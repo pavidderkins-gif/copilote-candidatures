@@ -12,11 +12,16 @@ profil/
   profil-maitre.md           source de vérité unique (zéro invention)
   perimetre.yaml             axes, zones, exclusions, seuils, entreprises cibles
   regles.yaml                garde-fous de contenu et d'envoi, vérifiés par le code
-prompts/                     prompts de scoring, génération, relance (phase 2)
+prompts/
+  routine-quotidienne.md     procédure suivie chaque matin par la tâche planifiée
+  scoring.md                 grille de notation v1 (exclusions, note /10, bonus, recommandation)
+donnees/offres.csv           toutes les offres vues et notées (déduplication)
+rapports/AAAA-MM-JJ.md       rapport quotidien
 supabase/
   migrations/                schéma : 6 tables métier + settings, RLS, bucket « documents »
   tests/socle_test.sql       tests des garde-fous SQL
 scripts/test-db.sh           lance migrations + tests sur un PostgreSQL local jetable
+scripts/offres.py            déduplication des offres (même empreinte que la base)
 ```
 
 ## Garde-fous codés dans la base

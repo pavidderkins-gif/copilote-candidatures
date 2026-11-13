@@ -5,7 +5,8 @@ quelle version a produit quelle note.
 
 | Fichier (phase 2) | Rôle | Statut |
 |---|---|---|
-| `scoring.md` | Mode B du coach : missions, compétences, mots-clés ATS, séniorité, signaux implicites → note /10, points forts, écarts, recommandation | texte de David si disponible, sinon rédigé d’après le cahier des charges |
+| `routine-quotidienne.md` | Recherche, notation et rapport de chaque matin | v1 |
+| `scoring.md` | Notation : exclusions, note /10, bonus, recommandation | v1, rédigée d’après le cahier des charges |
 | `generation-cv.md` | Textes du CV ciblé + fiche de modifications | à écrire |
 | `generation-lm.md` | Lettre de motivation | à écrire |
 | `message-approche.md` | Message LinkedIn ou email + contact | à écrire |
