@@ -1,4 +1,4 @@
-# Génération d'un dossier de candidature — version v1 (13/11/2026)
+# Génération d'un dossier de candidature — version v1.1 (13/11/2026)
 
 Entrées : l'offre (texte complet si possible), `profil/profil-maitre.md`, `profil/regles.yaml`,
 `profil/perimetre.yaml` (titre_cv, langue_dossier, canva). **Jamais pour une offre LVMH.**
@@ -33,6 +33,18 @@ l'offre. Vérifier le rendu (vignette) : rien qui déborde, tout tient sur une p
    (sans en-tête modifié) et vérifier avec `file` que c'est un PDF d'une page.
 3. Envoyer le fichier dans le tableau de bord : outil `Artifact`, `url` du tableau de bord,
    `file_path` du PDF, `asset: true`. Garder l'URL renvoyée (`/_blob/<id>`) et l'id.
+
+## 2 ter. Portfolio (toujours joint, décision de David du 13/11/2026)
+
+Chaque dossier contient le portfolio (`canva.portfolio`, « David_Perkins_Portfolio », 21 pages) :
+David le joint au formulaire ou à l'email chaque fois que c'est possible.
+1. `portfolio_url` = `canva.portfolio_url` de `perimetre.yaml`.
+2. `portfolio_pdf_url` = `canva.portfolio_pdf_url`. S'il est vide et que Canva répond :
+   `export-design` du portfolio en PDF, téléchargement comme en 2 bis
+   (`Portfolio-David-Perkins.pdf`, vérifier avec `file`), envoi dans le tableau de bord
+   (`asset: true`), puis noter l'URL `/_blob/<id>` dans `perimetre.yaml` (commit) pour que les
+   dossiers suivants réutilisent le même fichier.
+3. Ne jamais modifier le portfolio d'origine.
 
 ## 3. Lettre de motivation (si l'offre la demande ou si elle apporte un vrai plus)
 
@@ -70,6 +82,8 @@ Toute information nécessaire mais absente du profil maître devient une questio
 
 `dossiers/<dedup_hash>` : `cv_url` (lien d'édition Canva de la copie), `cv_design_id`,
 `cv_pdf_url` (`/_blob/<id>`), `cv_pdf_id`, `cv_titre`, `langue`, `lettre`, `message`, `pitch`,
-`fiche_modifications`, `questions` (liste), `brouillon_gmail` (si créé), `cree_le`
-(AAAA-MM-JJ), `version_prompt: "generation-v1"`.
+`fiche_modifications`, `questions` (liste), `portfolio_url`, `portfolio_pdf_url` (si exporté),
+`brouillon_gmail` (si créé), `cree_le` (AAAA-MM-JJ), `version_prompt: "generation-v1.1"`.
+Si Canva ne répond pas : tout le reste, plus `cv_a_generer: true` et la question « CV Canva à
+générer dès que Canva sera reconnecté ».
 Puis `suivi/<dedup_hash>` → `etape: "dossier_pret"`.

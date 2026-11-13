@@ -288,7 +288,7 @@ td button.t:hover { text-decoration: underline; }
     try {
       if (!S.dl) throw new Error("no-dl");
       const r = await fetch(url); if (!r.ok) throw new Error("fetch");
-      await S.dl.save({ filename: nom, data: await r.blob() }); toast("CV enregistré");
+      await S.dl.save({ filename: nom, data: await r.blob() }); toast("PDF enregistré");
     } catch (e) {
       if (e && e.code === "declined") return;
       toast("Téléchargement direct impossible ici : utilise « Ouvrir le PDF »");
@@ -417,7 +417,7 @@ td button.t:hover { text-decoration: underline; }
     if (relances.length) notes.push(`<div class="notice"><strong>À relancer (postulé il y a 7 jours ou plus)</strong><ul>${relances.map(o => `<li>${esc(o.intitule)} — ${esc(o.entreprise)}</li>`).join("")}</ul></div>`);
     if (notes.length) html += `<section style="display:grid;gap:10px">${notes.join("")}</section>`;
 
-    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts : à toi de postuler</h2><p>Clique sur « Postuler » : CV en PDF, lettre et réponses du formulaire prêtes à copier.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
+    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts : à toi de postuler</h2><p>Clique sur « Postuler » : CV en PDF, portfolio, lettre et réponses du formulaire prêtes à copier.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
     html += `<section><div class="section-head"><h2>À regarder</h2><p>Sélection du jour : jusqu'à ${reglages().plafond_jour} offres, plus toutes celles à ${fmtNote(reglages().passe_droit)}/10 ou plus.</p></div>
       ${selection.length ? `<div class="grid">${selection.map(carte).join("")}</div>` : `<div class="empty">Rien au-dessus du seuil aujourd'hui.</div>`}</section>`;
     if (lvmh.length) html += `<section><div class="section-head"><h2>Groupe LVMH — à postuler en interne</h2><p>Analysées pour toi. L'outil ne prépare et n'envoie rien pour ces offres.</p></div><div class="grid">${lvmh.map(carte).join("")}</div></section>`;
@@ -567,14 +567,25 @@ td button.t:hover { text-decoration: underline; }
     const pdf = d.cv_pdf_url ? safeUrlRel(d.cv_pdf_url) : "";
     const nomPdf = `CV-David-Perkins-${String(o.entreprise).replace(/[^A-Za-z0-9]+/g, "-")}.pdf`;
     const envoye = APRES_ENVOI.has(e);
+    const ppdf = d.portfolio_pdf_url ? safeUrlRel(d.portfolio_pdf_url) : "";
+    const pcanva = d.portfolio_url ? safeUrl(d.portfolio_url) : "";
+    const phrasePf = o.langue === "en" ? "Please also find my project portfolio attached." : "Vous trouverez également mon portfolio de projets en pièce jointe.";
+    const etapePf = ppdf || pcanva ? `<li><div class="step-t">Joins ton portfolio</div>
+          <div class="step-actions">${ppdf ? `<button class="btn primary small" type="button" data-pdf="${esc(ppdf)}" data-nom="Portfolio-David-Perkins.pdf">Télécharger le portfolio</button><a href="${esc(ppdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`}
+          ${pcanva ? `<a href="${esc(pcanva)}" target="_blank" rel="noopener noreferrer">Ouvrir dans Canva ↗</a>` : ""}</div>
+          <div style="color:var(--muted);font-size:.85rem;margin-top:4px">Dans le formulaire (« Autres documents ») ou en pièce jointe d'un email, quand c'est possible. Phrase à ajouter à ta lettre ou à ton message :</div>
+          <div class="step-actions">${btnCopy("portfolio", phrasePf, "Copier la phrase")}</div></li>` : "";
+    const cvAbsent = d.cv_url ? `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`
+      : `<span style="color:var(--muted)">CV ciblé pas encore créé : Canva ne répondait pas. Il sera ajouté ici dès que Canva répond ; les changements prévus sont dans « Ce qui a changé sur le CV ».</span>`;
     return `<section class="kit" aria-label="Postuler">
-      <h3>${envoye ? "Candidature envoyée" : "Postuler en 5 étapes"}</h3>
+      <h3>${envoye ? "Candidature envoyée" : `Postuler en ${etapePf ? 6 : 5} étapes`}</h3>
       ${Array.isArray(d.questions) && d.questions.length && !envoye ? `<div class="notice"><strong>À vérifier avant d'envoyer</strong><ul>${d.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>` : ""}
       <ol>
         <li><div class="step-t">Télécharge ton CV ciblé</div>
-          <div class="step-actions">${pdf ? `<button class="btn primary small" type="button" data-pdf="${esc(pdf)}" data-nom="${esc(nomPdf)}">Télécharger le PDF</button><a href="${esc(pdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`}
+          <div class="step-actions">${pdf ? `<button class="btn primary small" type="button" data-pdf="${esc(pdf)}" data-nom="${esc(nomPdf)}">Télécharger le PDF</button><a href="${esc(pdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : cvAbsent}
           ${d.cv_url ? `<a href="${esc(safeUrl(d.cv_url))}" target="_blank" rel="noopener noreferrer">Modifier dans Canva ↗</a>` : ""}</div>
           ${d.cv_titre ? `<div style="color:var(--muted);font-size:.85rem;margin-top:4px">Titre : ${esc(d.cv_titre)}</div>` : ""}</li>
+        ${etapePf}
         <li><div class="step-t">${d.lettre ? "Copie ta lettre de motivation" : "Pas de lettre nécessaire pour ce poste"}</div>
           ${d.lettre ? `<div class="step-actions">${btnCopy("lettre", d.lettre, "Copier la lettre")}</div><details><summary>Lire la lettre</summary><pre>${esc(d.lettre)}</pre></details>` : ""}</li>
         <li><div class="step-t">Ouvre l'offre et remplis le formulaire</div>

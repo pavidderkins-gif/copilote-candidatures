@@ -245,3 +245,8 @@ sources:
 canva:
   cv_reference_fr: DAHYYApcz6Y   # FR-David-Perkins-CV-Consultant-Data-BI
   portfolio: DAHKpyISgqQ         # David_Perkins_Portfolio_all_4.pptx (21 pages)
+  portfolio_url: https://www.canva.com/design/DAHKpyISgqQ/edit
+  # PDF du portfolio dans le tableau de bord (/_blob/<id>) : vide tant qu'il n'a pas été exporté.
+  # Le premier passage où Canva répond l'exporte une fois, l'envoie dans le tableau de bord et note
+  # son URL ici ; tous les dossiers réutilisent ensuite ce même fichier.
+  portfolio_pdf_url: ""
