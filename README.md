@@ -4,6 +4,12 @@ Outil qui trouve chaque jour les offres qui collent au profil de David, prépare
 complet pour les meilleures, attend sa validation, envoie ce qui peut l'être et suit chaque
 candidature jusqu'à la réponse. Spécification complète : [CAHIER_DES_CHARGES.md](CAHIER_DES_CHARGES.md).
 
+**Tableau de bord :** https://claude.ai/artifact/QngVuEMvQQTe5yhy1Pqgsg (privé, téléphone et ordinateur)
+— offres du jour, pipeline, historique, réglages. Source : `dashboard/index.html`.
+
+**Chaque matin à 6 h 58** (heure de Paris), une tâche planifiée suit `prompts/routine-quotidienne.md` :
+recherche, notation, écriture dans le tableau de bord, dossiers demandés, rapport et email.
+
 ## Structure
 
 ```
@@ -15,6 +21,9 @@ profil/
 prompts/
   routine-quotidienne.md     procédure suivie chaque matin par la tâche planifiée
   scoring.md                 grille de notation v1 (exclusions, note /10, bonus, recommandation)
+  generation-dossier.md      CV Canva ciblé, lettre, message, fiche de modifications (v1)
+dashboard/index.html         tableau de bord (Artifact avec base de données)
+dossiers/                    dossiers de candidature préparés
 donnees/offres.csv           toutes les offres vues et notées (déduplication)
 rapports/AAAA-MM-JJ.md       rapport quotidien
 supabase/

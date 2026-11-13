@@ -1,47 +1,70 @@
-# Routine quotidienne — recherche, notation, rapport (v1)
+# Routine quotidienne — recherche, notation, dashboard, rapport (v2)
 
-Lancée chaque matin par une tâche planifiée. Objectif : trouver les nouvelles offres qui
-collent au profil de David, les noter et lui envoyer un rapport lisible en 2 minutes.
+Lancée chaque matin à 6 h 58 (heure de Paris). Objectif : trouver les nouvelles offres qui
+collent au profil de David, les noter, alimenter son dashboard, préparer les dossiers qu'il a
+demandés et lui envoyer un récapitulatif lisible en 2 minutes.
 
-**Interdits absolus :** ne jamais postuler (et en particulier jamais aux offres du groupe
-LVMH, auxquelles David postule lui-même en interne), ne jamais contacter un recruteur, ne jamais se
-connecter à LinkedIn ou Indeed (lire seulement les alertes reçues par email), ne jamais
-inventer une offre, une date ou un lien. Une offre dont le lien n'a pas pu être vérifié est
-signalée comme telle.
+**Dashboard :** https://claude.ai/artifact/QngVuEMvQQTe5yhy1Pqgsg — sa base de données se lit
+et s'écrit avec l'outil `ArtifactData` (`url` ci-dessus). Collections : `offres/<dedup_hash>`,
+`suivi/<dedup_hash>` (écrit par David : son étape et ses notes), `dossiers/<dedup_hash>`,
+`rapports/<AAAA-MM-JJ>`, `reglages/general`.
+
+**Interdits absolus :** ne jamais postuler ; jamais rien préparer ni envoyer pour une offre
+du groupe LVMH (David postule en interne) ; ne jamais contacter un recruteur ; ne jamais se
+connecter à LinkedIn ou Indeed (lire seulement les alertes reçues par email) ; ne jamais
+inventer une offre, une date, un lien ou un fait du profil ; ne jamais écrire dans
+`suivi/` sauf pour passer une offre de « dossier_demande » à « dossier_pret ».
 
 ## 0. Préparation
 
-Dans le dépôt `copilote-candidatures` :
+1. `git pull` dans `copilote-candidatures`.
+2. Lire `profil/profil-maitre.md`, `profil/perimetre.yaml`, `profil/regles.yaml`, `prompts/scoring.md`.
+3. Lire les réglages de David : `ArtifactData get reglages/general` (seuil, passe_droit,
+   plafond_jour, cibles). Ils remplacent les valeurs de `perimetre.yaml`.
+4. Lire `suivi` (`ArtifactData list suivi`, limit 1000) : noter les offres en
+   `dossier_demande` (étape 6) et celles en `postulee` depuis 7 jours ou plus (relances).
+5. Date du jour (heure de Paris) : `AAAA-MM-JJ`.
 
-1. `git pull` pour partir de la dernière version.
-2. Lire `profil/profil-maitre.md`, `profil/perimetre.yaml`, `prompts/scoring.md`.
-3. Noter la date du jour (heure de Paris) : `AAAA-MM-JJ`.
+## 1. Sourcing (viser 60 à 100 offres candidates)
 
-## 1. Sourcing (viser 30 à 60 offres candidates)
+Tester d'abord si la lecture de pages fonctionne (`WebFetch` sur une page de résultats
+jobup.ch). Si oui, lire les pages de résultats triées par date des sites listés en 1b ; sinon,
+s'appuyer sur la recherche web (1c) et marquer les notes « provisoires ».
 
-Travailler axe par axe dans l'ordre de priorité (Data/BI, Finance, Supply Chain, Startup),
-zone par zone (Suisse, Paris, Lyon, VIE), avec les intitulés de `perimetre.yaml`.
-
-**a. Alertes Gmail** (2 derniers jours) :
+**a. Alertes Gmail** des 2 derniers jours :
 `newer_than:2d from:(jobalerts-noreply@linkedin.com OR jobs-noreply@linkedin.com OR apec.fr OR welcometothejungle.com OR jobteaser.com OR jobs.ch OR jobup.ch OR businessfrance.fr)`
-Lire chaque fil en entier et extraire les offres (intitulé, entreprise, lieu, lien).
 
-**b. Sites d'emploi** (WebFetch), pages de résultats triées par date :
-- Suisse : jobup.ch, jobs.ch, datacareer.ch
-- France : welcometothejungle.com, apec.fr, candidat.francetravail.fr, hellowork.com, cadremploi.fr
-- VIE : mon-vie-via.businessfrance.fr
-- LVMH : lvmh.com (offres du groupe et des Maisons)
-Si un site ne répond pas (domaine non autorisé), passer au suivant et le noter dans le rapport.
+**b. Sites d'emploi** (si la lecture de pages fonctionne) : jobup.ch, jobs.ch, datacareer.ch,
+welcometothejungle.com, apec.fr, candidat.francetravail.fr, hellowork.com,
+mon-vie-via.businessfrance.fr, lvmh.com/fr/nous-rejoindre.
 
-**c. Recherche web** (WebSearch, mode standard) pour compléter, avec des requêtes ciblées,
-par exemple `"Data Analyst" Genève site:jobup.ch`, `"FP&A Analyst" Paris CDI`,
-`VIE "Financial Analyst" 2027`, et une requête par entreprise cible
-(`<entreprise> careers data analyst`). Les résultats de recherche sont souvent anciens :
-ouvrir l'offre pour vérifier la date et qu'elle est toujours en ligne ; si c'est impossible,
-la garder avec la mention « lien non vérifié ».
+**c. Plan de recherche web** (WebSearch, mode `extended`, toutes en parallèle) — il a
+donné les meilleures offres du 13/11 :
 
-Écrire chaque offre candidate, une par ligne, dans `/tmp/candidates.jsonl`
-(`entreprise`, `intitule`, `lieu`, `pays`, `url`, `source`, `date_publication` si connue).
+| # | Requête type | Pourquoi |
+|---|---|---|
+| 1 | `"Data Analyst" OR "Business Analyst" junior Genève OR Lausanne CDI <mois> <année>` | Suisse romande, zone n°1 |
+| 2 | `junior "Data Analyst" OR "BI Analyst" OR "FP&A" Zurich OR Basel English no German` | Suisse anglophone |
+| 3 | `"Supply Chain Analyst" OR "Demand Planner" junior Genève OR Vaud OR Neuchâtel` | Supply chain en Suisse |
+| 4 | `graduate programme <année+1> finance OR data Zurich OR Genève` (Swiss Re, UBS, Julius Baer, Pictet, Lombard Odier) | Programmes graduate : idéal premier emploi |
+| 5 | `offre CDI "Data Analyst junior" OR "Business Data Analyst" Paris <mois> <année>` | Paris data |
+| 6 | `"FP&A Analyst" OR "Analyste FP&A" OR "Contrôleur de gestion junior" CDI Paris <mois>` | Paris finance |
+| 7 | `"Data Analyst" OR "Contrôleur de gestion junior" OR "Supply Chain Analyst" CDI Lyon <mois>` | Lyon |
+| 8 | `"Chief of Staff" OR "Business Operations" junior Paris startup CDI` | Axe startup |
+| 9 | `VIE <année+1> "Data Analyst" OR "Financial Analyst" OR "Business Analyst" Londres OR "New York" OR Singapour OR Sydney OR Montréal OR Dublin` | VIE anglophones |
+| 10 | `VIE "Supply Chain" OR "Demand Planning" analyst <année+1>` | VIE supply chain |
+| 11 | `<entreprise cible> careers junior analyst` pour 5 entreprises de `reglages.cibles`, en tournant chaque jour | Entreprises cibles |
+| 12 | `site:lvmh.com join-us our-job-offers analyst` | Groupe LVMH (rubrique interne) |
+| 13 | `BNP Paribas OR "Société Générale" OR Bpifrance CDI junior "Data Analyst" OR "Business Analyst"` | Banques |
+| 14 | `junior "Data Analyst" OR "Business Analyst" Mistral AI OR Qonto OR Pennylane OR Finary OR Photoroom` | IA et fintech |
+| 15 | `CERN junior OR graduate supply chain OR data Geneva` | Le CERN recrute des juniors avec des délais courts |
+
+Pour chaque offre prometteuse, faire une recherche ciblée (`<entreprise> "<intitulé>"`) pour
+retrouver le lien direct de l'annonce (site carrières, Workable, Greenhouse, Lever…) et sa date.
+Un lien vers une page de résultats est accepté seulement avec la mention « offre exacte à
+retrouver ».
+
+Écrire chaque offre candidate dans `/tmp/candidates.jsonl`.
 
 ## 2. Déduplication
 
@@ -49,25 +72,16 @@ la garder avec la mention « lien non vérifié ».
 python3 scripts/offres.py filtrer < /tmp/candidates.jsonl > /tmp/nouvelles.jsonl
 ```
 
-Seules les offres de `/tmp/nouvelles.jsonl` sont notées (les autres ont déjà été vues un jour
-précédent).
-
 ## 3. Notation
 
-Pour chaque nouvelle offre : ouvrir le texte complet quand c'est possible, appliquer
-`prompts/scoring.md` (filtres d'exclusion, puis note, bonus, recommandation) et écrire le
-résultat JSON dans `/tmp/notees.jsonl`. Statut :
-- `propose` : note ≥ seuil, retenue dans le rapport ;
-- `a_surveiller` : note entre seuil − 1 et seuil, ou texte incomplet ;
-- `archive` : note plus basse ;
-- `exclu` : filtre d'exclusion, avec le motif.
+Appliquer `prompts/scoring.md` à chaque nouvelle offre (réglages de David en priorité).
+Ajouter `points_forts` (2 ou 3, concrets, reliés au profil maître), `ecarts` (avec la façon de
+compenser), `canal`, `date_publication` si connue, `motif` (remarque ou motif d'exclusion),
+`rapport: "<AAAA-MM-JJ>"`, `date_collecte`. Statuts : `propose`, `a_surveiller`, `archive`, `exclu`.
 
-Les offres du groupe LVMH (`groupe_lvmh: true`) sont mises à part : toutes celles au-dessus
-du seuil vont dans la rubrique « Groupe LVMH » du rapport, hors sélection du jour.
-
-Sélection du jour (hors LVMH) : toutes les offres à 8/10 ou plus, puis les meilleures autres offres
-au-dessus du seuil jusqu'à 5 au total. Les offres au-dessus du seuil non retenues passent
-en `a_surveiller`.
+Sélection du jour (hors LVMH) : toutes les offres ≥ passe_droit, puis les meilleures au-dessus
+du seuil jusqu'à plafond_jour. Les autres au-dessus du seuil passent en `a_surveiller`.
+Offres LVMH : `groupe_lvmh: true`, `canal: "interne_lvmh"`, hors sélection.
 
 ## 4. Enregistrement
 
@@ -75,50 +89,37 @@ en `a_surveiller`.
 python3 scripts/offres.py ajouter < /tmp/notees.jsonl
 ```
 
-## 5. Rapport `rapports/AAAA-MM-JJ.md`
+Puis écrire chaque offre notée dans le dashboard : un fichier JSON par offre, et
+`ArtifactData batch` (50 écritures maximum par lot, `op: "set"`, `collection: "offres"`,
+`doc_id: <dedup_hash>`, `file_path`). Ne jamais réécrire une offre déjà présente.
 
-```markdown
-# Rapport du JJ/MM/AAAA
+## 5. Rapport
 
-**N offres proposées** · X candidates trouvées · Y nouvelles · Z exclues
+- `rapports/AAAA-MM-JJ.md` dans le dépôt (format du rapport du 13/11/2026).
+- Document `rapports/<AAAA-MM-JJ>` dans le dashboard : `date`, `lien` (GitHub), `nb_trouvees`,
+  `nb_proposees`, `nb_exclues`, `questions` (infos manquantes pour David), `avertissement`
+  (si les notes sont provisoires).
 
-## À regarder aujourd'hui
-### 1. <Intitulé> — <Entreprise> (<Lieu>) · **8,5/10** · postuler
-- Pourquoi : <2 ou 3 points forts>
-- Écarts : <écart et comment le compenser>
-- Canal : <email / ATS / LinkedIn / VIE> · Langue : <fr/en> · Publiée le <date>
-- Lien : <url> (ou « lien non vérifié »)
+## 6. Dossiers demandés depuis le dashboard
 
-## Groupe LVMH — à postuler en interne par David
-<même format que ci-dessus ; l'outil ne prépare rien d'autre pour ces offres>
+Pour chaque offre en `dossier_demande` (sauf LVMH, jamais) : suivre
+`prompts/generation-dossier.md`, écrire `dossiers/<dedup_hash>`, puis passer
+`suivi/<dedup_hash>` à `etape: "dossier_pret"` avec `ArtifactData update` (pinné sur la
+`version` lue à l'étape 0, sans toucher aux autres champs).
 
-## À surveiller
-| Note | Poste | Entreprise | Lieu | Lien |
-
-## Exclues (résumé)
-<motifs les plus fréquents, en une ligne chacun>
-
-## Sources
-<ce qui a marché, ce qui a été bloqué>
-```
-
-S'il n'y a aucune offre au-dessus du seuil, le dire clairement en tête du rapport.
-
-## 6. Publication
+## 7. Publication
 
 ```bash
 git add rapports/ donnees/ && git commit -m "Rapport du AAAA-MM-JJ" && git push
 ```
 
-## 7. Envoi à David
+## 8. Envoi à David
 
-Envoyer un email (connecteur Gmail, `send_message`) à l'adresse Gmail de David, sans pièce
-jointe :
-- Objet : `Copilote · N offres le JJ/MM` (ou `Copilote · rien de nouveau le JJ/MM`)
-- Corps en texte simple : les offres proposées (poste, entreprise, lieu, note, lien), puis
-  les offres du groupe LVMH sous le titre « Groupe LVMH (candidature interne) », une ligne
-  sur les offres à surveiller, puis le lien vers le rapport :
-  `https://github.com/pavidderkins-gif/copilote-candidatures/blob/main/rapports/AAAA-MM-JJ.md`
+Email (Gmail `send_message`) à l'adresse Gmail de David, sans pièce jointe :
+- Objet : `Copilote · N offres le JJ/MM` (ou `Copilote · rien de nouveau le JJ/MM`).
+- Corps en texte simple : offres sélectionnées (poste, entreprise, lieu, note, lien), offres
+  LVMH sous « Groupe LVMH (candidature interne) », dossiers prêts à relire, relances à faire,
+  questions, puis les liens vers le dashboard et le rapport GitHub. Signé « Respectueusement ».
 
-Si l'envoi échoue, créer un brouillon avec le même contenu et le signaler dans le rapport.
-Terminer par un résumé de 3 lignes dans la conversation.
+Si l'envoi échoue, créer un brouillon et le signaler dans le rapport. Terminer par un résumé
+de 3 lignes dans la conversation.
