@@ -113,6 +113,27 @@ begin
     raise exception 'ÉCHEC : dernier score incorrect';
   end if;
   raise notice 'OK 10 vues';
+
+  -- 11. Groupe LVMH : candidature interne uniquement, jamais d'envoi par l'outil
+  insert into offers (source, entreprise, intitule, groupe_lvmh) values ('page_carriere', 'Hublot', 'FP&A Analyst', true) returning id into o3;
+  begin
+    insert into applications (offer_id, canal) values (o3, 'email');
+    raise exception 'ÉCHEC : candidature externe LVMH acceptée';
+  exception when check_violation then null;
+  end;
+  insert into applications (offer_id, canal) values (o3, 'interne_lvmh') returning id into a2;
+  begin
+    update applications set statut = 'envoyee', approuve_le = now(), date_envoi = now(), mode_envoi = 'auto' where id = a2;
+    raise exception 'ÉCHEC : envoi auto LVMH accepté';
+  exception when check_violation then null;
+  end;
+  insert into offers (source, entreprise, intitule) values ('import_manuel', 'Qonto', 'Data Analyst') returning id into o3;
+  begin
+    insert into applications (offer_id, canal) values (o3, 'interne_lvmh');
+    raise exception 'ÉCHEC : canal interne_lvmh hors LVMH accepté';
+  exception when check_violation then null;
+  end;
+  raise notice 'OK 11 LVMH interne uniquement';
 end $$;
 
 \echo 'Tous les tests du socle passent.'

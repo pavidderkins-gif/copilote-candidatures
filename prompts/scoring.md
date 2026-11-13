@@ -37,6 +37,13 @@ Si l'un de ces cas s'applique, l'offre est **exclue** : statut `exclu`, motif no
 - +0,5 : banque
 - +0,5 : IA (entreprise d'IA ou poste centré sur l'IA)
 
+### Groupe LVMH
+
+Une offre du groupe LVMH ou d'une de ses Maisons est notée normalement (bonus compris), mais
+elle reçoit `"groupe_lvmh": true` et `"canal": "interne_lvmh"`. Elle n'entre pas dans les 5
+dossiers du jour : elle va dans une rubrique à part du rapport. **L'outil ne postule jamais et
+ne prépare aucun envoi pour ces offres : David postule lui-même en interne.**
+
 ## 4. Recommandation
 
 - Note finale ≥ `scoring.seuil` (6) sans écart bloquant → **postuler**
@@ -50,7 +57,8 @@ Si l'un de ces cas s'applique, l'offre est **exclue** : statut `exclu`, motif no
  "langue": "fr|en", "axe": "data_bi|finance|supply_chain|startup", "source": "...", "url": "...",
  "date_publication": "AAAA-MM-JJ", "note_brute": 7.0, "bonus": {"groupe_lvmh": 1}, "note": 8.0,
  "recommandation": "postuler", "points_forts": ["..."], "ecarts": ["..."], "mots_cles_ats": ["..."],
- "statut": "propose|a_surveiller|archive|exclu", "motif": "", "version_prompt": "scoring-v1"}
+ "groupe_lvmh": false, "statut": "propose|a_surveiller|archive|exclu", "motif": "",
+ "version_prompt": "scoring-v1"}
 ```
 
 Règles : ne jamais attribuer à David une compétence absente du profil maître ; si le texte de

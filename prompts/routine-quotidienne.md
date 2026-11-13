@@ -3,7 +3,8 @@
 Lancée chaque matin par une tâche planifiée. Objectif : trouver les nouvelles offres qui
 collent au profil de David, les noter et lui envoyer un rapport lisible en 2 minutes.
 
-**Interdits absolus :** ne jamais postuler, ne jamais contacter un recruteur, ne jamais se
+**Interdits absolus :** ne jamais postuler (et en particulier jamais aux offres du groupe
+LVMH, auxquelles David postule lui-même en interne), ne jamais contacter un recruteur, ne jamais se
 connecter à LinkedIn ou Indeed (lire seulement les alertes reçues par email), ne jamais
 inventer une offre, une date ou un lien. Une offre dont le lien n'a pas pu être vérifié est
 signalée comme telle.
@@ -61,7 +62,10 @@ résultat JSON dans `/tmp/notees.jsonl`. Statut :
 - `archive` : note plus basse ;
 - `exclu` : filtre d'exclusion, avec le motif.
 
-Sélection du jour : toutes les offres à 8/10 ou plus, puis les meilleures autres offres
+Les offres du groupe LVMH (`groupe_lvmh: true`) sont mises à part : toutes celles au-dessus
+du seuil vont dans la rubrique « Groupe LVMH » du rapport, hors sélection du jour.
+
+Sélection du jour (hors LVMH) : toutes les offres à 8/10 ou plus, puis les meilleures autres offres
 au-dessus du seuil jusqu'à 5 au total. Les offres au-dessus du seuil non retenues passent
 en `a_surveiller`.
 
@@ -84,6 +88,9 @@ python3 scripts/offres.py ajouter < /tmp/notees.jsonl
 - Écarts : <écart et comment le compenser>
 - Canal : <email / ATS / LinkedIn / VIE> · Langue : <fr/en> · Publiée le <date>
 - Lien : <url> (ou « lien non vérifié »)
+
+## Groupe LVMH — à postuler en interne par David
+<même format que ci-dessus ; l'outil ne prépare rien d'autre pour ces offres>
 
 ## À surveiller
 | Note | Poste | Entreprise | Lieu | Lien |
@@ -108,8 +115,9 @@ git add rapports/ donnees/ && git commit -m "Rapport du AAAA-MM-JJ" && git push
 Envoyer un email (connecteur Gmail, `send_message`) à l'adresse Gmail de David, sans pièce
 jointe :
 - Objet : `Copilote · N offres le JJ/MM` (ou `Copilote · rien de nouveau le JJ/MM`)
-- Corps en texte simple : les offres proposées (poste, entreprise, lieu, note, lien), une
-  ligne sur les offres à surveiller, puis le lien vers le rapport :
+- Corps en texte simple : les offres proposées (poste, entreprise, lieu, note, lien), puis
+  les offres du groupe LVMH sous le titre « Groupe LVMH (candidature interne) », une ligne
+  sur les offres à surveiller, puis le lien vers le rapport :
   `https://github.com/pavidderkins-gif/copilote-candidatures/blob/main/rapports/AAAA-MM-JJ.md`
 
 Si l'envoi échoue, créer un brouillon avec le même contenu et le signaler dans le rapport.

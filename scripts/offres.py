@@ -20,7 +20,7 @@ CSV_PATH = Path(__file__).resolve().parent.parent / "donnees" / "offres.csv"
 COLONNES = [
     "date_collecte", "dedup_hash", "entreprise", "intitule", "lieu", "pays", "contrat",
     "langue", "axe", "source", "url", "date_publication", "note", "recommandation",
-    "statut", "motif", "version_prompt",
+    "statut", "motif", "version_prompt", "groupe_lvmh",
 ]
 
 _ACCENTS = str.maketrans(

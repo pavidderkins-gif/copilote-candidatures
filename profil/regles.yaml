@@ -82,6 +82,9 @@ envoi:
   - id: meme_entreprise
     regle: Alerte si deux candidatures à la même entreprise en moins de 30 jours.
     applique_par: vue SQL v_alertes_meme_entreprise
+  - id: lvmh_interne
+    regle: Offres du groupe LVMH (toutes Maisons) - rechercher, analyser et signaler à David, mais ne jamais postuler ni préparer d'envoi externe. David postule en interne.
+    applique_par: trigger SQL applications_lvmh_interne (canal interne_lvmh obligatoire, aucun envoi auto)
   - id: pas_de_bot
     regle: Pas de bot sur LinkedIn ni Indeed ; pas de création de compte, mot de passe ni CAPTCHA.
     applique_par: canal linkedin/indeed => soumission manuelle uniquement (contrainte SQL applications_canal_manuel)

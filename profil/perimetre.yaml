@@ -151,7 +151,15 @@ exclusions:
 # Entreprises
 # ---------------------------------------------------------------------------
 entreprises:
-  groupe_lvmh_mots_cles:        # détection du bonus LVMH
+  # Décision du 13/11 : les offres du groupe LVMH (toutes Maisons) sont cherchées,
+  # analysées et envoyées à David dans une rubrique à part, mais l'outil ne postule
+  # JAMAIS et ne prépare aucun envoi externe : David postule lui-même en interne.
+  groupe_lvmh:
+    rechercher: true
+    analyser: true
+    candidature: interne_par_david   # aucun envoi, aucun kit ATS, aucun message de l'outil
+    compte_dans_plafond_jour: false  # rubrique séparée, hors des 5 dossiers du jour
+  groupe_lvmh_mots_cles:        # détection du groupe (bonus de score + règle interne)
     - LVMH
     - Dior
     - Louis Vuitton

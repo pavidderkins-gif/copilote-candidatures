@@ -284,6 +284,9 @@ prompt.
 - Plafond d'envois automatiques par jour (par défaut 10) pour éviter un
   emballement.
 
+- Groupe LVMH : jamais de candidature ni d'envoi par l'outil (David
+  postule en interne) ; offres signalées dans une rubrique à part.
+
 - Jamais deux candidatures au même poste ; alerte si on candidate deux
   fois à la même entreprise en moins de 30 jours.
 
@@ -611,6 +614,10 @@ Décisions de David (13/11/2026, suite) :
 - Titre du CV changé pour chaque offre, aligné sur l'intitulé du poste.
 
 - Dossiers toujours dans la langue de l'offre, quel que soit le pays.
+
+- Groupe LVMH (toutes Maisons) : l'outil cherche, analyse et envoie les
+  offres dans une rubrique à part, mais ne postule jamais et ne prépare
+  aucun envoi. David postule lui-même en interne.
 
 - Entreprises cibles : liste courte de départ proposée par Claude Code
   dans perimetre.yaml, à élaguer et compléter au fil de l'eau depuis

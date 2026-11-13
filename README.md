@@ -34,6 +34,7 @@ scripts/offres.py            déduplication des offres (même empreinte que la b
 | Plafond d'envois automatiques par jour | trigger `applications_send_cap` (réglage `envoi.plafond_envois_auto_jour`) |
 | Alerte même entreprise < 30 jours | vue `v_alertes_meme_entreprise` |
 | Motif obligatoire en cas de rejet | contrainte `applications_rejet_motif` |
+| Groupe LVMH : candidature interne par David uniquement | trigger `applications_lvmh_interne` (canal `interne_lvmh`, aucun envoi auto) |
 | Traçabilité totale | trigger `applications_log` → table `events` à chaque changement de statut |
 | Relance J+7 programmée à l'envoi | trigger `applications_follow_up` |
 
