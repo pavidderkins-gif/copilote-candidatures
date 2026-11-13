@@ -1,0 +1,654 @@
+<title>Copilote Candidatures</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout : poste de pilotage — barre d'onglets collante, une colonne de travail, cartes d'offres en grille souple */
+:root {
+  --bg: #f3f4f1; --surface: #ffffff; --surface-2: #eceee9; --ink: #18201d; --muted: #5b6660;
+  --line: #d9ddd7; --accent: #2f4bd8; --accent-ink: #ffffff; --accent-soft: #e4e8fb;
+  --fort: #1e7a4f; --bon: #2a7a8c; --moyen: #a86f12; --faible: #858d88;
+  --lvmh: #80612f; --lvmh-soft: #f3ece0; --danger: #b3261e;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111614; --surface: #1a201d; --surface-2: #222a26; --ink: #e6ebe8; --muted: #9ba7a1;
+  --line: #2e3833; --accent: #8fa3ff; --accent-ink: #0d1330; --accent-soft: #232a4a;
+  --fort: #4cc38a; --bon: #5db8cb; --moyen: #e2aa4c; --faible: #7f8984;
+  --lvmh: #d6b47e; --lvmh-soft: #2d2618; --danger: #f2877e; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111614; --surface: #1a201d; --surface-2: #222a26; --ink: #e6ebe8; --muted: #9ba7a1;
+  --line: #2e3833; --accent: #8fa3ff; --accent-ink: #0d1330; --accent-soft: #232a4a;
+  --fort: #4cc38a; --bon: #5db8cb; --moyen: #e2aa4c; --faible: #7f8984;
+  --lvmh: #d6b47e; --lvmh-soft: #2d2618; --danger: #f2877e; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+a { color: var(--accent); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* En-tête */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px 4px; flex-wrap: wrap; }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 1.3rem; letter-spacing: -0.01em; margin: 0; }
+.brand small { font-family: var(--f-body); font-weight: 500; font-size: 0.8rem; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
+.status-line { font-size: 0.8rem; color: var(--muted); }
+nav.tabs { display: flex; gap: 4px; overflow-x: auto; padding-block: 6px 0; scrollbar-width: none; }
+nav.tabs a { text-decoration: none; color: var(--muted); padding: 8px 12px 10px; border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 500; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+nav.tabs .count { font-family: var(--f-mono); font-size: 0.75rem; background: var(--surface-2); border-radius: 999px; padding: 1px 7px; margin-left: 6px; }
+
+main { padding-block: 20px 64px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr); }
+main > * { min-width: 0; }
+h2 { font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.section-head p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+
+/* Bandeau de synthèse */
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.summary div { background: var(--surface); padding: 12px 14px; display: grid; gap: 2px; }
+.summary b { font-family: var(--f-mono); font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.summary span { font-size: 0.8rem; color: var(--muted); }
+.summary .alert b { color: var(--moyen); }
+
+.notice { background: var(--accent-soft); border-radius: var(--r); padding: 12px 14px; font-size: 0.9rem; display: grid; gap: 6px; }
+.notice ul { margin: 0; padding-left: 18px; }
+.notice.warn { background: var(--surface-2); }
+
+/* Cartes d'offres */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 14px; }
+.offer { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.offer.lvmh { background: var(--lvmh-soft); border-color: color-mix(in srgb, var(--lvmh) 35%, var(--line)); }
+.offer-head { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: start; }
+.offer-title { margin: 0; font-size: 1.02rem; font-weight: 600; line-height: 1.3; }
+.offer-title button { all: unset; cursor: pointer; }
+.offer-title button:hover { text-decoration: underline; }
+.offer-title button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.offer-sub { color: var(--muted); font-size: 0.88rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { font-size: 0.74rem; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.chip.lvmh { background: transparent; border: 1px solid var(--lvmh); color: var(--lvmh); font-weight: 600; }
+.chip.etape { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.chip.warn { color: var(--moyen); }
+.points { display: grid; gap: 8px; font-size: 0.88rem; }
+.points ul { margin: 2px 0 0; padding-left: 18px; }
+.points .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; color: var(--muted); }
+.provisoire { font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
+/* Jauge de note */
+.gauge { width: 56px; height: 56px; position: relative; }
+.gauge svg { width: 56px; height: 56px; transform: rotate(-90deg); }
+.gauge .track { stroke: var(--surface-2); }
+.gauge .val { font-family: var(--f-mono); font-weight: 600; font-size: 0.95rem; position: absolute; inset: 0; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.s-fort { color: var(--fort); stroke: var(--fort); } .s-bon { color: var(--bon); stroke: var(--bon); }
+.s-moyen { color: var(--moyen); stroke: var(--moyen); } .s-faible { color: var(--faible); stroke: var(--faible); }
+
+/* Actions */
+.actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 11px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.link-out { font-size: 0.85rem; font-weight: 500; margin-left: auto; }
+.ecart-form { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
+.ecart-form input { flex: 1 1 180px; min-width: 0; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+
+/* Liste compacte (à surveiller) */
+.rows { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); }
+.row:first-child { border-top: 0; }
+.row .score { font-family: var(--f-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.row .t { font-weight: 500; }
+.row .m { color: var(--muted); font-size: 0.83rem; }
+.row button.t { all: unset; cursor: pointer; font-weight: 500; }
+.row button.t:hover { text-decoration: underline; }
+.row button.t:focus-visible { outline: 2px solid var(--accent); }
+
+/* Pipeline */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
+.kpi b { display: block; font-family: var(--f-mono); font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--muted); font-size: 0.8rem; }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 110px 1fr 36px; gap: 10px; align-items: center; font-size: 0.85rem; }
+.bar .track { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.bar .n { font-family: var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.board-scroll { overflow-x: auto; padding-bottom: 6px; }
+.board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 12px; min-width: min-content; }
+.col { background: var(--surface-2); border-radius: var(--r); padding: 10px; display: grid; gap: 8px; align-content: start; min-height: 120px; }
+.col h3 { margin: 0 2px 2px; font-size: 0.85rem; font-weight: 600; display: flex; justify-content: space-between; }
+.col h3 span { font-family: var(--f-mono); color: var(--muted); }
+.card-mini { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: grid; gap: 6px; font-size: 0.85rem; }
+.card-mini.lvmh { border-color: var(--lvmh); }
+.card-mini select { width: 100%; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); font-size: 0.8rem; }
+.empty-col { color: var(--muted); font-size: 0.8rem; padding: 4px 2px; }
+
+/* Historique */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.toolbar input, .toolbar select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.toolbar input[type="search"] { flex: 1 1 220px; min-width: 0; }
+.table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; min-width: 760px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; background: var(--surface); position: sticky; top: 0; }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.excl td { color: var(--muted); }
+td button.t { all: unset; cursor: pointer; font-weight: 500; color: var(--ink); }
+td button.t:hover { text-decoration: underline; }
+
+/* Réglages */
+.settings { display: grid; gap: 18px; max-width: 720px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
+.panel p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; background: var(--surface-2); border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 0.85rem; }
+.tag button { all: unset; cursor: pointer; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); }
+.tag button:hover { background: var(--line); }
+.add { display: flex; gap: 6px; flex-wrap: wrap; }
+.add input { flex: 1 1 200px; min-width: 0; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.fields label { display: grid; gap: 4px; font-size: 0.85rem; font-weight: 500; }
+.fields input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-family: var(--f-mono); }
+.fields small { color: var(--muted); font-weight: 400; }
+
+/* Panneau de détail */
+.drawer-bg { position: fixed; inset: 0; background: rgba(10, 14, 12, 0.45); z-index: 20; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100%); background: var(--surface); z-index: 21; overflow-y: auto;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) 18px;
+  display: grid; gap: 16px; align-content: start; border-left: 1px solid var(--line); }
+.drawer h2 { font-size: 1.25rem; }
+.drawer textarea { width: 100%; min-height: 90px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); resize: vertical; }
+.drawer select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 0.88rem; margin: 0; }
+.dl dt { color: var(--muted); } .dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.dossier { border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: grid; gap: 10px; }
+.dossier pre { white-space: pre-wrap; font-family: var(--f-body); font-size: 0.86rem; background: var(--surface-2); border-radius: 8px; padding: 10px; margin: 0; max-height: 320px; overflow-y: auto; }
+.close { justify-self: end; }
+
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 22px; color: var(--muted); text-align: center; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-size: 0.88rem; z-index: 30; }
+@media (max-width: 520px) {
+  .offer-head { grid-template-columns: 48px 1fr; gap: 10px; }
+  .gauge, .gauge svg { width: 48px; height: 48px; }
+  .row { grid-template-columns: 40px minmax(0, 1fr); }
+  .row .row-act { grid-column: 2; }
+  .bar { grid-template-columns: 90px 1fr 30px; }
+}
+@media (prefers-reduced-motion: no-preference) { .btn, nav.tabs a { transition: border-color .15s, background-color .15s, color .15s; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <h1 class="brand">Copilote <small>Candidatures de David</small></h1>
+      <div class="status-line" id="status">Chargement des offres…</div>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Vues">
+      <a href="#aujourdhui" data-view="aujourdhui">Aujourd'hui<span class="count" id="c-auj"></span></a>
+      <a href="#pipeline" data-view="pipeline">Pipeline<span class="count" id="c-pipe"></span></a>
+      <a href="#historique" data-view="historique">Historique<span class="count" id="c-hist"></span></a>
+      <a href="#reglages" data-view="reglages">Réglages</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+<div id="drawer-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Référentiels ----------
+  const ETAPES = [
+    { id: "nouvelle", label: "Nouvelle" },
+    { id: "interessante", label: "Intéressante" },
+    { id: "dossier_demande", label: "Dossier demandé" },
+    { id: "dossier_pret", label: "Dossier prêt" },
+    { id: "postulee", label: "Postulée" },
+    { id: "relance", label: "Relancée" },
+    { id: "entretien", label: "Entretien" },
+    { id: "offre", label: "Offre reçue" },
+    { id: "refus", label: "Refus" },
+    { id: "ecartee", label: "Écartée" },
+  ];
+  const ETAPE_LABEL = Object.fromEntries(ETAPES.map(e => [e.id, e.label]));
+  const COLONNES = ["interessante", "dossier_demande", "dossier_pret", "postulee", "relance", "entretien", "offre", "refus"];
+  const APRES_ENVOI = new Set(["postulee", "relance", "entretien", "offre", "refus"]);
+  const AXES = { data_bi: "Data / BI", finance: "Finance", supply_chain: "Supply Chain", startup: "Startup" };
+  const CANAUX = { ats: "Site de l'entreprise", email: "Email", linkedin: "LinkedIn (manuel)", indeed: "Indeed (manuel)", vie_business_france: "VIE Business France", interne_lvmh: "Interne LVMH" };
+  const RECO = { postuler: "Postuler", postuler_en_compensant: "Postuler en compensant", passer: "Passer" };
+  const STATUT_TRI = { propose: "Sélection", a_surveiller: "À surveiller", archive: "Archivée", exclu: "Exclue" };
+  const DEFAULT_REGLAGES = { seuil: 6, passe_droit: 8, plafond_jour: 5, cibles: [] };
+
+  // ---------- État ----------
+  const S = {
+    db: null, dl: null,
+    offres: new Map(), suivi: new Map(), dossiers: new Map(), rapports: [], reglages: null,
+    loaded: { offres: false, suivi: false, rapports: false },
+    stale: false, writable: true,
+    view: "aujourdhui", ouvert: null, ecartEnCours: null,
+    hist: { q: "", statut: "tous", tri: "note" },
+    pipeAxe: "tous",
+  };
+
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
+  const fmtNote = n => (typeof n === "number" ? n.toFixed(1).replace(".0", "").replace(".", ",") : "—");
+  const fmtDate = d => { if (!d) return ""; const [y, m, j] = String(d).slice(0, 10).split("-"); return j && m && y ? `${j}/${m}/${y}` : esc(d); };
+  const classe = n => typeof n !== "number" ? "s-faible" : n >= 8 ? "s-fort" : n >= 7 ? "s-bon" : n >= 6 ? "s-moyen" : "s-faible";
+  const etapeDe = h => S.suivi.get(h)?.etape || "nouvelle";
+  const reglages = () => ({ ...DEFAULT_REGLAGES, ...(S.reglages || {}) });
+
+  function toast(msg) {
+    const root = $("#toast-root");
+    root.innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`;
+    clearTimeout(toast.t); toast.t = setTimeout(() => { root.innerHTML = ""; }, 2600);
+  }
+
+  // ---------- Données dérivées ----------
+  const offresList = () => [...S.offres.values()];
+  const dernierRapport = () => S.rapports[0] || null;
+  const parNote = (a, b) => (b.note ?? -1) - (a.note ?? -1) || String(a.entreprise).localeCompare(String(b.entreprise));
+  function joursDepuis(iso) { if (!iso) return 0; return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000); }
+  function aRelancer() {
+    return offresList().filter(o => { const s = S.suivi.get(o.id); return s && s.etape === "postulee" && joursDepuis(s.envoye_le || s.maj) >= 7; });
+  }
+
+  // ---------- Écritures ----------
+  async function ecrireSuivi(h, patch, msg) {
+    if (!S.db) return;
+    const prev = S.suivi.get(h) || {};
+    const next = { ...prev, ...patch, maj: new Date().toISOString() };
+    if (patch.etape && APRES_ENVOI.has(patch.etape) && !prev.envoye_le) next.envoye_le = next.maj;
+    S.suivi.set(h, next); render();
+    try { await S.db.doc("suivi/" + h).set(next); if (msg) toast(msg); }
+    catch (e) {
+      if (prev && Object.keys(prev).length) S.suivi.set(h, prev); else S.suivi.delete(h);
+      render();
+      toast(e && e.code === "invalid_argument" ? "Modification refusée : tu n'as pas les droits d'écriture ici." : "Enregistrement impossible pour l'instant. Réessaie dans un moment.");
+    }
+  }
+  async function ecrireReglages(next) {
+    if (!S.db) return;
+    try { await S.db.doc("reglages/general").set({ ...next, maj: new Date().toISOString() }); toast("Réglages enregistrés"); }
+    catch { toast("Enregistrement impossible pour l'instant."); }
+  }
+
+  // ---------- Composants ----------
+  function gauge(n) {
+    const c = 2 * Math.PI * 24, v = typeof n === "number" ? Math.max(0, Math.min(10, n)) / 10 : 0;
+    return `<div class="gauge ${classe(n)}" aria-label="Note ${fmtNote(n)} sur 10">
+      <svg viewBox="0 0 56 56" aria-hidden="true"><circle class="track" cx="28" cy="28" r="24" fill="none" stroke-width="5"/>
+      <circle cx="28" cy="28" r="24" fill="none" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(c * v).toFixed(1)} ${c.toFixed(1)}"/></svg>
+      <span class="val">${fmtNote(n)}</span></div>`;
+  }
+  function chipsDe(o) {
+    const out = [];
+    if (o.groupe_lvmh) out.push(`<span class="chip lvmh">Interne LVMH</span>`);
+    if (o.contrat) out.push(`<span class="chip">${esc(o.contrat)}</span>`);
+    if (o.axe && AXES[o.axe]) out.push(`<span class="chip">${AXES[o.axe]}</span>`);
+    if (o.langue) out.push(`<span class="chip">${o.langue === "en" ? "Anglais" : o.langue === "fr" ? "Français" : esc(o.langue)}</span>`);
+    if (o.canal && CANAUX[o.canal] && !o.groupe_lvmh) out.push(`<span class="chip">${CANAUX[o.canal]}</span>`);
+    if (o.date_publication) out.push(`<span class="chip">Publiée le ${fmtDate(o.date_publication)}</span>`);
+    const e = etapeDe(o.id); if (e !== "nouvelle") out.push(`<span class="chip etape">${ETAPE_LABEL[e]}</span>`);
+    return `<div class="chips">${out.join("")}</div>`;
+  }
+  function actionsDe(o) {
+    const e = etapeDe(o.id), h = esc(o.id), url = safeUrl(o.url);
+    if (S.ecartEnCours === o.id) {
+      return `<form class="ecart-form" data-ecart="${h}"><input id="motif-${h}" name="motif" placeholder="Pourquoi l'écarter ? (aide à affiner la note)" autocomplete="off">
+        <button class="btn primary" type="submit">Écarter</button><button class="btn ghost" type="button" data-act="annuler-ecart">Annuler</button></form>`;
+    }
+    const b = (act, label, on) => `<button class="btn${on ? " on" : ""}" type="button" data-act="${act}" data-h="${h}" ${S.writable ? "" : "disabled"}>${label}</button>`;
+    const parts = [b("interessante", "Intéressé", e === "interessante")];
+    if (!o.groupe_lvmh) parts.push(b("dossier_demande", e === "dossier_pret" ? "Dossier prêt" : "Préparer le dossier", e === "dossier_demande" || e === "dossier_pret"));
+    parts.push(b("postulee", o.groupe_lvmh ? "Postulé en interne" : "J'ai postulé", APRES_ENVOI.has(e)));
+    parts.push(e === "ecartee" ? b("rouvrir", "Rouvrir", false) : `<button class="btn ghost" type="button" data-act="ecarter" data-h="${h}" ${S.writable ? "" : "disabled"}>Écarter</button>`);
+    if (url) parts.push(`<a class="link-out" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>`);
+    return `<div class="actions">${parts.join("")}</div>`;
+  }
+  function carte(o) {
+    const pf = (o.points_forts || []).map(x => `<li>${esc(x)}</li>`).join("");
+    const ec = (o.ecarts || []).map(x => `<li>${esc(x)}</li>`).join("");
+    return `<article class="offer${o.groupe_lvmh ? " lvmh" : ""}">
+      <div class="offer-head">${gauge(o.note)}
+        <div style="min-width:0"><h3 class="offer-title"><button type="button" data-open="${esc(o.id)}">${esc(o.intitule)}</button></h3>
+        <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || o.pays || "")}${o.recommandation && RECO[o.recommandation] ? ` · <strong>${RECO[o.recommandation]}</strong>` : ""}</div>
+        ${chipsDe(o)}</div></div>
+      ${pf || ec ? `<div class="points">${pf ? `<div><div class="label">Pourquoi</div><ul>${pf}</ul></div>` : ""}${ec ? `<div><div class="label">Écarts</div><ul>${ec}</ul></div>` : ""}</div>` : ""}
+      ${o.motif ? `<div class="provisoire">${esc(o.motif)}</div>` : ""}
+      ${actionsDe(o)}
+    </article>`;
+  }
+  function ligne(o, extra = "") {
+    return `<div class="row"><span class="score ${classe(o.note)}">${fmtNote(o.note)}</span>
+      <div style="min-width:0"><button type="button" class="t" data-open="${esc(o.id)}">${esc(o.intitule)}</button>
+      <div class="m">${esc(o.entreprise)} · ${esc(o.lieu || "")}${o.ecarts && o.ecarts[0] ? " · " + esc(o.ecarts[0]) : ""}${extra}</div></div>
+      <div class="row-act">${etapeDe(o.id) !== "nouvelle" ? `<span class="chip etape">${ETAPE_LABEL[etapeDe(o.id)]}</span>` : ""}</div></div>`;
+  }
+
+  // ---------- Vues ----------
+  function vueAujourdhui() {
+    const r = dernierRapport();
+    const jour = r ? r.date : offresList().map(o => o.rapport).sort().pop();
+    const duJour = offresList().filter(o => o.rapport === jour && etapeDe(o.id) !== "ecartee");
+    const selection = duJour.filter(o => o.statut === "propose" && !o.groupe_lvmh).sort(parNote);
+    const lvmh = duJour.filter(o => o.groupe_lvmh && o.statut !== "exclu").sort(parNote);
+    const surveiller = duJour.filter(o => o.statut === "a_surveiller" && !o.groupe_lvmh).sort(parNote);
+    const demandes = offresList().filter(o => etapeDe(o.id) === "dossier_demande");
+    const prets = offresList().filter(o => etapeDe(o.id) === "dossier_pret");
+    const relances = aRelancer();
+
+    if (!S.offres.size) {
+      return S.loaded.offres
+        ? `<div class="empty">Aucune offre pour l'instant. La recherche du matin (chaque jour à 6 h 58) les ajoutera ici.</div>`
+        : `<div class="empty">${S.stale ? "Les offres ne répondent pas encore. Vérifie ta connexion, la page se mettra à jour toute seule." : "Chargement des offres…"}</div>`;
+    }
+    let html = `<section><div class="section-head"><div><div class="eyebrow">${jour ? "Rapport du " + fmtDate(jour) : "Dernier rapport"}</div>
+      <h2>Qu'est-ce que je fais aujourd'hui ?</h2></div>
+      ${r && r.lien ? `<p><a href="${esc(safeUrl(r.lien))}" target="_blank" rel="noopener noreferrer">Rapport complet sur GitHub ↗</a></p>` : ""}</div>
+      <div class="summary">
+        <div><b>${selection.length}</b><span>offres à regarder</span></div>
+        <div><b>${lvmh.length}</b><span>offres LVMH (interne)</span></div>
+        <div><b>${surveiller.length}</b><span>à surveiller</span></div>
+        <div class="${prets.length ? "alert" : ""}"><b>${prets.length}</b><span>dossiers prêts à relire</span></div>
+        <div><b>${demandes.length}</b><span>dossiers demandés</span></div>
+        <div class="${relances.length ? "alert" : ""}"><b>${relances.length}</b><span>relances à faire</span></div>
+      </div></section>`;
+
+    const notes = [];
+    if (r && Array.isArray(r.questions) && r.questions.length) notes.push(`<div class="notice"><strong>Questions pour toi</strong><ul>${r.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>`);
+    if (r && r.avertissement) notes.push(`<div class="notice warn">${esc(r.avertissement)}</div>`);
+    if (relances.length) notes.push(`<div class="notice"><strong>À relancer (postulé il y a 7 jours ou plus)</strong><ul>${relances.map(o => `<li>${esc(o.intitule)} — ${esc(o.entreprise)}</li>`).join("")}</ul></div>`);
+    if (notes.length) html += `<section style="display:grid;gap:10px">${notes.join("")}</section>`;
+
+    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts à relire</h2><p>Ouvre l'offre pour voir le CV, la lettre et le message.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
+    html += `<section><div class="section-head"><h2>À regarder</h2><p>Sélection du jour : jusqu'à ${reglages().plafond_jour} offres, plus toutes celles à ${fmtNote(reglages().passe_droit)}/10 ou plus.</p></div>
+      ${selection.length ? `<div class="grid">${selection.map(carte).join("")}</div>` : `<div class="empty">Rien au-dessus du seuil aujourd'hui.</div>`}</section>`;
+    if (lvmh.length) html += `<section><div class="section-head"><h2>Groupe LVMH — à postuler en interne</h2><p>Analysées pour toi. L'outil ne prépare et n'envoie rien pour ces offres.</p></div><div class="grid">${lvmh.map(carte).join("")}</div></section>`;
+    if (surveiller.length) html += `<section><div class="section-head"><h2>À surveiller</h2><p>Au-dessus du seuil mais hors sélection, ou à vérifier.</p></div><div class="rows">${surveiller.map(o => ligne(o)).join("")}</div></section>`;
+    return html;
+  }
+
+  function vuePipeline() {
+    const all = offresList();
+    const analysees = all.filter(o => o.statut !== "exclu");
+    const suivies = all.filter(o => !["nouvelle", "ecartee"].includes(etapeDe(o.id)));
+    const envoyees = all.filter(o => APRES_ENVOI.has(etapeDe(o.id)));
+    const reponses = all.filter(o => ["entretien", "offre", "refus"].includes(etapeDe(o.id)));
+    const entretiens = all.filter(o => ["entretien", "offre"].includes(etapeDe(o.id)));
+    const taux = envoyees.length ? Math.round(100 * reponses.length / envoyees.length) + " %" : "—";
+    const parAxe = Object.keys(AXES).map(k => [AXES[k], analysees.filter(o => o.axe === k).length]);
+    const max = Math.max(1, ...parAxe.map(x => x[1]));
+    const filtre = o => S.pipeAxe === "tous" || o.axe === S.pipeAxe;
+
+    let html = `<section><div class="section-head"><h2>Où en sont tes candidatures</h2></div>
+      <div class="kpis">
+        <div class="kpi"><b>${analysees.length}</b><span>offres analysées</span></div>
+        <div class="kpi"><b>${suivies.length}</b><span>offres suivies</span></div>
+        <div class="kpi"><b>${envoyees.length}</b><span>candidatures envoyées</span></div>
+        <div class="kpi"><b>${taux}</b><span>taux de réponse</span></div>
+        <div class="kpi"><b>${entretiens.length}</b><span>entretiens</span></div>
+      </div></section>
+      <section><div class="section-head"><h2>Offres analysées par axe</h2></div>
+      <div class="bars">${parAxe.map(([l, n]) => `<div class="bar"><span>${l}</span><div class="track"><div class="fill" style="width:${(100 * n / max).toFixed(0)}%"></div></div><span class="n">${n}</span></div>`).join("")}</div></section>
+      <section><div class="section-head"><h2>Pipeline</h2>
+        <div class="toolbar" style="margin:0"><label for="pipe-axe" class="eyebrow">Axe</label>
+        <select id="pipe-axe"><option value="tous">Tous</option>${Object.entries(AXES).map(([k, l]) => `<option value="${k}" ${S.pipeAxe === k ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
+      <div class="board-scroll"><div class="board">`;
+    for (const col of COLONNES) {
+      const items = all.filter(o => etapeDe(o.id) === col && filtre(o)).sort(parNote);
+      html += `<div class="col"><h3>${ETAPE_LABEL[col]} <span>${items.length}</span></h3>
+        ${items.length ? items.map(o => `<div class="card-mini${o.groupe_lvmh ? " lvmh" : ""}">
+          <button type="button" class="t" data-open="${esc(o.id)}" style="all:unset;cursor:pointer;font-weight:600">${esc(o.intitule)}</button>
+          <span style="color:var(--muted)">${esc(o.entreprise)} · <span class="${classe(o.note)}" style="font-family:var(--f-mono)">${fmtNote(o.note)}</span>${o.groupe_lvmh ? " · interne" : ""}</span>
+          <label class="eyebrow" for="mv-${esc(o.id)}" style="position:absolute;left:-9999px">Déplacer</label>
+          <select id="mv-${esc(o.id)}" data-move="${esc(o.id)}" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => e.id !== "nouvelle").map(e => `<option value="${e.id}" ${e.id === col ? "selected" : ""}>${e.label}</option>`).join("")}</select>
+        </div>`).join("") : `<div class="empty-col">Aucune</div>`}</div>`;
+    }
+    html += `</div></div></section>`;
+    if (!suivies.length) html += `<div class="empty">Marque une offre « Intéressé » ou « J'ai postulé » depuis Aujourd'hui pour la voir ici.</div>`;
+    return html;
+  }
+
+  function vueHistorique() {
+    return `<section><div class="section-head"><h2>Toutes les offres vues</h2><p>Chaque offre n'est analysée qu'une fois : les doublons sont écartés.</p></div>
+      <div class="toolbar">
+        <input type="search" id="h-q" placeholder="Rechercher un poste, une entreprise, un lieu" value="${esc(S.hist.q)}" aria-label="Rechercher">
+        <select id="h-statut" aria-label="Filtrer">
+          ${[["tous", "Toutes"], ["propose", "Sélection"], ["a_surveiller", "À surveiller"], ["exclu", "Exclues"], ["lvmh", "Groupe LVMH"], ["suivies", "Suivies par moi"]].map(([v, l]) => `<option value="${v}" ${S.hist.statut === v ? "selected" : ""}>${l}</option>`).join("")}
+        </select>
+        <select id="h-tri" aria-label="Trier">
+          <option value="note" ${S.hist.tri === "note" ? "selected" : ""}>Par note</option>
+          <option value="date" ${S.hist.tri === "date" ? "selected" : ""}>Par date</option>
+        </select>
+        <button class="btn" type="button" id="h-csv" ${S.dl ? "" : "hidden"}>Exporter en CSV</button>
+      </div>
+      <div id="h-res"></div></section>`;
+  }
+  function filtreHistorique() {
+    const q = S.hist.q.trim().toLowerCase();
+    let l = offresList().filter(o => {
+      if (S.hist.statut === "lvmh" && !o.groupe_lvmh) return false;
+      if (S.hist.statut === "suivies" && etapeDe(o.id) === "nouvelle") return false;
+      if (["propose", "a_surveiller", "exclu"].includes(S.hist.statut) && o.statut !== S.hist.statut) return false;
+      if (q && ![o.intitule, o.entreprise, o.lieu, o.pays, o.motif].join(" ").toLowerCase().includes(q)) return false;
+      return true;
+    });
+    l.sort(S.hist.tri === "date" ? ((a, b) => String(b.date_collecte).localeCompare(String(a.date_collecte)) || parNote(a, b)) : parNote);
+    return l;
+  }
+  function renderHistoriqueResultats() {
+    const box = $("#h-res"); if (!box) return;
+    const csv = $("#h-csv"); if (csv) csv.hidden = !S.dl;
+    const l = filtreHistorique();
+    if (!l.length) { box.innerHTML = `<div class="empty">Aucune offre ne correspond.</div>`; return; }
+    box.innerHTML = `<div class="table-scroll"><table><thead><tr><th>Vue le</th><th>Note</th><th>Poste</th><th>Entreprise</th><th>Lieu</th><th>Contrat</th><th>Tri</th><th>Mon étape</th><th>Lien</th></tr></thead><tbody>
+      ${l.map(o => { const u = safeUrl(o.url); return `<tr class="${o.statut === "exclu" ? "excl" : ""}">
+        <td class="num">${fmtDate(o.date_collecte)}</td><td class="num ${classe(o.note)}">${fmtNote(o.note)}</td>
+        <td><button type="button" class="t" data-open="${esc(o.id)}">${esc(o.intitule)}</button>${o.groupe_lvmh ? ` <span class="chip lvmh">LVMH</span>` : ""}</td>
+        <td>${esc(o.entreprise)}</td><td>${esc(o.lieu)}</td><td>${esc(o.contrat)}</td>
+        <td>${STATUT_TRI[o.statut] || ""}${o.statut === "exclu" && o.motif ? `<br><span style="color:var(--muted)">${esc(o.motif)}</span>` : ""}</td>
+        <td>${etapeDe(o.id) === "nouvelle" ? "" : ETAPE_LABEL[etapeDe(o.id)]}</td>
+        <td>${u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Ouvrir ↗</a>` : ""}</td></tr>`; }).join("")}
+      </tbody></table></div>`;
+  }
+  async function exporterCSV() {
+    const cols = ["date_collecte", "note", "intitule", "entreprise", "lieu", "pays", "contrat", "axe", "statut", "motif", "etape", "url"];
+    const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const lignes = [cols.join(";")].concat(filtreHistorique().map(o => cols.map(c => q(c === "etape" ? ETAPE_LABEL[etapeDe(o.id)] : c === "note" ? fmtNote(o.note) : o[c])).join(";")));
+    try { await S.dl.save({ filename: "candidatures.csv", data: "﻿" + lignes.join("\n") }); toast("Fichier enregistré"); }
+    catch (e) { if (e && e.code !== "declined") toast("Export impossible ici."); }
+  }
+
+  function vueReglages() {
+    const g = reglages();
+    return `<section class="settings">
+      <div><div class="section-head"><h2>Réglages de la recherche</h2></div>
+      <p style="margin:0;color:var(--muted)">La recherche du matin lit ces réglages avant de chercher et de noter. Les valeurs par défaut viennent de <code>profil/perimetre.yaml</code>.</p></div>
+      <div class="panel"><h3 class="eyebrow" style="margin:0">Entreprises cibles (+1 point)</h3>
+        <p>Les Maisons LVMH, les banques et l'IA ont déjà leur propre bonus.</p>
+        <div class="tags" id="tags">${(g.cibles || []).map((c, i) => `<span class="tag">${esc(c)}<button type="button" data-rm="${i}" aria-label="Retirer ${esc(c)}">×</button></span>`).join("") || `<span style="color:var(--muted)">Aucune entreprise.</span>`}</div>
+        <form class="add" id="add-cible"><input id="cible-in" placeholder="Ajouter une entreprise" autocomplete="off" aria-label="Entreprise à ajouter"><button class="btn" type="submit" ${S.writable ? "" : "disabled"}>Ajouter</button></form>
+      </div>
+      <form class="panel" id="f-reglages"><h3 class="eyebrow" style="margin:0">Sélection quotidienne</h3>
+        <div class="fields">
+          <label for="r-seuil">Seuil de note<input id="r-seuil" type="number" min="0" max="10" step="0.5" value="${esc(g.seuil)}"><small>En dessous : archivée.</small></label>
+          <label for="r-passe">Passe toujours à partir de<input id="r-passe" type="number" min="0" max="10" step="0.5" value="${esc(g.passe_droit)}"><small>Même au-delà du plafond.</small></label>
+          <label for="r-plafond">Offres par jour<input id="r-plafond" type="number" min="1" max="20" step="1" value="${esc(g.plafond_jour)}"><small>Hors offres LVMH.</small></label>
+        </div>
+        <div><button class="btn primary" type="submit" ${S.writable ? "" : "disabled"}>Enregistrer les réglages</button></div>
+      </form>
+      <div class="panel"><h3 class="eyebrow" style="margin:0">Fonctionnement</h3>
+        <p>Recherche, notation et rapport chaque jour à 6 h 58 (heure de Paris), puis un email récapitulatif. Rien n'est jamais envoyé à un recruteur sans ton accord, et rien du tout pour les offres LVMH.</p>
+        <p>Code, profil maître et rapports : <a href="https://github.com/pavidderkins-gif/copilote-candidatures" target="_blank" rel="noopener noreferrer">dépôt GitHub ↗</a></p>
+      </div></section>`;
+  }
+
+  function drawer(focus = false) {
+    const root = $("#drawer-root");
+    const o = S.ouvert && S.offres.get(S.ouvert);
+    if (!o) { root.innerHTML = ""; return; }
+    const s = S.suivi.get(o.id) || {}, d = S.dossiers.get(o.id), u = safeUrl(o.url);
+    const list = (t, a) => a && a.length ? `<div><div class="eyebrow">${t}</div><ul style="margin:4px 0 0;padding-left:18px">${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+    root.innerHTML = `<div class="drawer-bg" data-close></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-t">
+        <button class="btn ghost close" type="button" data-close>Fermer ✕</button>
+        <div class="offer-head">${gauge(o.note)}<div style="min-width:0"><h2 id="dr-t">${esc(o.intitule)}</h2>
+          <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || "")}</div>${chipsDe(o)}</div></div>
+        ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
+        <dl class="dl">
+          <dt>Recommandation</dt><dd>${RECO[o.recommandation] || "—"}</dd>
+          <dt>Tri</dt><dd>${STATUT_TRI[o.statut] || "—"}</dd>
+          ${o.canal ? `<dt>Canal</dt><dd>${CANAUX[o.canal] || esc(o.canal)}</dd>` : ""}
+          <dt>Vue le</dt><dd>${fmtDate(o.date_collecte)}</dd>
+          ${o.motif ? `<dt>Remarque</dt><dd>${esc(o.motif)}</dd>` : ""}
+        </dl>
+        ${list("Pourquoi", o.points_forts)}${list("Écarts", o.ecarts)}
+        <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-etape">Mon étape</label>
+          <select id="dr-etape" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => !(o.groupe_lvmh && ["dossier_demande", "dossier_pret"].includes(e.id))).map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select>
+          ${s.motif_ecart ? `<span style="color:var(--muted);font-size:.85rem">Écartée : ${esc(s.motif_ecart)}</span>` : ""}</div>
+        <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-note">Mes notes</label>
+          <textarea id="dr-note" placeholder="Contact, date d'entretien, impressions…" ${S.writable ? "" : "disabled"}>${esc(s.note || "")}</textarea>
+          <div><button class="btn" type="button" id="dr-save" ${S.writable ? "" : "disabled"}>Enregistrer la note</button></div></div>
+        ${o.groupe_lvmh ? `<div class="notice warn">Offre du groupe LVMH : tu postules toi-même en interne. L'outil ne prépare aucun dossier pour cette offre.</div>`
+          : d ? `<div class="dossier"><div class="eyebrow">Dossier préparé${d.cree_le ? " le " + fmtDate(d.cree_le) : ""}</div>
+            ${d.cv_url ? `<a href="${esc(safeUrl(d.cv_url))}" target="_blank" rel="noopener noreferrer">CV ciblé dans Canva ↗</a>` : ""}
+            ${d.cv_titre ? `<div><span class="eyebrow">Titre du CV</span><br>${esc(d.cv_titre)}</div>` : ""}
+            ${d.fiche_modifications ? `<div><div class="eyebrow">Ce qui a changé</div><pre>${esc(d.fiche_modifications)}</pre></div>` : ""}
+            ${d.lettre ? `<div><div class="eyebrow">Lettre de motivation</div><pre>${esc(d.lettre)}</pre></div>` : ""}
+            ${d.message ? `<div><div class="eyebrow">Message d'approche</div><pre>${esc(d.message)}</pre></div>` : ""}
+            ${Array.isArray(d.questions) && d.questions.length ? `<div class="notice"><strong>Questions avant envoi</strong><ul>${d.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>` : ""}
+          </div>`
+          : etapeDe(o.id) === "dossier_demande" ? `<div class="notice">Dossier demandé : il sera préparé au prochain passage (CV Canva, lettre si utile, message d'approche).</div>` : ""}
+      </aside>`;
+    if (focus) $(".drawer .close", root)?.focus();
+  }
+  // Ne pas redessiner le panneau pendant que David y tape une note
+  const refreshDrawer = () => { if (S.ouvert && !document.activeElement?.closest(".drawer")) drawer(); };
+
+  // ---------- Rendu ----------
+  function setCounts() {
+    const r = dernierRapport(); const jour = r ? r.date : offresList().map(o => o.rapport).sort().pop();
+    const n = offresList().filter(o => o.rapport === jour && o.statut === "propose" && !o.groupe_lvmh && etapeDe(o.id) !== "ecartee").length;
+    $("#c-auj").textContent = S.offres.size ? n : "";
+    $("#c-pipe").textContent = S.offres.size ? offresList().filter(o => !["nouvelle", "ecartee"].includes(etapeDe(o.id))).length : "";
+    $("#c-hist").textContent = S.offres.size ? S.offres.size : "";
+    const st = $("#status");
+    if (!S.db) st.textContent = S.loaded.offres ? "" : st.textContent;
+    else if (S.stale && !S.loaded.offres) st.textContent = "Connexion lente aux données…";
+    else st.textContent = r ? `Dernière recherche : ${fmtDate(r.date)}` : "";
+  }
+  function render() {
+    document.querySelectorAll("#tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.view === S.view ? "page" : "false"));
+    const main = $("#main");
+    const active = document.activeElement && document.activeElement.id;
+    if (S.view === "historique" && $("#h-res")) { renderHistoriqueResultats(); }
+    else {
+      main.innerHTML = S.view === "pipeline" ? vuePipeline() : S.view === "historique" ? vueHistorique() : S.view === "reglages" ? vueReglages() : vueAujourdhui();
+      if (S.view === "historique") renderHistoriqueResultats();
+      if (active && document.getElementById(active)) document.getElementById(active).focus();
+    }
+    setCounts();
+  }
+  function route() {
+    const v = (location.hash || "").replace("#", "");
+    S.view = ["aujourdhui", "pipeline", "historique", "reglages"].includes(v) ? v : "aujourdhui";
+    S.ecartEnCours = null;
+    $("#main").innerHTML = ""; render(); window.scrollTo(0, 0);
+  }
+
+  // ---------- Événements ----------
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-open],[data-act],[data-close],[data-rm],#h-csv,#dr-save");
+    if (!t) return;
+    if (t.dataset.open) { S.ouvert = t.dataset.open; drawer(true); return; }
+    if (t.hasAttribute("data-close")) { S.ouvert = null; drawer(); return; }
+    if (t.id === "h-csv") { exporterCSV(); return; }
+    if (t.id === "dr-save") { ecrireSuivi(S.ouvert, { etape: etapeDe(S.ouvert), note: $("#dr-note").value.trim() }, "Note enregistrée"); return; }
+    if (t.dataset.rm !== undefined) {
+      const g = reglages(); const c = [...(g.cibles || [])]; c.splice(Number(t.dataset.rm), 1);
+      S.reglages = { ...g, cibles: c }; render(); ecrireReglages(S.reglages); return;
+    }
+    const act = t.dataset.act, h = t.dataset.h;
+    if (act === "annuler-ecart") { S.ecartEnCours = null; render(); return; }
+    if (act === "ecarter") { S.ecartEnCours = h; render(); $("#motif-" + CSS.escape(h))?.focus(); return; }
+    if (act === "rouvrir") { ecrireSuivi(h, { etape: "nouvelle", motif_ecart: "" }, "Offre rouverte"); return; }
+    if (act) {
+      const cur = etapeDe(h);
+      const next = cur === act ? "nouvelle" : act;
+      const msg = { interessante: "Marquée intéressante", dossier_demande: "Dossier demandé : il sera préparé au prochain passage", postulee: "Candidature notée comme envoyée", nouvelle: "Étape retirée" }[next] || "Enregistré";
+      ecrireSuivi(h, { etape: next }, msg);
+    }
+  });
+  document.addEventListener("submit", e => {
+    const f = e.target; e.preventDefault();
+    if (f.dataset.ecart) {
+      const h = f.dataset.ecart; const motif = (f.motif.value || "").trim();
+      S.ecartEnCours = null; ecrireSuivi(h, { etape: "ecartee", motif_ecart: motif || "Sans motif" }, "Offre écartée");
+    } else if (f.id === "add-cible") {
+      const v = $("#cible-in").value.trim(); if (!v) return;
+      const g = reglages(); if ((g.cibles || []).some(c => c.toLowerCase() === v.toLowerCase())) { toast("Déjà dans la liste"); return; }
+      S.reglages = { ...g, cibles: [...(g.cibles || []), v] }; render(); ecrireReglages(S.reglages); $("#cible-in")?.focus();
+    } else if (f.id === "f-reglages") {
+      const num = (id, d) => { const n = parseFloat($(id).value.replace(",", ".")); return Number.isFinite(n) ? n : d; };
+      const g = reglages();
+      S.reglages = { ...g, seuil: num("#r-seuil", g.seuil), passe_droit: num("#r-passe", g.passe_droit), plafond_jour: Math.round(num("#r-plafond", g.plafond_jour)) };
+      ecrireReglages(S.reglages);
+    }
+  });
+  document.addEventListener("change", e => {
+    const t = e.target;
+    if (t.dataset.move) ecrireSuivi(t.dataset.move, { etape: t.value }, "Étape mise à jour : " + ETAPE_LABEL[t.value]);
+    else if (t.id === "dr-etape") ecrireSuivi(S.ouvert, { etape: t.value }, "Étape mise à jour : " + ETAPE_LABEL[t.value]);
+    else if (t.id === "pipe-axe") { S.pipeAxe = t.value; render(); }
+    else if (t.id === "h-statut") { S.hist.statut = t.value; renderHistoriqueResultats(); }
+    else if (t.id === "h-tri") { S.hist.tri = t.value; renderHistoriqueResultats(); }
+  });
+  document.addEventListener("input", e => { if (e.target.id === "h-q") { S.hist.q = e.target.value; renderHistoriqueResultats(); } });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && S.ouvert) { S.ouvert = null; drawer(); } });
+  window.addEventListener("hashchange", route);
+
+  // ---------- Connexion aux données ----------
+  async function start() {
+    route();
+    const timer = setTimeout(() => { S.stale = true; render(); }, 10000);
+    let db = null;
+    try { db = await claude.use("db"); } catch { db = null; }
+    if (!db) {
+      clearTimeout(timer); S.loaded.offres = true;
+      $("#main").innerHTML = `<div class="empty">Les données ne sont pas disponibles dans cette vue. Ouvre la page depuis claude.ai en étant connecté.</div>`;
+      $("#status").textContent = ""; return;
+    }
+    S.db = db;
+    try { S.dl = await claude.use("downloads"); } catch { S.dl = null; }
+    const onErr = () => { S.loaded.offres = true; clearTimeout(timer); render(); };
+    const done = (k, snap) => { if (!snap.metadata.fromCache) { S.loaded[k] = true; if (k === "offres") { clearTimeout(timer); S.stale = false; } } };
+    db.collection("offres").onSnapshot(snap => {
+      S.offres = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); done("offres", snap); render(); refreshDrawer();
+    }, onErr);
+    db.collection("suivi").onSnapshot(snap => {
+      if (snap.metadata.hasPendingWrites) return; // nos propres écritures sont déjà appliquées localement
+      S.suivi = new Map(snap.docs.map(d => [d.id, d.data()])); done("suivi", snap); render();
+    }, () => {});
+    db.collection("dossiers").onSnapshot(snap => { S.dossiers = new Map(snap.docs.map(d => [d.id, d.data()])); render(); refreshDrawer(); }, () => {});
+    db.collection("rapports").onSnapshot(snap => {
+      S.rapports = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(b.date || b.id).localeCompare(String(a.date || a.id))); done("rapports", snap); render();
+    }, () => {});
+    db.doc("reglages/general").onSnapshot(snap => { S.reglages = snap.exists ? snap.data() : null; if (S.view === "reglages" && !document.activeElement?.closest("form")) render(); }, () => {});
+  }
+  start();
+})();
+</script>

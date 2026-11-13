@@ -73,7 +73,7 @@ def ajouter() -> None:
     CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
     ajoutees = 0
     with CSV_PATH.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=COLONNES, extrasaction="ignore")
+        w = csv.DictWriter(f, fieldnames=COLONNES, extrasaction="ignore", lineterminator="\n")
         if nouveau:
             w.writeheader()
         for offre in lire_jsonl():
