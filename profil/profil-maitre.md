@@ -171,7 +171,9 @@ dépenses, déclarations annuelles).
 - VIE : tous pays, priorité aux pays anglophones, sauf la Chine, le
   Japon et la Corée.
 
-- Salaire : pas un critère de recherche pour l'instant.
+- Salaire : pas un critère de recherche. Prétentions à indiquer dans les formulaires
+  (13/11/2026) : France 43 000 – 46 000 € bruts annuels ; Suisse 80 000 – 90 000 CHF
+  bruts annuels selon le canton et le poste (estimation de Claude validée par David).
 
 ## 6. Ambitions
 

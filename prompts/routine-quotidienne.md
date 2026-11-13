@@ -25,7 +25,32 @@ inventer une offre, une date, un lien ou un fait du profil ; ne jamais écrire d
    `dossier_demande` (étape 6) et celles en `postulee` depuis 7 jours ou plus (relances).
 5. Date du jour (heure de Paris) : `AAAA-MM-JJ`.
 
+## Règles d'or (décisions de David du 13/11/2026)
+
+1. **Seulement du neuf** : le rapport ne montre que les offres publiées depuis le passage
+   précédent (48 heures, 72 heures le lundi). Une offre plus ancienne a déjà été vue.
+2. **Seulement des liens vérifiés** : aucune offre n'entre dans la sélection sans lien
+   vérifié (étape 3 bis). Lien à donner, dans l'ordre : l'offre sur le site carrières de
+   l'entreprise, sinon l'annonce sur le site d'emploi. Jamais une page de résultats ni un
+   agrégateur (Indeed, Glassdoor, Jobleads, iagora…).
+
 ## 1. Sourcing (viser 60 à 100 offres candidates)
+
+**Sources fiables d'abord** (date de publication réelle et lien direct) :
+- Suisse : `python3 scripts/jobup.py --jours 2 > /tmp/jobup.jsonl` (jobup.ch et jobs.ch,
+  recherches du périmètre). `--jours 3` le lundi.
+- Paris et Lyon : pages de résultats HelloWork filtrées CDI et « dernière semaine »
+  (`https://www.hellowork.com/fr-fr/emploi/recherche.html?k=<terme>&l=<ville>&c=CDI&d=w`),
+  puis la page de chaque offre (`/fr-fr/emplois/<id>.html`).
+- Entreprises cibles : leurs flux publics quand ils existent (Workable
+  `apply.workable.com/api/v1/widget/accounts/<compte>`, Greenhouse
+  `boards-api.greenhouse.io/v1/boards/<compte>/jobs`, Lever `api.lever.co/v0/postings/<compte>`,
+  SmartRecruiters `api.smartrecruiters.com/v1/companies/<compte>/postings` — CERN : `CERN`,
+  Workday, SuccessFactors).
+- La recherche web (1c) sert seulement à découvrir des pistes : chaque piste doit ensuite
+  être retrouvée sur le site de l'entreprise ou sur un site d'emploi lisible.
+
+Toujours avec curl simple, sans modifier l'en-tête, avec une pause entre les requêtes.
 
 Tester d'abord si la lecture de pages fonctionne (`WebFetch` sur une page de résultats
 jobup.ch). Si oui, lire les pages de résultats triées par date des sites listés en 1b ; sinon,
@@ -66,6 +91,11 @@ retrouver ».
 
 Écrire chaque offre candidate dans `/tmp/candidates.jsonl`.
 
+## 2 bis. Fraîcheur
+
+Écarter toute offre dont `date_publication` est antérieure au dernier passage (48 h ; 72 h le
+lundi). Sans date fiable : l'offre ne va pas dans la sélection, au mieux « à surveiller ».
+
 ## 2. Déduplication
 
 ```bash
@@ -82,6 +112,24 @@ compenser), `canal`, `date_publication` si connue, `motif` (remarque ou motif d'
 Sélection du jour (hors LVMH) : toutes les offres ≥ passe_droit, puis les meilleures au-dessus
 du seuil jusqu'à plafond_jour. Les autres au-dessus du seuil passent en `a_surveiller`.
 Offres LVMH : `groupe_lvmh: true`, `canal: "interne_lvmh"`, hors sélection.
+
+## 3 bis. Vérification des liens (obligatoire avant le rapport)
+
+Pour chaque offre `propose` ou `a_surveiller` :
+1. Chercher le lien de candidature sur le site de l'entreprise (`python3 scripts/jobup.py
+   --detail <id>` pour jobup ; flux ATS de l'entreprise ; recherche ciblée). Suivre les
+   redirections (`curl -sL -o /dev/null -w "%{http_code} %{url_effective}"`).
+2. Statut du lien (`lien_verifie`) :
+   - `ok` : code 200 et l'offre est bien présente (titre retrouvé dans la page ou dans le
+     flux officiel de l'entreprise) ;
+   - `protege` : site officiel qui bloque la vérification automatique (403) : accepté
+     seulement pour une page officielle de l'entreprise, avec la mention « ouvre pour vérifier » ;
+   - `retire` : 404, 410, redirection vers une liste ou une page d'erreur, ou offre absente du
+     flux officiel → statut `exclu`, motif « offre retirée » ;
+   - `non_verifiable` : agrégateur ou page de résultats → statut `archive`.
+3. Enregistrer `lien_verifie` et `lien_verifie_le` (AAAA-MM-JJ) dans l'offre.
+4. Revérifier aussi, chaque matin, les liens des offres que David suit (`interessante`,
+   `dossier_demande`, `dossier_pret`) : si l'une est retirée, le dire en tête de l'email.
 
 ## 4. Enregistrement
 

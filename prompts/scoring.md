@@ -17,7 +17,7 @@ Si l'un de ces cas s'applique, l'offre est **exclue** : statut `exclu`, motif no
 - VIE en Chine, au Japon ou en Corée.
 - Site isolé, loin d'une ville.
 - Stage, alternance ou poste étudiant (David cherche un CDI ou un VIE à partir de février 2027).
-- Offre expirée ou publiée il y a plus de 30 jours.
+- Offre expirée, retirée (lien mort) ou publiée avant le passage précédent (48 h ; 72 h le lundi).
 
 ## 2. Note brute sur 10
 
