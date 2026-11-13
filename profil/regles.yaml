@@ -1,0 +1,81 @@
+# Garde-fous de contenu — vérifiés par le code après chaque génération (phase 2),
+# pas seulement rappelés dans les prompts. Un document qui viole une règle
+# « bloquante » ne peut pas passer en « À valider » : il est régénéré ou
+# transformé en question pour David.
+
+version: 2026-11-13
+
+contenu:
+  - id: zero_invention
+    bloquant: true
+    regle: Aucun fait absent du Profil maître (expérience, chiffre, compétence, diplôme).
+    controle: chaque chiffre et chaque nom d'entreprise du document doit apparaître dans profil-maitre.md
+
+  - id: master_uq
+    bloquant: true
+    regle: Le master UQ s'écrit « Master of Entrepreneurship and Innovation » (mineure Business Analytics), UQ Business School.
+    interdits_regex:
+      - "(?i)master of business"
+      - "(?i)\\bMBA\\b"
+
+  - id: classement_ensam
+    bloquant: true
+    regle: Le classement du premier semestre à l'ENSAM n'apparaît jamais.
+    interdits_regex:
+      - "(?i)class(é|ement).{0,40}(semestre|promo)"
+      - "(?i)(top|premier|1er)\\s*\\d*\\s*%?.{0,20}(promo|semestre)"
+
+  - id: email_cv
+    bloquant: true
+    regle: Email ENSAM sur le CV, pas d'adresse postale.
+    email_attendu: david.perkins@ensam.eu
+    interdits_regex:
+      - "(?i)\\b\\d{5}\\s+[A-Z][a-zé-]+"   # code postal + ville
+      - "(?i)\\b(rue|avenue|boulevard|bd)\\b"
+
+  - id: positionnement
+    bloquant: true
+    regle: Premier emploi avec des missions freelance ; ne jamais prétendre à 2 ans d'expérience ou plus.
+    interdits_regex:
+      - "(?i)\\b([2-9]|deux|trois|quatre|cinq)\\s*(\\+\\s*)?ans d'expérience"
+      - "(?i)\\b([2-9]|two|three|four|five)\\+?\\s*years? of experience"
+
+  - id: courlancy
+    bloquant: true
+    regle: La mission Courlancy est présentée via la Junior-Entreprise, jamais en freelance.
+    controle: si « Courlancy » est présent, « Junior-Entreprise » ou « Junior Enterprise » doit l'être dans la même section ; « freelance » ou « indépendant » ne doit pas y être
+
+  - id: gcp
+    bloquant: false
+    regle: GCP mis en avant sur les postes data.
+
+  - id: langue
+    bloquant: true
+    regle: Dossiers VIE et Suisse en anglais (voir langue_dossier dans perimetre.yaml).
+
+  - id: signature
+    bloquant: true
+    regle: Les emails rédigés pour David se terminent par « Respectueusement » (ou « Respectfully » / « Kind regards » en anglais, à confirmer).
+
+  - id: allemand
+    bloquant: true
+    regle: Ne jamais affirmer que David parle allemand.
+    interdits_regex:
+      - "(?i)(allemand|german|deutsch)\\s*(:|courant|fluent|B1|B2|C1|C2)"
+
+envoi:
+  - id: approbation
+    regle: Aucun envoi sans approbation explicite et horodatée dans le dashboard.
+    applique_par: contrainte SQL applications_envoi_approuve
+  - id: plafond
+    regle: Plafond d'envois automatiques par jour (défaut 10).
+    applique_par: trigger SQL events_plafond_envois
+  - id: doublon_poste
+    regle: Jamais deux candidatures au même poste.
+    applique_par: contrainte SQL unique (offer_id) + dedup_hash des offres
+  - id: meme_entreprise
+    regle: Alerte si deux candidatures à la même entreprise en moins de 30 jours.
+    applique_par: vue SQL v_alertes_meme_entreprise
+  - id: pas_de_bot
+    regle: Pas de bot sur LinkedIn ni Indeed ; pas de création de compte, mot de passe ni CAPTCHA.
+    applique_par: canal linkedin/indeed => soumission manuelle uniquement (contrainte SQL applications_canal_manuel)

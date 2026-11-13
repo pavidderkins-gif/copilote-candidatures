@@ -1,0 +1,197 @@
+# Périmètre de recherche — Copilote Candidatures
+# Valeurs par défaut versionnées. Le dashboard (écran Réglages) peut les surcharger
+# via la table `settings` de Supabase : la valeur en base gagne sur ce fichier.
+# Décisions de David du 13/11/2026 intégrées.
+
+version: 2026-11-13
+
+# ---------------------------------------------------------------------------
+# File de validation
+# ---------------------------------------------------------------------------
+scoring:
+  seuil: 6                # note /10 minimale pour proposer une offre (en dessous : archivée, consultable)
+  passe_droit: 8          # >= 8/10 : toujours proposée, même au-delà du plafond quotidien
+  plafond_dossiers_jour: 5   # nombre moyen de dossiers proposés par jour (hors passe-droit)
+  bonus:                  # points ajoutés au score brut, plafonné à 10
+    entreprise_cible: 1.0
+    groupe_lvmh: 1.0
+    banque: 0.5
+    ia: 0.5
+  priorite_axes:          # ordre de priorité n°1 → départage à score égal
+    - data_bi
+    - finance
+    - supply_chain
+    - startup
+
+# ---------------------------------------------------------------------------
+# Axes métier
+# ---------------------------------------------------------------------------
+axes:
+  data_bi:
+    libelle: Data / BI
+    intitules:
+      - Data Analyst
+      - BI Analyst
+      - Business Intelligence Analyst
+      - Analytics Engineer junior
+      - Analyste décisionnel
+      - Business Data Analyst
+  finance:
+    libelle: Finance
+    intitules:
+      - FP&A Analyst
+      - Financial Analyst
+      - Contrôleur de gestion junior
+      - Business Analyst finance
+      - Analyste financier
+  supply_chain:
+    libelle: Supply Chain
+    intitules:
+      - Demand Planner
+      - Supply Planner
+      - Analyste supply chain
+      - Supply Chain Analyst
+      - S&OP Analyst
+  startup:
+    libelle: Startup / Entrepreneuriat
+    intitules:
+      - Chief of Staff
+      - Business Operations
+      - Bizops Analyst
+      - Strategy & Operations Analyst
+
+# ---------------------------------------------------------------------------
+# Zones (ordre = priorité)
+# ---------------------------------------------------------------------------
+zones:
+  cdi:
+    - id: suisse
+      libelle: Suisse francophone ou anglophone
+      priorite: 1
+      inclure:
+        - Genève
+        - Lausanne
+        - Neuchâtel
+        - Fribourg
+        - Sion
+        - Montreux
+        - Vevey
+        - Nyon
+      # Postes en Suisse alémanique acceptés seulement si l'offre est en anglais
+      # et n'exige pas l'allemand.
+      exclure_si_allemand_requis: true
+    - id: paris
+      libelle: Paris et Île-de-France
+      priorite: 2
+    - id: lyon
+      libelle: Lyon
+      priorite: 3
+    - id: australie
+      libelle: Australie (de préférence Sydney)
+      priorite: 4
+      condition: seulement si l'opportunité est bonne (score >= passe_droit)
+  vie:
+    libelle: VIE, tous pays
+    priorite_pays_anglophones: true
+    pays_exclus:
+      - Chine
+      - Japon
+      - Corée du Sud
+
+# ---------------------------------------------------------------------------
+# Langue du dossier
+# ---------------------------------------------------------------------------
+langue_dossier:
+  defaut: fr
+  vie: en
+  suisse: en            # règle actuelle « Dossiers VIE et Suisse en anglais » (à confirmer pour la Suisse romande)
+  startup: langue_offre
+
+# ---------------------------------------------------------------------------
+# Exclusions automatiques
+# ---------------------------------------------------------------------------
+exclusions:
+  experience_max_annees: 4      # exclure si l'offre exige plus de 4 ans
+  mots_cles_intitule:           # insensible à la casse
+    - consultant
+    - consulting
+    - conseil
+    - ingénieur d'affaires
+    - ingénieur commercial
+    - business developer
+    - key account
+  types_entreprise:
+    - cabinet de conseil
+    - ESN
+    - SSII
+  langues_requises_exclues:
+    - allemand
+    - german
+    - deutsch
+  sites_isoles: true            # site loin d'une ville : à juger au scoring
+  deduplication: entreprise + intitulé
+
+# ---------------------------------------------------------------------------
+# Entreprises
+# ---------------------------------------------------------------------------
+entreprises:
+  groupe_lvmh_mots_cles:        # détection du bonus LVMH
+    - LVMH
+    - Dior
+    - Louis Vuitton
+    - Moët Hennessy
+    - Sephora
+    - Bulgari
+    - Tiffany
+    - TAG Heuer
+    - Hublot
+    - Zenith
+    - Fendi
+    - Celine
+    - Loewe
+    - Givenchy
+    - Guerlain
+    - Chandon
+    - Dom Pérignon
+    - Hennessy
+    - Le Bon Marché
+    - DFS
+  cibles: []                    # À REMPLIR PAR DAVID : 20 à 40 entreprises (LVMH, banques, Suisse, startups)
+
+# ---------------------------------------------------------------------------
+# Envoi et suivi
+# ---------------------------------------------------------------------------
+envoi:
+  plafond_envois_auto_jour: 10
+  alerte_meme_entreprise_jours: 30
+  relances_jours: [7, 14]
+  signature: Respectueusement
+  plateformes_sans_bot:         # « préparé par l'outil, cliqué par David »
+    - linkedin
+    - indeed
+
+# ---------------------------------------------------------------------------
+# Sources
+# ---------------------------------------------------------------------------
+sources:
+  france_travail_api: true
+  alertes_email:
+    libelle_gmail: Jobs         # libellé à créer (en attendant : « Carrière & Candidatures »)
+    expediteurs:
+      - jobalerts-noreply@linkedin.com
+      - jobs-noreply@linkedin.com
+      - apec.fr
+      - welcometothejungle.com
+      - jobteaser.com
+      - jobs.ch
+      - jobup.ch
+      - businessfrance.fr
+  pages_carrieres: true
+  import_manuel: true
+
+# ---------------------------------------------------------------------------
+# Canva (références)
+# ---------------------------------------------------------------------------
+canva:
+  cv_reference_fr: DAHYYApcz6Y   # FR-David-Perkins-CV-Consultant-Data-BI
+  portfolio: DAHKpyISgqQ         # David_Perkins_Portfolio_all_4.pptx (21 pages)
