@@ -41,11 +41,11 @@ Quatre axes, deux zones, une règle de langue. Le conseil est exclu.
 
 | Axe                       | Exemples d'intitulés                                                 | Zones                                   | Langue du dossier |
 |---------------------------|----------------------------------------------------------------------|-----------------------------------------|-------------------|
-| Supply Chain              | Demand / Supply Planner, Analyste supply chain, S&OP                 | Suisse (FR ou EN), Paris, Lyon          | FR (Suisse : EN)  |
-| Data / BI                 | Data Analyst, BI Analyst, Analytics Engineer junior                  | Suisse (FR ou EN), Paris, Lyon          | FR (Suisse : EN)  |
-| Finance                   | FP&A Analyst, Contrôleur de gestion junior, Business Analyst finance | Suisse (FR ou EN), Paris, Lyon          | FR (Suisse : EN)  |
+| Supply Chain              | Demand / Supply Planner, Analyste supply chain, S&OP                 | Suisse (FR ou EN), Paris, Lyon          | Langue de l'offre |
+| Data / BI                 | Data Analyst, BI Analyst, Analytics Engineer junior                  | Suisse (FR ou EN), Paris, Lyon          | Langue de l'offre |
+| Finance                   | FP&A Analyst, Contrôleur de gestion junior, Business Analyst finance | Suisse (FR ou EN), Paris, Lyon          | Langue de l'offre |
 | Startup / Entrepreneuriat | Chief of Staff, Business Ops, Bizops Analyst                         | Suisse (FR ou EN), Paris, Lyon          | Langue de l'offre |
-| VIE (tous axes)           | Mêmes intitulés en VIE                                               | Monde entier, priorité pays anglophones | EN                |
+| VIE (tous axes)           | Mêmes intitulés en VIE                                               | Monde entier, priorité pays anglophones | Langue de l'offre |
 
 Filtres d'exclusion automatiques :
 
@@ -267,9 +267,14 @@ prompt.
 
 - Mission Courlancy : via la Junior-Entreprise, pas en freelance.
 
-- Dossiers VIE et Suisse en anglais.
+- Dossiers toujours rédigés dans la langue de l'offre (CV, lettre,
+  message, relances).
 
-- Emails rédigés pour David signés « Respectueusement ».
+- Titre du CV adapté à chaque offre : « David Perkins – <intitulé du
+  poste visé> », sans marqueur de séniorité (Senior, Lead, Head of…).
+
+- Emails rédigés pour David signés « Respectueusement » (en anglais :
+  « Kind regards »).
 
 **Envoi**
 
@@ -489,8 +494,8 @@ Le Profil maître est intégré à ce cahier des charges, il n'y a plus rien
 - [ ] Copier la section Profil maître dans profil/profil-maitre.md
   (Claude Code peut le faire en phase 1)
 
-- [ ] Lister 20 à 40 entreprises cibles (LVMH et ses Maisons, banques,
-  entreprises suisses, startups)
+- [ ] Relire la liste courte d'entreprises cibles proposée dans
+  profil/perimetre.yaml (barrer, ajouter)
 
 - [ ] Créer un compte GitHub (dépôt privé)
 
@@ -597,15 +602,19 @@ Décisions de David (13/11/2026) :
 
 Points encore ouverts :
 
-- Titre du CV de référence (« Consultant Data & BI ») et intitulé Cogeco
-  (« Consultant Data & Finance indépendant ») alors que le conseil est
-  exclu : garder ou reformuler ?
-
-- Langue des dossiers en Suisse romande pour une offre rédigée en
-  français : anglais (règle actuelle) ou langue de l'offre ?
-
 - Modes B (scoring) et E (préparation d'entretien) du coach : texte à
-  fournir pour prompts/.
+  fournir pour prompts/, sinon Claude Code les rédige à partir de ce
+  cahier des charges.
+
+Décisions de David (13/11/2026, suite) :
+
+- Titre du CV changé pour chaque offre, aligné sur l'intitulé du poste.
+
+- Dossiers toujours dans la langue de l'offre, quel que soit le pays.
+
+- Entreprises cibles : liste courte de départ proposée par Claude Code
+  dans perimetre.yaml, à élaguer et compléter au fil de l'eau depuis
+  l'écran Réglages. Pas besoin d'atteindre 40.
 
 ## Résultats de la phase 0 (13/11/2026)
 

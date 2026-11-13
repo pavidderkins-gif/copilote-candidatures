@@ -85,15 +85,9 @@ create table settings (
 comment on table settings is
   'Surcharges de profil/perimetre.yaml. Clé en notation pointée, ex. scoring.seuil.';
 
-insert into settings (key, value) values
-  ('scoring.seuil',                         '6'),
-  ('scoring.passe_droit',                   '8'),
-  ('scoring.plafond_dossiers_jour',         '5'),
-  ('exclusions.experience_max_annees',      '4'),
-  ('envoi.plafond_envois_auto_jour',        '10'),
-  ('envoi.alerte_meme_entreprise_jours',    '30'),
-  ('envoi.relances_jours',                  '[7, 14]'),
-  ('entreprises.cibles',                    '[]');
+-- Vide au départ : les valeurs par défaut vivent dans profil/perimetre.yaml.
+-- Une ligne n'apparaît ici que lorsque David modifie un réglage dans le dashboard.
+-- Les fonctions SQL qui lisent un réglage ont leur propre valeur de secours.
 
 create or replace function setting_int(k text, fallback int)
 returns int

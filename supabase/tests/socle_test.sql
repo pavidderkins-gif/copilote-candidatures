@@ -82,7 +82,7 @@ begin
   raise notice 'OK 7 motif de rejet';
 
   -- 8. Plafond d'envois automatiques (réglé à 2 pour le test)
-  update settings set value = '2' where key = 'envoi.plafond_envois_auto_jour';
+  insert into settings (key, value) values ('envoi.plafond_envois_auto_jour', '2');
   -- a1 compte déjà pour 1 envoi auto aujourd'hui
   insert into offers (source, entreprise, intitule) values ('import_manuel', 'Plafond A', 'Data Analyst') returning id into o3;
   insert into applications (offer_id, canal, approuve_le, statut, mode_envoi, date_envoi)
@@ -94,7 +94,8 @@ begin
     raise exception 'ÉCHEC : plafond dépassé';
   exception when check_violation then null;
   end;
-  update settings set value = '10' where key = 'envoi.plafond_envois_auto_jour';
+  delete from settings where key = 'envoi.plafond_envois_auto_jour';
+  if setting_int('envoi.plafond_envois_auto_jour', 10) <> 10 then raise exception 'ÉCHEC : valeur de secours'; end if;
   raise notice 'OK 8 plafond d''envois';
 
   -- 9. Alerte même entreprise < 30 jours

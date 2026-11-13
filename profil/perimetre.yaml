@@ -102,10 +102,26 @@ zones:
 # Langue du dossier
 # ---------------------------------------------------------------------------
 langue_dossier:
-  defaut: fr
-  vie: en
-  suisse: en            # règle actuelle « Dossiers VIE et Suisse en anglais » (à confirmer pour la Suisse romande)
-  startup: langue_offre
+  regle: langue_offre   # décision du 13/11 : toujours la langue de l'offre, quel que soit le pays
+  langues_possibles: [fr, en]
+  si_autre_langue: en   # offre ni en français ni en anglais (rare) : dossier en anglais
+
+# ---------------------------------------------------------------------------
+# Titre du CV : changé pour chaque offre (décision du 13/11)
+# ---------------------------------------------------------------------------
+titre_cv:
+  format: "David Perkins – {intitule}"
+  source: intitulé du poste visé, dans la langue de l'offre
+  longueur_max: 50          # tient sur une ligne dans le gabarit Canva (police 25 pt)
+  retirer:                  # marqueurs de séniorité incompatibles avec un premier emploi
+    - Senior
+    - Sr.
+    - Lead
+    - Head of
+    - Principal
+    - Confirmé
+    - Expérimenté
+  retirer_mentions: ["H/F", "F/H", "(m/f/d)", "CDI", "Stage"]
 
 # ---------------------------------------------------------------------------
 # Exclusions automatiques
@@ -156,7 +172,30 @@ entreprises:
     - Hennessy
     - Le Bon Marché
     - DFS
-  cibles: []                    # À REMPLIR PAR DAVID : 20 à 40 entreprises (LVMH, banques, Suisse, startups)
+  # Liste courte de départ proposée par Claude (13/11), à élaguer et compléter
+  # depuis l'écran Réglages. Les Maisons LVMH sont déjà couvertes par le bonus
+  # groupe_lvmh ci-dessus ; les banques et l'IA ont aussi leur bonus.
+  cibles:
+    # Suisse
+    - Richemont
+    - Rolex
+    - Pictet
+    - Lombard Odier
+    - UBS
+    - dsm-firmenich
+    - Nestlé
+    - Philip Morris International
+    - Logitech
+    # Banque France
+    - BNP Paribas
+    - Société Générale
+    - Crédit Agricole CIB
+    - Bpifrance
+    # IA, fintech, startups
+    - Finary
+    - Mistral AI
+    - Qonto
+    - Pennylane
 
 # ---------------------------------------------------------------------------
 # Envoi et suivi

@@ -51,11 +51,17 @@ contenu:
 
   - id: langue
     bloquant: true
-    regle: Dossiers VIE et Suisse en anglais (voir langue_dossier dans perimetre.yaml).
+    regle: Tout le dossier (CV, lettre, message, relances) est rédigé dans la langue de l'offre.
+    controle: langue détectée de chaque document == offers.langue
+
+  - id: titre_cv
+    bloquant: true
+    regle: Le titre du CV est adapté à chaque offre, au format « David Perkins – <intitulé du poste visé> » (voir titre_cv dans perimetre.yaml).
+    controle: titre <= 50 caractères, dans la langue de l'offre, sans Senior / Lead / Head of / Principal ; écart avec l'intitulé de l'offre noté dans la fiche de modifications
 
   - id: signature
     bloquant: true
-    regle: Les emails rédigés pour David se terminent par « Respectueusement » (ou « Respectfully » / « Kind regards » en anglais, à confirmer).
+    regle: Les emails rédigés pour David se terminent par « Respectueusement » en français, « Kind regards » en anglais.
 
   - id: allemand
     bloquant: true
