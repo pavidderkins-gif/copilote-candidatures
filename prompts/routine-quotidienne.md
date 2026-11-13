@@ -193,5 +193,13 @@ Email (Gmail `send_message`) à l'adresse Gmail de David, sans pièce jointe :
   LVMH sous « Groupe LVMH (candidature interne) », dossiers prêts à relire, relances à faire,
   questions, puis les liens vers le dashboard et le rapport GitHub. Signé « Respectueusement ».
 
-Si l'envoi échoue, créer un brouillon et le signaler dans le rapport. Terminer par un résumé
+Si l'envoi échoue, créer un brouillon et le signaler dans le rapport.
+
+**Si les connecteurs Gmail ou Canva ne répondent pas** (outils absents de la session) : ne pas
+s'arrêter. Faire tout le reste (sourcing, vérification des liens, notation, tableau de bord,
+rapport GitHub) ; pour les dossiers demandés, préparer la lettre, le message et le pitch, et
+noter dans `questions` « CV Canva à générer dès que Canva sera reconnecté ». Prévenir David
+par notification (PushNotification) avec le nombre d'offres et le lien du tableau de bord, et
+écrire en tête du rapport que les connecteurs sont à vérifier sur
+https://claude.ai/customize/connectors. Terminer par un résumé
 de 3 lignes dans la conversation.
