@@ -7,6 +7,19 @@ candidature jusqu'à la réponse. Spécification complète : [CAHIER_DES_CHARGES
 **Tableau de bord :** https://claude.ai/artifact/QngVuEMvQQTe5yhy1Pqgsg (privé, téléphone et ordinateur)
 — offres du jour, pipeline, historique, réglages. Source : `dashboard/index.html`.
 
+## Postuler en 5 minutes
+
+1. Dans le tableau de bord, clique **« Préparer le dossier »** sur une offre qui te plaît.
+2. Vers 12 h 30 ou 18 h 30 (sinon le lendemain matin), le dossier est prêt : CV Canva ciblé
+   et son PDF, lettre si utile, message d'approche, réponse « Pourquoi ce poste ? ».
+3. Clique **« Postuler : kit prêt »** : télécharge le PDF, copie la lettre, ouvre l'offre et
+   colle les réponses du formulaire (tes infos sont dans Réglages), copie le message.
+4. Clique **« J'ai postulé »** : la relance est préparée pour J+7, puis J+14.
+5. Si tu décroches un entretien, passe l'offre en « Entretien » : une fiche de préparation
+   est rédigée au passage suivant.
+
+Les offres LVMH n'ont jamais de dossier : tu postules en interne.
+
 **Chaque matin à 6 h 58** (heure de Paris), une tâche planifiée suit `prompts/routine-quotidienne.md` :
 recherche, notation, écriture dans le tableau de bord, dossiers demandés, rapport et email.
 
@@ -21,7 +34,8 @@ profil/
 prompts/
   routine-quotidienne.md     procédure suivie chaque matin par la tâche planifiée
   scoring.md                 grille de notation v1 (exclusions, note /10, bonus, recommandation)
-  generation-dossier.md      CV Canva ciblé, lettre, message, fiche de modifications (v1)
+  generation-dossier.md      CV Canva ciblé + PDF, lettre, message, pitch, fiche (v1)
+  preparation-entretien.md   fiche de préparation d'entretien (v1)
 dashboard/index.html         tableau de bord (Artifact avec base de données)
 dossiers/                    dossiers de candidature préparés
 donnees/offres.csv           toutes les offres vues et notées (déduplication)

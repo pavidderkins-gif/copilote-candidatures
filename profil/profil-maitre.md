@@ -17,6 +17,9 @@
   niveau C2 en lecture, écoute et expression orale. Ne parle pas
   allemand.
 
+- Nationalité : pas de nationalité britannique (confirmé le 13/11/2026) ; un VIE au
+  Royaume-Uni est donc possible.
+
 - Disponible en CDI à partir de début février 2027. Le stage Dior se
   termine le 15 janvier 2027.
 
@@ -35,8 +38,8 @@
 - Gain d'au moins 1h30 par projet lors de chaque lancement de nouveau
   projet.
 
-- Plus de 50 utilisateurs clés, des opérateurs au Global Supply Chain
-  Director.
+- Plus de 50 utilisateurs clés, des opérateurs à l'Industrial Supply Chain Director (directeur supply chain
+  industrielle ; confirmé par David le 13/11/2026).
 
 - Flux de données venant de SAP, SharePoint et Excel. Cycle Dev / Test /
   Prod. Gestion des accès et de la gouvernance. Utilisation de Google
@@ -70,10 +73,16 @@ prévue en décembre 2026)**
 
 - Outil utilisé en production par la direction et les responsables RH.
 
+- Reporting mensuel d'aide à la décision pour la direction ; rapprochement des écarts
+  entre l'ancien et le nouveau modèle (confirmé par David le 13/11/2026).
+
 **Gadz Cours Particuliers – Fondateur et gérant (février à août 2025)**
 
-- Environ 30 clients et 30 professeurs recrutés. Marketing 100 %
-  organique.
+- Plus de 30 clients et plus de 30 professeurs recrutés. Marketing 100 % organique.
+  Activité menée seul de bout en bout.
+
+- Back-office Excel, facturation et gestion de la trésorerie (cash management)
+  (confirmé par David le 13/11/2026).
 
 **Australian Venue Co. – Babylon, Brisbane (septembre 2025 à juillet
 2026)**

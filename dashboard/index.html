@@ -174,6 +174,22 @@ td button.t:hover { text-decoration: underline; }
 .dossier { border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: grid; gap: 10px; }
 .dossier pre { white-space: pre-wrap; font-family: var(--f-body); font-size: 0.86rem; background: var(--surface-2); border-radius: 8px; padding: 10px; margin: 0; max-height: 320px; overflow-y: auto; }
 .close { justify-self: end; }
+.kit { border: 1px solid var(--accent); border-radius: var(--r); padding: 14px; display: grid; gap: 12px; background: var(--surface); }
+.kit h3 { margin: 0; font-family: var(--f-display); font-size: 1.05rem; font-weight: 600; }
+.kit ol { margin: 0; padding-left: 22px; display: grid; gap: 14px; }
+.kit li::marker { font-family: var(--f-mono); font-weight: 600; color: var(--accent); }
+.kit .step-t { font-weight: 600; }
+.kit .step-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; align-items: center; }
+.kit details { margin-top: 6px; }
+.kit summary { cursor: pointer; color: var(--accent); font-size: 0.85rem; }
+.answers { display: grid; gap: 4px; margin-top: 8px; }
+.answer { display: grid; grid-template-columns: minmax(110px, 34%) minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 0.85rem; padding: 4px 0; border-top: 1px solid var(--line); }
+.answer:first-child { border-top: 0; }
+.answer .k { color: var(--muted); }
+.answer .v { overflow-wrap: anywhere; }
+.answer .v.missing { color: var(--moyen); font-style: italic; }
+.btn.small { padding: 3px 9px; font-size: 0.78rem; }
+.done { color: var(--fort); font-weight: 600; }
 
 .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 22px; color: var(--muted); text-align: center; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-size: 0.88rem; z-index: 30; }
@@ -234,7 +250,7 @@ td button.t:hover { text-decoration: underline; }
   // ---------- État ----------
   const S = {
     db: null, dl: null,
-    offres: new Map(), suivi: new Map(), dossiers: new Map(), rapports: [], reglages: null,
+    offres: new Map(), suivi: new Map(), dossiers: new Map(), rapports: [], reglages: null, candidat: null, copy: {},
     loaded: { offres: false, suivi: false, rapports: false },
     stale: false, writable: true,
     view: "aujourdhui", ouvert: null, ecartEnCours: null,
@@ -256,6 +272,27 @@ td button.t:hover { text-decoration: underline; }
     root.innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`;
     clearTimeout(toast.t); toast.t = setTimeout(() => { root.innerHTML = ""; }, 2600);
   }
+
+  async function copier(key) {
+    const text = S.copy[key]; if (!text) return;
+    try { await navigator.clipboard.writeText(text); toast("Copié"); }
+    catch {
+      const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch {} ta.remove();
+      toast(ok ? "Copié" : "Copie impossible ici : ouvre l'aperçu et sélectionne le texte");
+    }
+  }
+  async function telechargerPdf(url, nom) {
+    try {
+      if (!S.dl) throw new Error("no-dl");
+      const r = await fetch(url); if (!r.ok) throw new Error("fetch");
+      await S.dl.save({ filename: nom, data: await r.blob() }); toast("CV enregistré");
+    } catch (e) {
+      if (e && e.code === "declined") return;
+      toast("Téléchargement direct impossible ici : utilise « Ouvrir le PDF »");
+    }
+  }
+  const relanceLe = s => { const base = s && (s.envoye_le || s.maj); if (!base) return ""; const d = new Date(base); d.setDate(d.getDate() + 7); return d.toISOString().slice(0, 10); };
 
   // ---------- Données dérivées ----------
   const offresList = () => [...S.offres.values()];
@@ -312,7 +349,9 @@ td button.t:hover { text-decoration: underline; }
         <button class="btn primary" type="submit">Écarter</button><button class="btn ghost" type="button" data-act="annuler-ecart">Annuler</button></form>`;
     }
     const b = (act, label, on) => `<button class="btn${on ? " on" : ""}" type="button" data-act="${act}" data-h="${h}" ${S.writable ? "" : "disabled"}>${label}</button>`;
-    const parts = [b("interessante", "Intéressé", e === "interessante")];
+    const parts = [];
+    if (!o.groupe_lvmh && S.dossiers.has(o.id) && !APRES_ENVOI.has(e)) parts.push(`<button class="btn primary" type="button" data-open="${h}">Postuler : kit prêt</button>`);
+    parts.push(b("interessante", "Intéressé", e === "interessante"));
     if (!o.groupe_lvmh) parts.push(b("dossier_demande", e === "dossier_pret" ? "Dossier prêt" : "Préparer le dossier", e === "dossier_demande" || e === "dossier_pret"));
     parts.push(b("postulee", o.groupe_lvmh ? "Postulé en interne" : "J'ai postulé", APRES_ENVOI.has(e)));
     parts.push(e === "ecartee" ? b("rouvrir", "Rouvrir", false) : `<button class="btn ghost" type="button" data-act="ecarter" data-h="${h}" ${S.writable ? "" : "disabled"}>Écarter</button>`);
@@ -374,7 +413,7 @@ td button.t:hover { text-decoration: underline; }
     if (relances.length) notes.push(`<div class="notice"><strong>À relancer (postulé il y a 7 jours ou plus)</strong><ul>${relances.map(o => `<li>${esc(o.intitule)} — ${esc(o.entreprise)}</li>`).join("")}</ul></div>`);
     if (notes.length) html += `<section style="display:grid;gap:10px">${notes.join("")}</section>`;
 
-    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts à relire</h2><p>Ouvre l'offre pour voir le CV, la lettre et le message.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
+    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts : à toi de postuler</h2><p>Clique sur « Postuler » : CV en PDF, lettre et réponses du formulaire prêtes à copier.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
     html += `<section><div class="section-head"><h2>À regarder</h2><p>Sélection du jour : jusqu'à ${reglages().plafond_jour} offres, plus toutes celles à ${fmtNote(reglages().passe_droit)}/10 ou plus.</p></div>
       ${selection.length ? `<div class="grid">${selection.map(carte).join("")}</div>` : `<div class="empty">Rien au-dessus du seuil aujourd'hui.</div>`}</section>`;
     if (lvmh.length) html += `<section><div class="section-head"><h2>Groupe LVMH — à postuler en interne</h2><p>Analysées pour toi. L'outil ne prépare et n'envoie rien pour ces offres.</p></div><div class="grid">${lvmh.map(carte).join("")}</div></section>`;
@@ -491,11 +530,64 @@ td button.t:hover { text-decoration: underline; }
         </div>
         <div><button class="btn primary" type="submit" ${S.writable ? "" : "disabled"}>Enregistrer les réglages</button></div>
       </form>
+      <form class="panel" id="f-candidat"><h3 class="eyebrow" style="margin:0">Mes infos de candidature</h3>
+        <p>Reprises dans chaque kit « Postuler », prêtes à copier dans les formulaires.</p>
+        <div class="fields">
+          ${[["c-email", "email", "Email"], ["c-tel", "telephone", "Téléphone"], ["c-linkedin", "linkedin", "LinkedIn"], ["c-dispo", "disponibilite", "Disponibilité"],
+             ["c-permis", "permis", "Nationalité / permis de travail"], ["c-pch", "pretentions_ch", "Prétentions (Suisse)"], ["c-pfr", "pretentions_fr", "Prétentions (France)"],
+             ["c-langues", "langues", "Langues"], ["c-source", "source_offre", "Où as-tu vu les offres ?"]]
+            .map(([id, k, l]) => `<label for="${id}">${l}<input id="${id}" data-k="${k}" value="${esc((S.candidat || {})[k] || "")}" style="font-family:var(--f-body)"></label>`).join("")}
+        </div>
+        <div><button class="btn primary" type="submit" ${S.writable ? "" : "disabled"}>Enregistrer mes infos</button></div>
+      </form>
       <div class="panel"><h3 class="eyebrow" style="margin:0">Fonctionnement</h3>
         <p>Recherche, notation et rapport chaque jour à 6 h 58 (heure de Paris), puis un email récapitulatif. Rien n'est jamais envoyé à un recruteur sans ton accord, et rien du tout pour les offres LVMH.</p>
         <p>Code, profil maître et rapports : <a href="https://github.com/pavidderkins-gif/copilote-candidatures" target="_blank" rel="noopener noreferrer">dépôt GitHub ↗</a></p>
       </div></section>`;
   }
+
+  function kitDe(o, d) {
+    const c = S.candidat || {}, s = S.suivi.get(o.id) || {}, u = safeUrl(o.url), e = etapeDe(o.id);
+    S.copy = {};
+    const reg = (k, v) => { if (v) S.copy[k] = String(v); return k; };
+    const btnCopy = (k, v, label = "Copier") => v ? `<button class="btn small" type="button" data-copy="${reg(k, v)}">${label}</button>` : "";
+    const suisse = /suisse|switzerland/i.test(o.pays || "");
+    const reponses = [
+      ["Nom complet", "David Perkins"], ["Email", c.email], ["Téléphone", c.telephone], ["LinkedIn", c.linkedin],
+      ["Disponibilité", c.disponibilite], ["Nationalité / permis de travail", c.permis],
+      ["Prétentions salariales", suisse ? c.pretentions_ch : c.pretentions_fr], ["Langues", c.langues],
+      ["Pourquoi ce poste ?", d.pitch], ["Où avez-vous vu l'offre ?", c.source_offre],
+    ];
+    const ans = reponses.map(([k, v], i) => `<div class="answer"><span class="k">${esc(k)}</span>
+      <span class="v${v ? "" : " missing"}">${v ? esc(v) : "À compléter dans Réglages"}</span>${btnCopy("r" + i, v)}</div>`).join("");
+    const pdf = d.cv_pdf_url ? safeUrlRel(d.cv_pdf_url) : "";
+    const nomPdf = `CV-David-Perkins-${String(o.entreprise).replace(/[^A-Za-z0-9]+/g, "-")}.pdf`;
+    const envoye = APRES_ENVOI.has(e);
+    return `<section class="kit" aria-label="Postuler">
+      <h3>${envoye ? "Candidature envoyée" : "Postuler en 5 étapes"}</h3>
+      ${Array.isArray(d.questions) && d.questions.length && !envoye ? `<div class="notice"><strong>À vérifier avant d'envoyer</strong><ul>${d.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>` : ""}
+      <ol>
+        <li><div class="step-t">Télécharge ton CV ciblé</div>
+          <div class="step-actions">${pdf ? `<button class="btn primary small" type="button" data-pdf="${esc(pdf)}" data-nom="${esc(nomPdf)}">Télécharger le PDF</button><a href="${esc(pdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`}
+          ${d.cv_url ? `<a href="${esc(safeUrl(d.cv_url))}" target="_blank" rel="noopener noreferrer">Modifier dans Canva ↗</a>` : ""}</div>
+          ${d.cv_titre ? `<div style="color:var(--muted);font-size:.85rem;margin-top:4px">Titre : ${esc(d.cv_titre)}</div>` : ""}</li>
+        <li><div class="step-t">${d.lettre ? "Copie ta lettre de motivation" : "Pas de lettre nécessaire pour ce poste"}</div>
+          ${d.lettre ? `<div class="step-actions">${btnCopy("lettre", d.lettre, "Copier la lettre")}</div><details><summary>Lire la lettre</summary><pre>${esc(d.lettre)}</pre></details>` : ""}</li>
+        <li><div class="step-t">Ouvre l'offre et remplis le formulaire</div>
+          <div class="step-actions">${u ? `<a class="btn primary small" href="${esc(u)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Ouvrir l'offre ↗</a>` : ""}<span style="color:var(--muted);font-size:.85rem">Réponses prêtes à coller :</span></div>
+          <div class="answers">${ans}</div></li>
+        <li><div class="step-t">Envoie le message d'approche</div>
+          <div style="color:var(--muted);font-size:.85rem">À un recruteur ou au futur manager, sur LinkedIn ou par email. Tu l'envoies toi-même.</div>
+          ${d.message ? `<div class="step-actions">${btnCopy("message", d.message, "Copier le message")}</div><details><summary>Lire le message</summary><pre>${esc(d.message)}</pre></details>` : ""}</li>
+        <li><div class="step-t">Note que c'est envoyé</div>
+          <div class="step-actions">${envoye ? `<span class="done">Envoyée${s.envoye_le ? " le " + fmtDate(s.envoye_le) : ""}. Relance prévue le ${fmtDate(relanceLe(s))}.</span>` : `<button class="btn primary small" type="button" data-act="postulee" data-h="${esc(o.id)}" ${S.writable ? "" : "disabled"}>J'ai postulé</button><span style="color:var(--muted);font-size:.85rem">La relance sera préparée pour J+7.</span>`}</div></li>
+      </ol>
+      ${envoye && d.relance ? `<div><div class="eyebrow">Relance prête</div><div class="step-actions">${btnCopy("relance", d.relance, "Copier la relance")}</div><details><summary>Lire la relance</summary><pre>${esc(d.relance)}</pre></details></div>` : ""}
+      ${d.preparation_entretien ? `<div><div class="eyebrow">Préparation d'entretien</div><pre>${esc(d.preparation_entretien)}</pre></div>` : ""}
+    </section>`;
+  }
+  // URL absolue http(s) ou chemin d'asset de l'artifact (/_blob/…)
+  const safeUrlRel = u => (typeof u === "string" && /^\/_blob\/[A-Za-z0-9]+$/.test(u)) ? u : safeUrl(u);
 
   function drawer(focus = false) {
     const root = $("#drawer-root");
@@ -508,7 +600,7 @@ td button.t:hover { text-decoration: underline; }
         <button class="btn ghost close" type="button" data-close>Fermer ✕</button>
         <div class="offer-head">${gauge(o.note)}<div style="min-width:0"><h2 id="dr-t">${esc(o.intitule)}</h2>
           <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || "")}</div>${chipsDe(o)}</div></div>
-        ${u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
+        ${!o.groupe_lvmh && d ? kitDe(o, d) : u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
         <dl class="dl">
           <dt>Recommandation</dt><dd>${RECO[o.recommandation] || "—"}</dd>
           <dt>Tri</dt><dd>${STATUT_TRI[o.statut] || "—"}</dd>
@@ -524,15 +616,8 @@ td button.t:hover { text-decoration: underline; }
           <textarea id="dr-note" placeholder="Contact, date d'entretien, impressions…" ${S.writable ? "" : "disabled"}>${esc(s.note || "")}</textarea>
           <div><button class="btn" type="button" id="dr-save" ${S.writable ? "" : "disabled"}>Enregistrer la note</button></div></div>
         ${o.groupe_lvmh ? `<div class="notice warn">Offre du groupe LVMH : tu postules toi-même en interne. L'outil ne prépare aucun dossier pour cette offre.</div>`
-          : d ? `<div class="dossier"><div class="eyebrow">Dossier préparé${d.cree_le ? " le " + fmtDate(d.cree_le) : ""}</div>
-            ${d.cv_url ? `<a href="${esc(safeUrl(d.cv_url))}" target="_blank" rel="noopener noreferrer">CV ciblé dans Canva ↗</a>` : ""}
-            ${d.cv_titre ? `<div><span class="eyebrow">Titre du CV</span><br>${esc(d.cv_titre)}</div>` : ""}
-            ${d.fiche_modifications ? `<div><div class="eyebrow">Ce qui a changé</div><pre>${esc(d.fiche_modifications)}</pre></div>` : ""}
-            ${d.lettre ? `<div><div class="eyebrow">Lettre de motivation</div><pre>${esc(d.lettre)}</pre></div>` : ""}
-            ${d.message ? `<div><div class="eyebrow">Message d'approche</div><pre>${esc(d.message)}</pre></div>` : ""}
-            ${Array.isArray(d.questions) && d.questions.length ? `<div class="notice"><strong>Questions avant envoi</strong><ul>${d.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>` : ""}
-          </div>`
-          : etapeDe(o.id) === "dossier_demande" ? `<div class="notice">Dossier demandé : il sera préparé au prochain passage (CV Canva, lettre si utile, message d'approche).</div>` : ""}
+          : d ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>`
+          : etapeDe(o.id) === "dossier_demande" ? `<div class="notice">Dossier demandé : il sera prêt vers 12 h 30 ou 18 h 45 (sinon demain matin), avec le CV en PDF, la lettre et les réponses du formulaire.</div>` : ""}
       </aside>`;
     if (focus) $(".drawer .close", root)?.focus();
   }
@@ -572,8 +657,10 @@ td button.t:hover { text-decoration: underline; }
 
   // ---------- Événements ----------
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-open],[data-act],[data-close],[data-rm],#h-csv,#dr-save");
+    const t = e.target.closest("[data-open],[data-act],[data-close],[data-rm],[data-copy],[data-pdf],#h-csv,#dr-save");
     if (!t) return;
+    if (t.dataset.copy) { copier(t.dataset.copy); return; }
+    if (t.dataset.pdf) { telechargerPdf(t.dataset.pdf, t.dataset.nom || "CV.pdf"); return; }
     if (t.dataset.open) { S.ouvert = t.dataset.open; drawer(true); return; }
     if (t.hasAttribute("data-close")) { S.ouvert = null; drawer(); return; }
     if (t.id === "h-csv") { exporterCSV(); return; }
@@ -586,10 +673,11 @@ td button.t:hover { text-decoration: underline; }
     if (act === "annuler-ecart") { S.ecartEnCours = null; render(); return; }
     if (act === "ecarter") { S.ecartEnCours = h; render(); $("#motif-" + CSS.escape(h))?.focus(); return; }
     if (act === "rouvrir") { ecrireSuivi(h, { etape: "nouvelle", motif_ecart: "" }, "Offre rouverte"); return; }
+    if (act === "postulee" && S.ouvert === h) { ecrireSuivi(h, { etape: "postulee" }, "Candidature notée comme envoyée. Relance dans 7 jours."); setTimeout(() => drawer(), 0); return; }
     if (act) {
       const cur = etapeDe(h);
       const next = cur === act ? "nouvelle" : act;
-      const msg = { interessante: "Marquée intéressante", dossier_demande: "Dossier demandé : il sera préparé au prochain passage", postulee: "Candidature notée comme envoyée", nouvelle: "Étape retirée" }[next] || "Enregistré";
+      const msg = { interessante: "Marquée intéressante", dossier_demande: "Dossier demandé : prêt vers 12 h 30 ou 18 h 45, sinon demain matin", postulee: "Candidature notée comme envoyée", nouvelle: "Étape retirée" }[next] || "Enregistré";
       ecrireSuivi(h, { etape: next }, msg);
     }
   });
@@ -602,6 +690,11 @@ td button.t:hover { text-decoration: underline; }
       const v = $("#cible-in").value.trim(); if (!v) return;
       const g = reglages(); if ((g.cibles || []).some(c => c.toLowerCase() === v.toLowerCase())) { toast("Déjà dans la liste"); return; }
       S.reglages = { ...g, cibles: [...(g.cibles || []), v] }; render(); ecrireReglages(S.reglages); $("#cible-in")?.focus();
+    } else if (f.id === "f-candidat") {
+      const next = { ...(S.candidat || {}) };
+      f.querySelectorAll("input[data-k]").forEach(i => { next[i.dataset.k] = i.value.trim(); });
+      S.candidat = next;
+      S.db && S.db.doc("reglages/candidat").set({ ...next, maj: new Date().toISOString() }).then(() => toast("Infos enregistrées"), () => toast("Enregistrement impossible pour l'instant."));
     } else if (f.id === "f-reglages") {
       const num = (id, d) => { const n = parseFloat($(id).value.replace(",", ".")); return Number.isFinite(n) ? n : d; };
       const g = reglages();
@@ -647,6 +740,7 @@ td button.t:hover { text-decoration: underline; }
     db.collection("rapports").onSnapshot(snap => {
       S.rapports = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(b.date || b.id).localeCompare(String(a.date || a.id))); done("rapports", snap); render();
     }, () => {});
+    db.doc("reglages/candidat").onSnapshot(snap => { S.candidat = snap.exists ? snap.data() : null; if (S.view === "reglages" && !document.activeElement?.closest("form")) render(); refreshDrawer(); }, () => {});
     db.doc("reglages/general").onSnapshot(snap => { S.reglages = snap.exists ? snap.data() : null; if (S.view === "reglages" && !document.activeElement?.closest("form")) render(); }, () => {});
   }
   start();

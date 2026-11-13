@@ -107,6 +107,30 @@ Pour chaque offre en `dossier_demande` (sauf LVMH, jamais) : suivre
 `suivi/<dedup_hash>` à `etape: "dossier_pret"` avec `ArtifactData update` (pinné sur la
 `version` lue à l'étape 0, sans toucher aux autres champs).
 
+## 6 bis. Relances (J+7 et J+14)
+
+Pour chaque offre en `postulee` ou `relance` depuis 7 jours (puis 14 jours) sans réponse :
+écrire un message de relance court et poli dans la langue de l'offre (rappel du poste, une
+phrase de valeur ajoutée, question sur la suite ; « Respectueusement » ou « Kind regards »)
+dans le champ `relance` de `dossiers/<dedup_hash>` (créer le document s'il n'existe pas). Si
+un email de contact est connu (notes de David ou offre), créer un **brouillon** Gmail. Le
+signaler dans l'email du matin. Ne jamais l'envoyer soi-même.
+
+## 6 ter. Entretiens
+
+Pour chaque offre passée en `entretien` sans `preparation_entretien` : suivre
+`prompts/preparation-entretien.md` et écrire le résultat dans le champ
+`preparation_entretien` de `dossiers/<dedup_hash>`. Si les notes de David donnent une date
+et une heure d'entretien, créer l'événement dans Google Calendar (titre « Entretien –
+<entreprise> – <poste> », lien de l'offre en description) s'il n'existe pas déjà.
+
+## 6 quater. Réponses des recruteurs
+
+Chercher dans Gmail les réponses des 3 derniers jours aux candidatures envoyées (nom de
+l'entreprise dans l'expéditeur ou l'objet). Les signaler dans l'email du matin et le rapport
+(accusé de réception, refus, invitation à un entretien). Ne pas changer l'étape soi-même :
+David la met à jour dans le tableau de bord.
+
 ## 7. Publication
 
 ```bash

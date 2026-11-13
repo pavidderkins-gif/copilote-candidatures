@@ -93,6 +93,7 @@ zones:
   vie:
     libelle: VIE, tous pays
     priorite_pays_anglophones: true
+    royaume_uni: autorise   # David n'a pas la nationalité britannique (13/11/2026)
     pays_exclus:
       - Chine
       - Japon
