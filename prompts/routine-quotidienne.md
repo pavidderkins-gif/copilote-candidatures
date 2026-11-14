@@ -1,8 +1,9 @@
-# Routine quotidienne — recherche, notation, dashboard, rapport (v2)
+# Routine quotidienne — recherche, notation, dashboard, email (v3, 14/11/2026, remplace la v2)
 
 Lancée chaque matin à 6 h 58 (heure de Paris). Objectif : trouver les nouvelles offres qui
-collent au profil de David, les noter, alimenter son dashboard, préparer les dossiers qu'il a
-demandés et lui envoyer un récapitulatif lisible en 2 minutes.
+collent au profil de David, **les lire en entier**, les noter, alimenter son dashboard, préparer
+les dossiers qu'il a demandés et lui envoyer un email **court et clair** : il doit gagner du
+temps, pas en perdre. Chercher partout, ne montrer que le meilleur.
 
 **Dashboard :** https://claude.ai/artifact/QngVuEMvQQTe5yhy1Pqgsg — sa base de données se lit
 et s'écrit avec l'outil `ArtifactData` (`url` ci-dessus). Collections : `offres/<dedup_hash>`,
@@ -29,126 +30,94 @@ inventer une offre, une date, un lien ou un fait du profil ; ne jamais écrire d
    `dossier_demande` (étape 6) et celles en `postulee` depuis 7 jours ou plus (relances).
 5. Date du jour (heure de Paris) : `AAAA-MM-JJ`.
 
-## Règles d'or (décisions de David du 13/11/2026)
+## Règles d'or (décisions de David du 13 et du 14/11/2026)
 
-1. **Seulement du neuf** : le rapport ne montre que les offres publiées depuis le passage
-   précédent (48 heures, 72 heures le lundi). Une offre plus ancienne a déjà été vue.
-2. **Seulement des liens vérifiés** : aucune offre n'entre dans la sélection sans lien
-   vérifié (étape 3 bis). Lien à donner, dans l'ordre : l'offre sur le site carrières de
-   l'entreprise, sinon l'annonce sur le site d'emploi. Jamais une page de résultats ni un
-   agrégateur (Indeed, Glassdoor, Jobleads, iagora…).
+1. **Seulement du neuf** : publié depuis le passage précédent (48 h ; 72 h le lundi).
+   `N` = 2 (3 le lundi) dans les commandes ci-dessous.
+2. **Seulement des offres lues en entier** : chaque offre passe par `scripts/qualite.py` sur son
+   texte complet. Sans texte complet, elle n'est jamais montrée.
+3. **Tout ce qui peut être vérifié l'est avant l'email** (langue exigée, nationalité, expérience,
+   date, lien). Jamais de « à vérifier » que le texte de l'offre permet de trancher.
+4. **Lien direct de l'entreprise** : site carrières / outil de recrutement de l'entreprise ;
+   à défaut l'annonce jobup / jobs.ch / HelloWork ; pour un VIE, la page de l'entreprise, sinon
+   Business France, sinon la page iagora. Jamais une page de résultats ni un agrégateur
+   (Indeed, Glassdoor, Jobleads…) pour un CDI.
+5. **Email court** : l'essentiel de chaque offre en 3 lignes (le poste, pour toi, à savoir).
 
-## 1. Sourcing (viser 60 à 100 offres candidates)
+## 1. Collecte (lancer les trois scripts en parallèle, en arrière-plan)
 
-**Sources fiables d'abord** (date de publication réelle et lien direct) :
-- Suisse : `python3 scripts/jobup.py --jours 2 > /tmp/jobup.jsonl` (jobup.ch et jobs.ch,
-  recherches du périmètre). `--jours 3` le lundi.
-- Paris et Lyon : pages de résultats HelloWork filtrées CDI et « dernière semaine »
-  (`https://www.hellowork.com/fr-fr/emploi/recherche.html?k=<terme>&l=<ville>&c=CDI&d=w`),
-  puis la page de chaque offre (`/fr-fr/emplois/<id>.html`).
-- Entreprises cibles : leurs flux publics quand ils existent (Workable
-  `apply.workable.com/api/v1/widget/accounts/<compte>`, Greenhouse
-  `boards-api.greenhouse.io/v1/boards/<compte>/jobs`, Lever `api.lever.co/v0/postings/<compte>`,
-  SmartRecruiters `api.smartrecruiters.com/v1/companies/<compte>/postings` — CERN : `CERN`,
-  Workday, SuccessFactors).
-- La recherche web (1c) sert seulement à découvrir des pistes : chaque piste doit ensuite
-  être retrouvée sur le site de l'entreprise ou sur un site d'emploi lisible.
+```bash
+python3 scripts/jobup.py --jours N --complet > /tmp/c_jobup.jsonl 2> /tmp/c_jobup.log     # Suisse romande + Zurich + SIG (~3 min)
+python3 scripts/workday.py --jours N > /tmp/c_workday.jsonl 2> /tmp/c_workday.log         # sites carrières : Suisse, Australie, France, VIE (~5-10 min)
+python3 scripts/vie.py --jours N > /tmp/c_vie.jsonl 2> /tmp/c_vie.log                    # tous les VIE finance / supply chain / data / achats (~1 min)
+```
 
-Toujours avec curl simple, sans modifier l'en-tête, avec une pause entre les requêtes.
+Chaque ligne a déjà `texte` (description complète), `controles` et `exclusion`.
+Pendant ce temps :
 
-Tester d'abord si la lecture de pages fonctionne (`WebFetch` sur une page de résultats
-jobup.ch). Si oui, lire les pages de résultats triées par date des sites listés en 1b ; sinon,
-s'appuyer sur la recherche web (1c) et marquer les notes « provisoires ».
+**a. Alertes Gmail** des N derniers jours :
+`newer_than:Nd from:(jobalerts-noreply@linkedin.com OR jobs-noreply@linkedin.com OR seek.com.au OR businessfrance.fr OR vie-via.businessfrance.fr OR jobs.ch OR jobup.ch OR welcometothejungle.com OR apec.fr OR jobteaser.com)`
+Pour chaque offre des alertes : retrouver le lien de l'entreprise, puis la lire et la contrôler :
+`printf '%s\n' <lien1> <lien2> … | python3 scripts/lire_offre.py | python3 scripts/qualite.py >> /tmp/c_autres.jsonl`
 
-**a. Alertes Gmail** des 2 derniers jours :
-`newer_than:2d from:(jobalerts-noreply@linkedin.com OR jobs-noreply@linkedin.com OR apec.fr OR welcometothejungle.com OR jobteaser.com OR jobs.ch OR jobup.ch OR businessfrance.fr)`
+**b. Paris et Lyon** : HelloWork filtré CDI et dernière semaine
+(`https://www.hellowork.com/fr-fr/emploi/recherche.html?k=<terme>&l=<ville>&c=CDI&d=w`, termes :
+data analyst, business analyst, analyste financier, contrôleur de gestion, FP&A, supply chain
+analyst), puis chaque offre lue et contrôlée de la même façon (`>> /tmp/c_autres.jsonl`).
 
-**b. Sites d'emploi** (si la lecture de pages fonctionne) : jobup.ch, jobs.ch, datacareer.ch,
-welcometothejungle.com, apec.fr, candidat.francetravail.fr, hellowork.com,
-mon-vie-via.businessfrance.fr, lvmh.com/fr/nous-rejoindre.
-
-**c. Plan de recherche web** (WebSearch, mode `extended`, toutes en parallèle) — il a
-donné les meilleures offres du 13/11 :
+**c. Recherche web** (WebSearch `extended`, en parallèle) pour ce que les scripts ne couvrent
+pas. Chaque piste doit être retrouvée sur le site de l'entreprise puis lue avec `lire_offre.py`
+et contrôlée avec `qualite.py` ; sinon elle est abandonnée.
 
 | # | Requête type | Pourquoi |
 |---|---|---|
-| 1 | `"Data Analyst" OR "Business Analyst" junior Genève OR Lausanne CDI <mois> <année>` | Suisse romande, zone n°1 |
-| 2 | `junior "Data Analyst" OR "BI Analyst" OR "FP&A" Zurich OR Basel English no German` | Suisse anglophone |
-| 3 | `"Supply Chain Analyst" OR "Demand Planner" junior Genève OR Vaud OR Neuchâtel` | Supply chain en Suisse |
-| 4 | `graduate programme <année+1> finance OR data Zurich OR Genève` (Swiss Re, UBS, Julius Baer, Pictet, Lombard Odier) | Programmes graduate : idéal premier emploi |
-| 5 | `offre CDI "Data Analyst junior" OR "Business Data Analyst" Paris <mois> <année>` | Paris data |
-| 6 | `"FP&A Analyst" OR "Analyste FP&A" OR "Contrôleur de gestion junior" CDI Paris <mois>` | Paris finance |
-| 7 | `"Data Analyst" OR "Contrôleur de gestion junior" OR "Supply Chain Analyst" CDI Lyon <mois>` | Lyon |
-| 8 | `"Chief of Staff" OR "Business Operations" junior Paris startup CDI` | Axe startup |
-| 9 | `VIE <année+1> "Data Analyst" OR "Financial Analyst" OR "Business Analyst" Londres OR "New York" OR Singapour OR Sydney OR Montréal OR Dublin` | VIE anglophones |
-| 10 | `VIE "Supply Chain" OR "Demand Planning" analyst <année+1>` | VIE supply chain |
-| 11 | `<entreprise cible> careers junior analyst` pour 5 entreprises de `reglages.cibles`, en tournant chaque jour | Entreprises cibles |
-| 12 | `site:lvmh.com join-us our-job-offers analyst` | Groupe LVMH (rubrique interne) |
-| 13 | `BNP Paribas OR "Société Générale" OR Bpifrance CDI junior "Data Analyst" OR "Business Analyst"` | Banques |
-| 14 | `junior "Data Analyst" OR "Business Analyst" Mistral AI OR Qonto OR Pennylane OR Finary OR Photoroom` | IA et fintech |
-| 15 | `CERN junior OR graduate supply chain OR data Geneva` | Le CERN recrute des juniors avec des délais courts |
+| 1 | `"Data Analyst" OR "Business Analyst" OR "Financial Analyst" junior Genève OR Lausanne <mois> <année>` | Suisse romande, zone n°1 |
+| 2 | `graduate OR trainee programme <année+1> finance OR data Genève OR Zurich` (UBS, Pictet, Lombard Odier, Nestlé, PMI, JTI, dsm-firmenich, Givaudan, SGS, Rolex) | Programmes jeunes diplômés |
+| 3 | `"Services Industriels de Genève" OR SIG "premier emploi" analyste OR finance OR data` | SIG, cible de David |
+| 4 | `graduate program <année+1> analyst Sydney OR Melbourne OR Brisbane finance OR data` (Macquarie, ANZ, Westpac, Deloitte, KPMG, EY, PwC, Suncorp, Canva, Atlassian) | Australie, seulement le très bon |
+| 5 | `"junior" "data analyst" OR "financial analyst" OR "business analyst" Sydney OR Melbourne OR Brisbane` | Australie, premiers postes |
+| 6 | `VIE <année+1> "Financial Analyst" OR "Contrôleur de gestion" OR "Data Analyst" OR "Supply Chain" Londres OR "New York" OR Singapour OR Sydney OR Montréal OR Dublin` | VIE anglophones |
+| 7 | `offre CDI "Data Analyst junior" OR "FP&A" OR "Contrôleur de gestion junior" Paris <mois> <année>` | Paris |
+| 8 | `<entreprise cible> careers junior analyst` pour 5 entreprises de `reglages.cibles`, en tournant | Entreprises cibles |
+| 9 | `site:lvmh.com join-us our-job-offers analyst` | Groupe LVMH (rubrique interne) |
+| 10 | `CERN junior OR graduate finance OR data OR supply chain Geneva` | CERN |
 
-Pour chaque offre prometteuse, faire une recherche ciblée (`<entreprise> "<intitulé>"`) pour
-retrouver le lien direct de l'annonce (site carrières, Workable, Greenhouse, Lever…) et sa date.
-Un lien vers une page de résultats est accepté seulement avec la mention « offre exacte à
-retrouver ».
+Tout rassembler dans `/tmp/candidats.jsonl` (une offre par ligne, avec `texte`, `controles`,
+`exclusion`, `zone`).
 
-Écrire chaque offre candidate dans `/tmp/candidates.jsonl`.
+## 2. Contrôle, fraîcheur, déduplication
 
-## 2 bis. Fraîcheur
+1. Mettre de côté les offres dont `exclusion` n'est pas vide (les compter pour l'email :
+   « N écartées »). Relire la preuve citée seulement si elle paraît absurde.
+2. Écarter les offres publiées avant le passage précédent.
+3. Dédupliquer : `python3 scripts/offres.py filtrer < /tmp/candidats_ok.jsonl > /tmp/nouvelles.jsonl`
 
-Écarter toute offre dont `date_publication` est antérieure au dernier passage (48 h ; 72 h le
-lundi). Sans date fiable : l'offre ne va pas dans la sélection, au mieux « à surveiller ».
+## 3. Notation et catégorie
 
-## 2. Déduplication
+Appliquer `prompts/scoring.md` (v2) à chaque nouvelle offre, en lisant son texte complet
+(réglages de David en priorité). Remplir `categorie` (`postuler`, `vie`, `australie`, `lvmh`,
+`a_surveiller`), `en_bref`, `pour_toi`, `a_savoir`, `contrat`, `duree`, `salaire` (si l'offre
+le donne), `points_forts`, `ecarts`, `motif`, `rapport: "<AAAA-MM-JJ>"`, `date_collecte`.
+Statuts : `propose` (catégories postuler / vie / australie), `a_surveiller`, `archive`, `exclu`.
+Offres LVMH : `groupe_lvmh: true`, `canal: "interne_lvmh"`.
 
-```bash
-python3 scripts/offres.py filtrer < /tmp/candidates.jsonl > /tmp/nouvelles.jsonl
-```
+## 3 bis. Liens
 
-## 3. Notation
-
-Appliquer `prompts/scoring.md` à chaque nouvelle offre (réglages de David en priorité).
-Ajouter `points_forts` (2 ou 3, concrets, reliés au profil maître), `ecarts` (avec la façon de
-compenser), `canal`, `date_publication` si connue, `motif` (remarque ou motif d'exclusion),
-`rapport: "<AAAA-MM-JJ>"`, `date_collecte`. Statuts : `propose`, `a_surveiller`, `archive`, `exclu`.
-
-Sélection du jour (hors LVMH) : toutes les offres ≥ passe_droit, puis les meilleures au-dessus
-du seuil jusqu'à plafond_jour. Les autres au-dessus du seuil passent en `a_surveiller`.
-Offres LVMH : `groupe_lvmh: true`, `canal: "interne_lvmh"`, hors sélection.
-
-## 3 bis. Vérification des liens (obligatoire avant le rapport)
-
-Pour chaque offre `propose` ou `a_surveiller` :
-1. Chercher le lien de candidature sur le site de l'entreprise (`python3 scripts/jobup.py
-   --detail <id>` pour jobup ; flux ATS de l'entreprise ; recherche ciblée). Suivre les
-   redirections (`curl -sL -o /dev/null -w "%{http_code} %{url_effective}"`).
-2. Statut du lien (`lien_verifie`) :
-   - `ok` : code 200 et l'offre est bien présente (titre retrouvé dans la page ou dans le
-     flux officiel de l'entreprise) ;
-   - `protege` : site officiel qui bloque la vérification automatique (403) : accepté
-     seulement pour une page officielle de l'entreprise, avec la mention « ouvre pour vérifier » ;
-   - `retire` : 404, 410, redirection vers une liste ou une page d'erreur, ou offre absente du
-     flux officiel → statut `exclu`, motif « offre retirée » ;
-   - `non_verifiable` : agrégateur ou page de résultats → statut `archive`.
-3. Enregistrer `lien_verifie` et `lien_verifie_le` (AAAA-MM-JJ) dans l'offre.
-4. Revérifier aussi, chaque matin, les liens des offres que David suit (`interessante`,
-   `dossier_demande`, `dossier_pret`, `postulee`, `relance`) : si l'une est retirée, le dire
-   en tête de l'email.
-
-Outil : le script fait les étapes 2 et 4 d'un coup, pour toutes les offres actives et suivies.
-
-```bash
-# exporter les offres et le suivi (ArtifactData list avec out_dir), puis :
-python3 scripts/verifier_liens.py /tmp/db/offres /tmp/db/suivi > /tmp/liens.jsonl
-```
-
-Une ligne JSON par offre : `id`, `lien_verifie`, `detail`, `lien_verifie_le`. Il lit les flux
-officiels Workday et Workable, la fiche JobPosting de jobup / jobs.ch, repère les pages
-« offre expirée / supprimée » et les annonces de plus de 60 jours. Les fichiers exportés ne
-portent pas la version : reprendre la `version` de chaque offre dans la liste renvoyée par
-l'export pour écrire avec `if_version`. Une offre `retire` passe en `exclu` (motif « offre
-retirée ») ; une offre suivie retirée est signalée en tête de l'email.
+1. Pour chaque offre retenue (postuler, vie, australie), trouver le lien de l'entreprise si la
+   source n'en est pas un : `python3 scripts/jobup.py --detail <id>` (lien externe d'une annonce
+   jobup), recherche ciblée `<entreprise> "<intitulé>"`, flux de l'outil de recrutement. Pour
+   un VIE iagora : chercher l'offre chez l'entreprise (Workday, site carrières) ; si
+   l'entreprise n'est pas indiquée, garder la page iagora avec `lien: "iagora (postuler via
+   Business France)"`.
+2. `lien_verifie` : `ok` (en ligne, intitulé retrouvé), `protege` (site officiel qui bloque les
+   robots : accepté), `retire` (404, page d'erreur, absente du flux → `exclu`),
+   `non_verifiable` (agrégateur → pas de CDI dans l'email).
+3. Chaque matin, revérifier aussi les offres actives et suivies :
+   `python3 scripts/verifier_liens.py /tmp/db/offres /tmp/db/suivi > /tmp/liens.jsonl`
+   (exporter `offres` et `suivi` avec `ArtifactData list` + `out_dir` ; les fichiers exportés
+   n'ont pas la version : la reprendre dans la liste renvoyée pour écrire avec `if_version`).
+   Une offre `retire` passe en `exclu` (« offre retirée ») ; une offre suivie retirée va dans
+   « À faire » de l'email.
 
 ## 4. Enregistrement
 
@@ -156,16 +125,17 @@ retirée ») ; une offre suivie retirée est signalée en tête de l'email.
 python3 scripts/offres.py ajouter < /tmp/notees.jsonl
 ```
 
-Puis écrire chaque offre notée dans le dashboard : un fichier JSON par offre, et
+Puis écrire chaque offre notée dans le dashboard (sans les champs `texte` et `controles`,
+trop volumineux : garder `en_bref`, `pour_toi`, `a_savoir`, `categorie`) : un fichier JSON par offre, et
 `ArtifactData batch` (50 écritures maximum par lot, `op: "set"`, `collection: "offres"`,
 `doc_id: <dedup_hash>`, `file_path`). Ne jamais réécrire une offre déjà présente.
 
 ## 5. Rapport
 
-- `rapports/AAAA-MM-JJ.md` dans le dépôt (format du rapport du 13/11/2026).
+- `rapports/AAAA-MM-JJ.md` dans le dépôt : le même contenu que l'email (texte), puis la liste
+  des offres écartées avec leur motif (une ligne chacune), pour garder la trace.
 - Document `rapports/<AAAA-MM-JJ>` dans le dashboard : `date`, `lien` (GitHub), `nb_trouvees`,
-  `nb_proposees`, `nb_exclues`, `questions` (infos manquantes pour David), `avertissement`
-  (si les notes sont provisoires).
+  `nb_proposees`, `nb_exclues`, `nb_vie`, `questions` (infos manquantes pour David).
 
 ## 6. Dossiers demandés depuis le dashboard
 
@@ -212,15 +182,26 @@ git add rapports/ donnees/ dossiers/ && git commit -m "Rapport du AAAA-MM-JJ" &&
 En cas de refus du push (commit arrivé entre-temps) : `git pull --rebase origin main`, puis
 `git push origin main`.
 
-## 8. Envoi à David
+## 8. Envoi à David (email court, toujours le même format)
 
-Email (Gmail `send_message`) à l'adresse Gmail de David, sans pièce jointe :
-- Objet : `Copilote · N offres le JJ/MM` (ou `Copilote · rien de nouveau le JJ/MM`).
-- Corps en texte simple : offres sélectionnées (poste, entreprise, lieu, note, lien), offres
-  LVMH sous « Groupe LVMH (candidature interne) », dossiers prêts à relire, relances à faire,
-  questions, puis les liens vers le dashboard et le rapport GitHub. Signé « Respectueusement ».
+1. Écrire `/tmp/selection.json` (format décrit en tête de `scripts/email_rapport.py`) :
+   `date`, `stats` (`lues` = offres lues en entier, `exclues`, `vie_trouves` = VIE nouveaux
+   avant notation), `offres` (catégories postuler, vie, australie, lvmh ; avec `en_bref`,
+   `pour_toi`, `a_savoir`, `contrat`, `salaire`, `url`, `lien` = nom du site, par exemple
+   « site Airbus », `date_publication`, `dossier_pret`), `a_faire` (relances dues, offres
+   suivies retirées, réponses de recruteurs, dossiers prêts : une ligne chacun).
+2. `python3 scripts/email_rapport.py /tmp/selection.json > /tmp/email.json`
+3. Gmail `send_message` à l'adresse Gmail de David : `subject` = `objet`, `body` = `texte`,
+   `htmlBody` = `html` (sans rien ajouter). Si l'envoi échoue, créer un brouillon et le
+   signaler dans le rapport.
 
-Si l'envoi échoue, créer un brouillon et le signaler dans le rapport.
+Style des trois lignes (20 mots maximum chacune, en français, sans jargon) :
+- **Le poste** : le travail concret (« Contrôle de gestion d'une filiale Airbus : clôtures,
+  budget, tableaux Power BI, 24 mois »), pas la présentation de l'entreprise.
+- **Pour toi** : le lien avec une expérience précise de David (« Tes outils de trésorerie
+  Cogeco et tes dashboards Dior »).
+- **À savoir** : la vraie contrainte tirée du texte (« 2-3 ans demandés », « démarrage
+  immédiat », « allemand apprécié, pas exigé », « droit de travail australien exigé »), ou rien.
 
 **Si les connecteurs Gmail ou Canva ne répondent pas** (outils absents de la session) : ne pas
 s'arrêter. Faire tout le reste (sourcing, vérification des liens, notation, tableau de bord,

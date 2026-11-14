@@ -8,6 +8,7 @@ Une requête par recherche, avec une pause entre deux requêtes : usage modéré
   python3 scripts/jobup.py --jours 2 > /tmp/jobup.jsonl            # recherches par défaut
   python3 scripts/jobup.py --jours 30 --terme "data analyst" --lieu Genève
   python3 scripts/jobup.py --detail <id>                            # lien de candidature externe
+  python3 scripts/jobup.py --jours 2 --complet > /tmp/jobup.jsonl   # + texte complet et contrôle qualité
 
 Sortie : une offre par ligne (JSON) au format attendu par scripts/offres.py.
 """
@@ -37,7 +38,16 @@ RECHERCHES = [
         "fp&a", "contrôleur de gestion", "demand planner", "supply chain analyst", "business intelligence")],
     *[("jobup", t, l) for l in ("Neuchâtel", "Fribourg", "Vaud") for t in ("data analyst", "financial analyst", "business analyst")],
     *[("jobs", t, "Zürich") for t in ("junior data analyst", "junior financial analyst", "graduate finance", "junior business analyst")],
+    # Entreprises cibles suivies nommément (SIG : CDD « Premier Emploi » pour les jeunes diplômés)
+    ("jobup", "Services Industriels de Genève", ""), ("jobup", "premier emploi", "Genève"),
+    *[("jobup", t, l) for l in ("Genève", "Lausanne") for t in ("junior", "graduate", "trainee")],
 ]
+
+
+GENERIQUES = {"junior", "graduate", "trainee", "premier emploi"}
+TITRE_UTILE = (r"analy|data|\bbi\b|business intelligence|financ|fp&a|controll|contr[ôo]l|planning|planner|supply|demand|"
+               r"strategy|strat[ée]g|business|operations|reporting|treasury|tr[ée]sor|pricing|insight|achat|procurement|"
+               r"graduate|trainee|programme|program|consultant|projet|project")
 
 
 def get(url: str) -> str:
@@ -92,7 +102,13 @@ def main() -> None:
     ap.add_argument("--lieu", default="")
     ap.add_argument("--site", default="jobup", choices=SITES)
     ap.add_argument("--detail")
+    ap.add_argument("--complet", action="store_true",
+                    help="lit chaque annonce en entier et ajoute le contrôle qualité (scripts/qualite.py)")
     a = ap.parse_args()
+    if a.complet:
+        sys.path.insert(0, __file__.rsplit("/", 1)[0])
+        from lire_offre import lire
+        from qualite import analyser
 
     if a.detail:
         print(lien_externe(a.detail, a.site) or "(pas de lien externe : candidature via l'annonce)")
@@ -114,8 +130,19 @@ def main() -> None:
                 continue
             if d < limite:
                 continue
+            # recherches génériques : ne garder que les intitulés du périmètre (data, finance, BI, supply chain…)
+            if terme in GENERIQUES and not re.search(TITRE_UTILE, o["intitule"].lower()):
+                continue
             vues.add(o["source_ref"])
             o["requete"] = f"{terme} @ {lieu or '-'}"
+            o["zone"] = "suisse"
+            if a.complet:
+                time.sleep(1)
+                fiche = lire(o["url"])
+                o["texte"] = fiche.get("texte", "")
+                if fiche.get("salaire"):
+                    o["salaire"] = fiche["salaire"]
+                o.update(analyser(o))
             print(json.dumps(o, ensure_ascii=False), flush=True)
     print(f"{len(vues)} offre(s) publiée(s) depuis {a.jours:g} jour(s)", file=sys.stderr)
 

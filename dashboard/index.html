@@ -83,6 +83,9 @@ h2 { font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; margin
 .points ul { margin: 2px 0 0; padding-left: 18px; }
 .points .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; color: var(--muted); }
 .provisoire { font-size: 0.78rem; color: var(--muted); font-style: italic; }
+.bref { display: grid; gap: 4px; font-size: 0.9rem; }
+.bref p { margin: 0; }
+.bref .a-savoir { color: var(--danger); }
 
 /* Jauge de note */
 .gauge { width: 56px; height: 56px; position: relative; }
@@ -397,6 +400,7 @@ table.mini { min-width: 0; }
         <div style="min-width:0"><h3 class="offer-title"><button type="button" data-open="${esc(o.id)}">${esc(o.intitule)}</button></h3>
         <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || o.pays || "")}${o.recommandation && RECO[o.recommandation] ? ` · <strong>${RECO[o.recommandation]}</strong>` : ""}</div>
         ${chipsDe(o)}</div></div>
+      ${o.en_bref || o.a_savoir ? `<div class="bref">${o.en_bref ? `<p><b>Le poste :</b> ${esc(o.en_bref)}</p>` : ""}${o.pour_toi ? `<p><b>Pour toi :</b> ${esc(o.pour_toi)}</p>` : ""}${o.a_savoir ? `<p class="a-savoir"><b>À savoir :</b> ${esc(o.a_savoir)}</p>` : ""}</div>` : ""}
       ${pf || ec ? `<div class="points">${pf ? `<div><div class="label">Pourquoi</div><ul>${pf}</ul></div>` : ""}${ec ? `<div><div class="label">Écarts</div><ul>${ec}</ul></div>` : ""}</div>` : ""}
       ${o.motif ? `<div class="provisoire">${esc(o.motif)}</div>` : ""}
       ${actionsDe(o)}
@@ -683,6 +687,7 @@ table.mini { min-width: 0; }
           <dt>Vue le</dt><dd>${fmtDate(o.date_collecte)}</dd>
           ${o.motif ? `<dt>Remarque</dt><dd>${esc(o.motif)}</dd>` : ""}
         </dl>
+        ${o.en_bref ? `<p style="margin:0"><b>Le poste :</b> ${esc(o.en_bref)}</p>` : ""}${o.a_savoir ? `<p style="margin:0"><b>À savoir :</b> ${esc(o.a_savoir)}</p>` : ""}
         ${list("Pourquoi", o.points_forts)}${list("Écarts", o.ecarts)}
         <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-etape">Mon étape</label>
           <select id="dr-etape" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => !(o.groupe_lvmh && ["dossier_demande", "dossier_pret"].includes(e.id))).map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select>

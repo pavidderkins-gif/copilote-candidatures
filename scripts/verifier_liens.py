@@ -83,6 +83,14 @@ def verifier(url: str, intitule: str) -> tuple[str, str]:
             return ("ok", "flux Workable officiel") if code_offre in corps else ("retire", "absente du flux Workable")
         return "protege", f"Workable {code}"
 
+    # SuccessFactors : page lue par JavaScript ; elle affiche « cannot be viewed » aux robots même
+    # quand l'offre est ouverte (Pictet, 13/11). On ne conclut « retiré » que sur un 404.
+    if "successfactors" in host:
+        code, _, _ = curl(url)
+        if code in (404, 410):
+            return "retire", f"HTTP {code}"
+        return "protege", "SuccessFactors : vérification automatique impossible, ouvre le lien pour confirmer"
+
     code, finale, corps = curl(url)
     bas = corps.lower()
     if code in (404, 410):

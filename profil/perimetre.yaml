@@ -87,9 +87,9 @@ zones:
       libelle: Lyon
       priorite: 3
     - id: australie
-      libelle: Australie (de préférence Sydney)
+      libelle: Australie (Sydney, Melbourne ou Brisbane)
       priorite: 4
-      condition: seulement si l'opportunité est bonne (score >= passe_droit)
+      condition: seulement les très bonnes offres (score >= passe_droit) ; David est très intéressé (14/11)
   vie:
     libelle: VIE, tous pays
     priorite_pays_anglophones: true
@@ -195,6 +195,7 @@ entreprises:
     - Nestlé
     - Philip Morris International
     - Logitech
+    - SIG   # Services Industriels de Genève : CDD « Premier Emploi » pour jeunes diplômés (demande de David, 14/11)
     # Banque France
     - BNP Paribas
     - Société Générale
