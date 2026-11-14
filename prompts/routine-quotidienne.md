@@ -129,7 +129,22 @@ Pour chaque offre `propose` ou `a_surveiller` :
    - `non_verifiable` : agrégateur ou page de résultats → statut `archive`.
 3. Enregistrer `lien_verifie` et `lien_verifie_le` (AAAA-MM-JJ) dans l'offre.
 4. Revérifier aussi, chaque matin, les liens des offres que David suit (`interessante`,
-   `dossier_demande`, `dossier_pret`) : si l'une est retirée, le dire en tête de l'email.
+   `dossier_demande`, `dossier_pret`, `postulee`, `relance`) : si l'une est retirée, le dire
+   en tête de l'email.
+
+Outil : le script fait les étapes 2 et 4 d'un coup, pour toutes les offres actives et suivies.
+
+```bash
+# exporter les offres et le suivi (ArtifactData list avec out_dir), puis :
+python3 scripts/verifier_liens.py /tmp/db/offres /tmp/db/suivi > /tmp/liens.jsonl
+```
+
+Une ligne JSON par offre : `id`, `lien_verifie`, `detail`, `lien_verifie_le`. Il lit les flux
+officiels Workday et Workable, la fiche JobPosting de jobup / jobs.ch, repère les pages
+« offre expirée / supprimée » et les annonces de plus de 60 jours. Les fichiers exportés ne
+portent pas la version : reprendre la `version` de chaque offre dans la liste renvoyée par
+l'export pour écrire avec `if_version`. Une offre `retire` passe en `exclu` (motif « offre
+retirée ») ; une offre suivie retirée est signalée en tête de l'email.
 
 ## 4. Enregistrement
 
