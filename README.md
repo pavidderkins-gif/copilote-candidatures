@@ -20,6 +20,11 @@ candidature jusqu'à la réponse. Spécification complète : [CAHIER_DES_CHARGES
 
 Les offres LVMH n'ont jamais de dossier : tu postules en interne.
 
+**Suivi** : toutes tes candidatures, celles de Copilote et celles faites ailleurs (bouton « Ajouter
+une démarche »), classées par phase (à préparer, envoyées, en discussion, offres, closes), avec
+l'agenda « À faire », les points à confirmer et tes lettres de recommandation. Chaque candidature
+garde son contact, sa prochaine étape et un journal des échanges.
+
 **Chaque matin à 6 h 58** (heure de Paris), une tâche planifiée suit `prompts/routine-quotidienne.md` :
 recherche, notation, écriture dans le tableau de bord, dossiers demandés, rapport et email.
 

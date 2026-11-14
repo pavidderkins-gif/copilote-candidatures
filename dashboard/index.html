@@ -9,6 +9,7 @@
   --line: #d9ddd7; --accent: #2f4bd8; --accent-ink: #ffffff; --accent-soft: #e4e8fb;
   --fort: #1e7a4f; --bon: #2a7a8c; --moyen: #a86f12; --faible: #858d88;
   --lvmh: #80612f; --lvmh-soft: #f3ece0; --danger: #b3261e;
+  --st-prep: #5d6a8c; --st-sent: #2f4bd8; --st-talk: #7d45c9; --st-offer: #1e7a4f; --st-closed: #858d88;
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -18,12 +19,14 @@
   --bg: #111614; --surface: #1a201d; --surface-2: #222a26; --ink: #e6ebe8; --muted: #9ba7a1;
   --line: #2e3833; --accent: #8fa3ff; --accent-ink: #0d1330; --accent-soft: #232a4a;
   --fort: #4cc38a; --bon: #5db8cb; --moyen: #e2aa4c; --faible: #7f8984;
-  --lvmh: #d6b47e; --lvmh-soft: #2d2618; --danger: #f2877e; color-scheme: dark; } }
+  --lvmh: #d6b47e; --lvmh-soft: #2d2618; --danger: #f2877e; color-scheme: dark;
+  --st-prep: #a3aed0; --st-sent: #8fa3ff; --st-talk: #c4a3ff; --st-offer: #4cc38a; --st-closed: #7f8984; } }
 :root[data-theme="dark"] {
   --bg: #111614; --surface: #1a201d; --surface-2: #222a26; --ink: #e6ebe8; --muted: #9ba7a1;
   --line: #2e3833; --accent: #8fa3ff; --accent-ink: #0d1330; --accent-soft: #232a4a;
   --fort: #4cc38a; --bon: #5db8cb; --moyen: #e2aa4c; --faible: #7f8984;
-  --lvmh: #d6b47e; --lvmh-soft: #2d2618; --danger: #f2877e; color-scheme: dark; }
+  --lvmh: #d6b47e; --lvmh-soft: #2d2618; --danger: #f2877e; color-scheme: dark;
+  --st-prep: #a3aed0; --st-sent: #8fa3ff; --st-talk: #c4a3ff; --st-offer: #4cc38a; --st-closed: #7f8984; }
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
@@ -128,15 +131,6 @@ h2 { font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; margin
 .bar .track { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
 .bar .fill { height: 100%; background: var(--accent); border-radius: 4px; }
 .bar .n { font-family: var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
-.board-scroll { overflow-x: auto; padding-bottom: 6px; }
-.board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 12px; min-width: min-content; }
-.col { background: var(--surface-2); border-radius: var(--r); padding: 10px; display: grid; gap: 8px; align-content: start; min-height: 120px; }
-.col h3 { margin: 0 2px 2px; font-size: 0.85rem; font-weight: 600; display: flex; justify-content: space-between; }
-.col h3 span { font-family: var(--f-mono); color: var(--muted); }
-.card-mini { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: grid; gap: 6px; font-size: 0.85rem; }
-.card-mini.lvmh { border-color: var(--lvmh); }
-.card-mini select { width: 100%; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); font-size: 0.8rem; }
-.empty-col { color: var(--muted); font-size: 0.8rem; padding: 4px 2px; }
 
 /* Historique */
 .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
@@ -195,23 +189,121 @@ td button.t:hover { text-decoration: underline; }
 .answer .v.missing { color: var(--moyen); font-style: italic; }
 .btn.small { padding: 3px 9px; font-size: 0.78rem; }
 .done { color: var(--fort); font-weight: 600; }
-.todo { display: grid; gap: 8px; }
-.todo-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
-.todo-item .tag-k { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
-.todo-item .tag-k.urgent { background: color-mix(in srgb, var(--moyen) 18%, transparent); color: var(--moyen); }
-.todo-item .tag-k.go { background: var(--accent-soft); color: var(--accent); }
-.todo-item .t { font-weight: 500; } .todo-item .m { color: var(--muted); font-size: 0.83rem; }
-.weeks { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; align-items: end; height: 120px; padding-top: 8px; }
-.week { display: grid; gap: 4px; justify-items: center; align-content: end; height: 100%; font-size: 0.72rem; color: var(--muted); }
-.week .b { width: 70%; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
-.week .n { font-family: var(--f-mono); color: var(--ink); font-size: 0.78rem; }
 .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
 table.mini { min-width: 0; }
 .timeline { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.85rem; }
 .timeline li { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
 .timeline .d { font-family: var(--f-mono); color: var(--muted); }
 .banner-err { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--ink); border-radius: var(--r); padding: 10px 14px; }
-@media (max-width: 520px) { .todo-item { grid-template-columns: minmax(0, 1fr); } }
+
+/* Suivi : ruban des phases, agenda à droite, candidatures en lignes avec leur avancement */
+.muted { color: var(--muted); margin: 0; font-size: 0.85rem; }
+.st-prep { --c: var(--st-prep); } .st-sent { --c: var(--st-sent); } .st-talk { --c: var(--st-talk); }
+.st-offer { --c: var(--st-offer); } .st-closed { --c: var(--st-closed); }
+.sv-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
+.sv-head h2 { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.02em; }
+.sv-head p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+.phases { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.phase { all: unset; box-sizing: border-box; cursor: pointer; padding: 12px 14px 14px; display: grid; gap: 1px; position: relative; border-left: 1px solid var(--line); min-width: 0; }
+.phase:first-child { border-left: 0; }
+.phase:hover { background: color-mix(in srgb, var(--c) 6%, var(--surface)); }
+.phase:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.phase b { font-family: var(--f-mono); font-size: 1.75rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; color: var(--c); }
+.phase span { font-size: 0.8rem; color: var(--muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.phase::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--c); opacity: 0.3; }
+.phase[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 11%, var(--surface)); }
+.phase[aria-pressed="true"]::after { opacity: 1; }
+@media (max-width: 620px) {
+  .phases { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .phase:nth-child(4) { border-left: 0; }
+  .phase:nth-child(n+4) { border-top: 1px solid var(--line); }
+  .phase b { font-size: 1.4rem; }
+}
+.sv-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 330px); gap: 22px; align-items: start; }
+@media (max-width: 920px) { .sv-layout { grid-template-columns: minmax(0, 1fr); } .sv-side { order: -1; } }
+.sv-main { display: grid; gap: 14px; min-width: 0; }
+.sv-side { display: grid; gap: 14px; min-width: 0; }
+.sv-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sv-tools input[type="search"] { flex: 1 1 220px; min-width: 0; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { all: unset; cursor: pointer; padding: 6px 12px; font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.sv-liste { display: grid; gap: 18px; }
+.cand-group { display: grid; gap: 8px; }
+.cand-group > h3 { margin: 0; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--c); font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.cand-group > h3 span { font-family: var(--f-mono); color: var(--muted); letter-spacing: 0; }
+.cand { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(160px, 230px); gap: 10px 14px; align-items: center; }
+.cand-group.st-offer .cand { border-color: color-mix(in srgb, var(--st-offer) 45%, var(--line)); }
+.mono { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 0.95rem; background: color-mix(in srgb, var(--c) 15%, var(--surface)); color: var(--c); }
+.cand-main { min-width: 0; }
+.cand-t { all: unset; cursor: pointer; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.cand-t:hover { text-decoration: underline; }
+.cand-t:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cand-s { font-size: 0.83rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 0; align-items: center; margin-top: 2px; }
+.cand-s > span + span::before { content: "·"; margin: 0 6px; }
+.cand-s .ent { color: var(--ink); font-weight: 500; }
+.cand-s .chip::before { content: none; }
+.cand-s .chip { margin-left: 8px; }
+.steps { display: flex; gap: 4px; margin-top: 9px; max-width: 220px; }
+.steps i { flex: 1 1 0; height: 4px; border-radius: 2px; background: var(--surface-2); }
+.steps i.on { background: var(--c); }
+.steps i.ko { background: var(--danger); }
+.steps i.off { background: var(--st-closed); }
+.ask { margin-top: 7px; font-size: 0.8rem; color: var(--moyen); font-weight: 500; }
+.cand-side { display: grid; gap: 4px; justify-items: end; text-align: right; min-width: 0; }
+.pill { font-size: 0.74rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: color-mix(in srgb, var(--c) 15%, var(--surface)); color: var(--c); white-space: nowrap; }
+.since { font-size: 0.76rem; color: var(--muted); }
+.cand-next { font-size: 0.82rem; line-height: 1.35; }
+.due { font-family: var(--f-mono); font-size: 0.74rem; font-weight: 600; padding: 1px 6px; border-radius: 5px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.due.late { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--danger); }
+.due.today { background: color-mix(in srgb, var(--moyen) 18%, var(--surface)); color: var(--moyen); }
+@media (max-width: 620px) {
+  .cand { grid-template-columns: 40px minmax(0, 1fr); }
+  .mono { width: 40px; height: 40px; }
+  .cand-side { grid-column: 1 / -1; justify-items: start; text-align: left; grid-auto-flow: row; padding-top: 8px; border-top: 1px solid var(--line); }
+}
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card h3 { margin: 0; font-family: var(--f-display); font-size: 1.02rem; font-weight: 600; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.card h3 small { font-family: var(--f-body); font-weight: 500; color: var(--muted); font-size: 0.78rem; text-align: right; }
+.ag-group { display: grid; gap: 2px; }
+.ag-group + .ag-group { padding-top: 6px; border-top: 1px solid var(--line); }
+.ag-group > .eyebrow { margin: 2px 0 2px; }
+.ag-item { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 10px; align-items: start; padding: 6px; margin: 0 -6px; border-radius: 8px; }
+.ag-item:hover { background: var(--surface-2); }
+.ag-item:focus-visible { outline: 2px solid var(--accent); }
+.ag-date { font-family: var(--f-mono); font-size: 0.74rem; font-weight: 600; text-align: center; padding: 3px 0; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
+.ag-date.late { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--danger); }
+.ag-date.today { background: color-mix(in srgb, var(--moyen) 18%, var(--surface)); color: var(--moyen); }
+.ag-date.q { background: color-mix(in srgb, var(--moyen) 18%, var(--surface)); color: var(--moyen); font-size: 0.85rem; }
+.ag-t { display: block; font-size: 0.87rem; font-weight: 500; line-height: 1.35; }
+.ag-s { display: block; font-size: 0.77rem; color: var(--muted); overflow-wrap: anywhere; }
+.reco-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.reco-st { all: unset; cursor: pointer; font-size: 0.74rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 15%, var(--surface)); color: var(--c); white-space: nowrap; }
+.reco-st:focus-visible { outline: 2px solid var(--accent); }
+.sv-chiffres { display: grid; gap: 12px; }
+.chart { width: 100%; height: auto; display: block; }
+.chart .g { stroke: var(--line); stroke-width: 1; }
+.chart .ax { fill: var(--muted); font-size: 11px; font-family: var(--f-body); }
+.chart .v { fill: var(--ink); font-size: 11px; font-family: var(--f-mono); font-weight: 600; }
+.chart .b { fill: color-mix(in srgb, var(--st-sent) 55%, var(--surface)); }
+.chart .b.now { fill: var(--st-sent); }
+/* Panneau : formulaires du suivi et de l'ajout */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 10px 12px; }
+.form-grid label { display: grid; gap: 4px; font-size: 0.82rem; font-weight: 500; color: var(--muted); min-width: 0; }
+.form-grid .wide { grid-column: 1 / -1; }
+.form-grid input, .form-grid select, .form-grid textarea, .journal input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); min-width: 0; width: 100%; }
+.form-grid textarea { min-height: 80px; resize: vertical; }
+.form-grid .check { display: flex; gap: 8px; align-items: center; color: var(--ink); }
+.form-grid .check input { width: auto; }
+.dr-suivi { display: grid; gap: 14px; border-top: 1px solid var(--line); padding-top: 14px; }
+.ask-box { background: color-mix(in srgb, var(--moyen) 14%, var(--surface)); }
+.journal { display: grid; gap: 8px; }
+.journal .add input[type="date"] { flex: 0 0 150px; }
+.timeline li.e span:last-child { color: var(--muted); }
+.dr-head { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: start; }
+.dr-head .mono { width: 56px; height: 56px; font-size: 1.1rem; }
 
 .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 22px; color: var(--muted); text-align: center; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-size: 0.88rem; z-index: 30; }
@@ -233,7 +325,7 @@ table.mini { min-width: 0; }
     </div>
     <nav class="tabs" id="tabs" aria-label="Vues">
       <a href="#aujourdhui" data-view="aujourdhui">Aujourd'hui<span class="count" id="c-auj"></span></a>
-      <a href="#pipeline" data-view="pipeline">Suivi<span class="count" id="c-pipe"></span></a>
+      <a href="#suivi" data-view="suivi">Suivi<span class="count" id="c-pipe"></span></a>
       <a href="#historique" data-view="historique">Historique<span class="count" id="c-hist"></span></a>
       <a href="#reglages" data-view="reglages">Réglages</a>
     </nav>
@@ -258,13 +350,13 @@ table.mini { min-width: 0; }
     { id: "entretien", label: "Entretien" },
     { id: "offre", label: "Offre reçue" },
     { id: "refus", label: "Refus" },
+    { id: "sans_suite", label: "Sans suite" },
     { id: "ecartee", label: "Écartée" },
   ];
   const ETAPE_LABEL = Object.fromEntries(ETAPES.map(e => [e.id, e.label]));
-  const COLONNES = ["interessante", "dossier_demande", "dossier_pret", "postulee", "relance", "entretien", "offre", "refus"];
-  const APRES_ENVOI = new Set(["postulee", "relance", "entretien", "offre", "refus"]);
+  const APRES_ENVOI = new Set(["postulee", "relance", "entretien", "offre", "refus", "sans_suite"]);
   const AXES = { data_bi: "Data / BI", finance: "Finance", supply_chain: "Supply Chain", startup: "Startup" };
-  const CANAUX = { ats: "Site de l'entreprise", email: "Email", linkedin: "LinkedIn (manuel)", indeed: "Indeed (manuel)", vie_business_france: "VIE Business France", interne_lvmh: "Interne LVMH" };
+  const CANAUX = { ats: "Site de l'entreprise", email: "Email", linkedin: "LinkedIn (manuel)", indeed: "Indeed (manuel)", vie_business_france: "VIE Business France", interne_lvmh: "Interne LVMH", reseau: "Réseau / recommandation", cabinet: "Cabinet de recrutement", spontanee: "Candidature spontanée", autre: "Autre" };
   const RECO = { postuler: "Postuler", postuler_en_compensant: "Postuler en compensant", passer: "Passer" };
   const STATUT_TRI = { propose: "Sélection", a_surveiller: "À surveiller", archive: "Archivée", exclu: "Exclue" };
   const DEFAULT_REGLAGES = { seuil: 6, passe_droit: 8, plafond_jour: 5, cibles: [] };
@@ -278,6 +370,7 @@ table.mini { min-width: 0; }
     view: "aujourdhui", ouvert: null, ecartEnCours: null,
     hist: { q: "", statut: "tous", tri: "note" },
     pipeAxe: "tous",
+    sv: { filtre: "actives", q: "" }, ajout: false, recos: null,
   };
 
   const $ = (s, el = document) => el.querySelector(s);
@@ -348,6 +441,12 @@ table.mini { min-width: 0; }
       render();
       toast(e && e.code === "invalid_argument" ? "Modification refusée : tu n'as pas les droits d'écriture ici." : "Enregistrement impossible pour l'instant. Réessaie dans un moment.");
     }
+  }
+  async function ecrireRecos(items) {
+    if (!S.db) return;
+    const prev = S.recos; S.recos = { ...(S.recos || {}), items }; render();
+    try { await S.db.doc("reglages/recommandations").set({ items, maj: new Date().toISOString() }); toast("Recommandations à jour"); }
+    catch { S.recos = prev; render(); toast("Enregistrement impossible pour l'instant."); }
   }
   async function ecrireReglages(next) {
     if (!S.db) return;
@@ -456,78 +555,269 @@ table.mini { min-width: 0; }
     return html;
   }
 
-  function vuePipeline() {
-    const all = offresList();
-    const et = o => etapeDe(o.id);
-    const envoyees = all.filter(o => APRES_ENVOI.has(et(o)));
-    const reponses = all.filter(o => ["entretien", "offre", "refus"].includes(et(o)));
-    const entretiens = all.filter(o => ["entretien", "offre"].includes(et(o)));
+  // ---------- Suivi : phases, agenda, candidatures ----------
+  const PHASES = [
+    { id: "prep", label: "À préparer", etapes: ["interessante", "dossier_demande", "dossier_pret"] },
+    { id: "sent", label: "Envoyées", etapes: ["postulee", "relance"] },
+    { id: "talk", label: "En discussion", etapes: ["entretien"] },
+    { id: "offer", label: "Offres", etapes: ["offre"] },
+    { id: "closed", label: "Closes", etapes: ["refus", "sans_suite"] },
+  ];
+  const PHASE_DE = Object.fromEntries(PHASES.flatMap(p => p.etapes.map(e => [e, p.id])));
+  const ORDRE_GROUPES = ["offer", "talk", "sent", "prep", "closed"];
+  const AVANCEMENT = { interessante: 0, dossier_demande: 0, dossier_pret: 0, postulee: 1, relance: 2, entretien: 3, offre: 4, refus: 4, sans_suite: 4 };
+  const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+  const RECO_ST = { demandee: ["Demandée", "st-prep"], accord: ["Accord donné", "st-sent"], recue: ["Reçue", "st-offer"] };
+  const RECO_SUIVANT = { demandee: "accord", accord: "recue", recue: "demandee" };
+
+  const isoJour = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`; };
+  const aujourdhui = () => isoJour(new Date());
+  // « 5 nov. », ou « oct. 2026 » pour une date connue au mois près
+  const jourCourt = d => {
+    const s = String(d || ""); if (!s) return "";
+    if (/^\d{4}-\d{2}$/.test(s)) return `${MOIS[+s.slice(5, 7) - 1]} ${s.slice(0, 4)}`;
+    const x = new Date(s.length === 10 ? s + "T12:00:00" : s); return isNaN(x) ? esc(s) : `${x.getDate()} ${MOIS[x.getMonth()]}`;
+  };
+  const nomEntreprise = n => String(n || "").replace(/^client de\s+/i, "").replace(/\s*\(.*?\)\s*/g, " ").trim();
+  function initiales(nom) {
+    const mots = nomEntreprise(nom).split(/[\s\-–&'’/]+/).filter(m => m && !/^(sa|sas|ag|cie|group|groupe|de|du|des|la|le|les|et|banque|bank)$/i.test(m));
+    const a = mots[0] || "?", b = mots[1];
+    return (a[0] + (b ? b[0] : (a[1] || ""))).toUpperCase();
+  }
+  const candidatures = () => offresList().filter(o => PHASE_DE[etapeDe(o.id)]);
+  const phaseDe = o => PHASE_DE[etapeDe(o.id)];
+  function derniereActivite(s) {
+    const ds = [...(s.historique || []).map(h => h.date), ...(s.journal || []).map(j => j.date), s.envoye_le].filter(Boolean).map(d => String(d).slice(0, 10));
+    return ds.length ? ds.sort().pop() : "";
+  }
+  const ACTION_DEFAUT = { interessante: "Préparer la candidature", dossier_demande: "Dossier en préparation par Copilote", dossier_pret: "Envoyer la candidature : le dossier est prêt",
+    postulee: "Attendre la réponse", relance: "Attendre la réponse", entretien: "Noter où en est l'échange", offre: "Répondre à l'offre" };
+  function prochaineEtape(s) {
+    if (s.prochaine_action || s.prochaine_date) return { t: s.prochaine_action || ACTION_DEFAUT[s.etape] || "", d: s.prochaine_date || "" };
+    if (s.etape === "postulee" || s.etape === "relance") {
+      const r = prochaineRelance(s);
+      return r ? { t: s.etape === "relance" ? "Seconde relance" : "Relancer", d: isoJour(r) } : { t: "Attendre la réponse", d: "" };
+    }
+    return { t: ACTION_DEFAUT[s.etape] || "", d: "" };
+  }
+  function urgence(d) {
+    if (!d || d.length < 10) return "";
+    const n = Math.round((new Date(d + "T12:00:00") - new Date(aujourdhui() + "T12:00:00")) / 86400000);
+    return n < 0 ? "late" : n === 0 ? "today" : n <= 7 ? "week" : "later";
+  }
+
+  function agendaItems() {
+    const items = [];
+    for (const o of candidatures()) {
+      const s = S.suivi.get(o.id) || {};
+      if (phaseDe(o) === "closed" || s.etape === "dossier_demande") continue;
+      const nx = prochaineEtape(s);
+      if (nx.d || ["dossier_pret", "offre"].includes(s.etape) || s.prochaine_action) items.push({ o, t: nx.t, d: nx.d, u: urgence(nx.d) });
+    }
+    return items.sort((a, b) => (a.d || "9999").localeCompare(b.d || "9999"));
+  }
+  const questions = () => candidatures().filter(o => (S.suivi.get(o.id) || {}).a_confirmer);
+
+  function vueSuivi() {
+    const cands = candidatures();
+    if (!cands.length) {
+      return `<section class="sv-head"><div><div class="eyebrow">Suivi</div><h2>Tes candidatures</h2><p>Aucune candidature suivie pour l'instant.</p></div>
+        <button class="btn primary" type="button" data-act="ajout-demarche">Ajouter une démarche</button></section>
+        <div class="empty">Ajoute une démarche faite hors de Copilote, ou clique « Intéressé » sur une offre du jour : elle apparaîtra ici avec ses prochaines étapes.</div>`;
+    }
+    const par = Object.fromEntries(PHASES.map(p => [p.id, cands.filter(o => phaseDe(o) === p.id)]));
+    const actives = cands.length - par.closed.length;
+    const ag = agendaItems(), qs = questions();
+    const urgent = ag.filter(a => a.u === "late" || a.u === "today").length;
+    const resume = [`${actives} en cours`, par.offer.length ? `${par.offer.length} offre${par.offer.length > 1 ? "s" : ""} à traiter` : "", urgent ? `${urgent} action${urgent > 1 ? "s" : ""} en retard ou pour aujourd'hui` : "", qs.length ? `${qs.length} point${qs.length > 1 ? "s" : ""} à confirmer` : ""].filter(Boolean).join(" · ");
+    const phases = PHASES.map(p => `<button type="button" class="phase st-${p.id}" data-phase="${p.id}" aria-pressed="${S.sv.filtre === p.id}">
+        <b>${par[p.id].length}</b><span>${p.label}</span></button>`).join("");
+    return `<section class="sv-head"><div><div class="eyebrow">Suivi au ${fmtDate(aujourdhui())}</div><h2>Tes candidatures</h2><p>${resume}</p></div>
+        <button class="btn primary" type="button" data-act="ajout-demarche">Ajouter une démarche</button></section>
+      <nav class="phases" aria-label="Filtrer par phase">${phases}</nav>
+      <section class="sv-layout">
+        <div class="sv-main">
+          <div class="sv-tools">
+            <div class="seg" role="group" aria-label="Afficher">${[["actives", "En cours"], ["toutes", "Toutes"]].map(([v, l]) => `<button type="button" data-filtre="${v}" aria-pressed="${S.sv.filtre === v}">${l}</button>`).join("")}</div>
+            <input type="search" id="sv-q" placeholder="Chercher une entreprise, un poste, un contact" value="${esc(S.sv.q)}" aria-label="Chercher une candidature">
+          </div>
+          <div id="sv-liste" class="sv-liste"></div>
+        </div>
+        <aside class="sv-side">${carteAgenda(ag)}${carteQuestions(qs)}${carteRecos()}</aside>
+      </section>
+      ${blocChiffres(cands)}`;
+  }
+
+  function renderSuiviListe() {
+    const box = $("#sv-liste"); if (!box) return;
+    const q = S.sv.q.trim().toLowerCase(), f = S.sv.filtre;
+    const liste = candidatures().filter(o => {
+      const ph = phaseDe(o), s = S.suivi.get(o.id) || {};
+      if (f === "actives" && ph === "closed") return false;
+      if (PHASES.some(p => p.id === f) && ph !== f) return false;
+      if (q && ![o.entreprise, o.intitule, o.lieu, s.contact, s.note].join(" ").toLowerCase().includes(q)) return false;
+      return true;
+    });
+    if (!liste.length) { box.innerHTML = `<div class="empty">${q ? "Aucune candidature ne correspond à ta recherche." : "Rien dans cette phase pour l'instant."}</div>`; return; }
+    box.innerHTML = ORDRE_GROUPES.map(ph => {
+      const g = liste.filter(o => phaseDe(o) === ph).sort((a, b) => (prochaineEtape(S.suivi.get(a.id) || {}).d || "9999").localeCompare(prochaineEtape(S.suivi.get(b.id) || {}).d || "9999"));
+      if (!g.length) return "";
+      const p = PHASES.find(x => x.id === ph);
+      return `<section class="cand-group st-${ph}"><h3>${p.label}<span>${g.length}</span></h3>${g.map(ligneCandidature).join("")}</section>`;
+    }).join("");
+  }
+
+  function actionRapide(o, s) {
+    const h = esc(o.id), dis = S.writable ? "" : "disabled";
+    if (s.etape === "dossier_pret" && !o.groupe_lvmh) return `<button class="btn primary small" type="button" data-open="${h}">Postuler</button>`;
+    if (s.etape === "interessante" && o.origine === "manuel") return `<button class="btn small" type="button" data-act="postulee" data-h="${h}" ${dis}>J'ai postulé</button>`;
+    if (s.etape === "interessante" && !o.groupe_lvmh) return `<button class="btn small" type="button" data-act="dossier_demande" data-h="${h}" ${dis}>Préparer le dossier</button>`;
+    const r = prochaineRelance(s);
+    if (r && r.getTime() <= Date.now()) return `<button class="btn primary small" type="button" data-act="relance" data-h="${h}" ${dis}>J'ai relancé</button>`;
+    return "";
+  }
+
+  function ligneCandidature(o) {
+    const s = S.suivi.get(o.id) || {}, e = s.etape, nx = prochaineEtape(s), u = urgence(nx.d);
+    const der = derniereActivite(s), j = phaseDe(o) !== "prep" && der && der.length === 10 ? joursDepuis(der + "T12:00:00") : null;
+    const source = o.origine === "manuel" ? "ajoutée par toi" : typeof o.note === "number" ? `Copilote ${fmtNote(o.note)}/10` : "Copilote";
+    const idx = AVANCEMENT[e];
+    const pas = ["Préparée", "Envoyée", "Relancée", "Entretien", "Décision"].map((l, i) => `<i class="${i <= idx ? (i === 4 && e === "refus" ? "ko" : i === 4 && e === "sans_suite" ? "off" : "on") : ""}" title="${l}"></i>`).join("");
+    return `<article class="cand">
+      <div class="mono" aria-hidden="true">${esc(initiales(o.entreprise))}</div>
+      <div class="cand-main"><button type="button" class="cand-t" data-open="${esc(o.id)}">${esc(o.intitule)}</button>
+        <div class="cand-s"><span class="ent">${esc(nomEntreprise(o.entreprise))}</span>${o.lieu ? `<span>${esc(o.lieu)}</span>` : ""}<span>${source}</span>${o.groupe_lvmh ? `<span class="chip lvmh">Interne LVMH</span>` : ""}</div>
+        <div class="steps" role="img" aria-label="Avancement : ${esc(ETAPE_LABEL[e])}">${pas}</div>
+        ${s.a_confirmer ? `<div class="ask">À confirmer : ${esc(s.a_confirmer)}</div>` : ""}</div>
+      <div class="cand-side"><span class="pill">${esc(ETAPE_LABEL[e])}</span>
+        ${j !== null ? `<span class="since">${j <= 0 ? "dernier échange aujourd'hui" : `dernier échange il y a ${j} j`}</span>` : ""}
+        ${nx.t ? `<span class="cand-next">${esc(nx.t)}${nx.d ? ` <span class="due ${u}">${jourCourt(nx.d)}</span>` : ""}</span>` : ""}
+        ${actionRapide(o, s)}</div>
+    </article>`;
+  }
+
+  function carteAgenda(ag) {
+    const groupes = [["late", "En retard"], ["today", "Aujourd'hui"], ["week", "Dans les 7 jours"], ["later", "Plus tard"], ["", "Sans date"]];
+    const corps = groupes.map(([u, l]) => {
+      const g = ag.filter(a => a.u === u); if (!g.length) return "";
+      return `<div class="ag-group"><div class="eyebrow">${l}</div>${g.map(a => `<button type="button" class="ag-item" data-open="${esc(a.o.id)}">
+        <span class="ag-date ${a.u}">${a.d ? jourCourt(a.d) : "—"}</span>
+        <span style="min-width:0"><span class="ag-t">${esc(a.t)}</span><span class="ag-s">${esc(nomEntreprise(a.o.entreprise))} · ${esc(a.o.intitule)}</span></span></button>`).join("")}</div>`;
+    }).join("");
+    return `<section class="card"><h3>À faire <small>${ag.length ? ag.length + " action" + (ag.length > 1 ? "s" : "") : ""}</small></h3>${corps || `<p class="muted">Rien de prévu. Ajoute une prochaine étape dans une candidature pour la voir ici.</p>`}</section>`;
+  }
+  function carteQuestions(qs) {
+    if (!qs.length) return "";
+    return `<section class="card"><h3>À confirmer <small>${qs.length}</small></h3>
+      <p class="muted">Des dates sont passées sans nouvelles. Ouvre la candidature pour noter ce qui s'est passé.</p>
+      ${qs.map(o => `<button type="button" class="ag-item" data-open="${esc(o.id)}"><span class="ag-date q">?</span>
+        <span style="min-width:0"><span class="ag-t">${esc((S.suivi.get(o.id) || {}).a_confirmer)}</span><span class="ag-s">${esc(nomEntreprise(o.entreprise))} · ${esc(o.intitule)}</span></span></button>`).join("")}</section>`;
+  }
+  function carteRecos() {
+    const items = (S.recos && Array.isArray(S.recos.items)) ? S.recos.items : [];
+    return `<section class="card"><h3>Lettres de recommandation <small>${items.filter(r => r.statut === "recue").length}/${items.length} reçues</small></h3>
+      ${items.length ? items.map((r, i) => { const [lab, cls] = RECO_ST[r.statut] || RECO_ST.demandee; return `<div class="reco-item"><span style="min-width:0"><span class="ag-t">${esc(r.nom)}</span><span class="ag-s">${esc(r.role || "")}</span></span>
+        <button type="button" class="reco-st ${cls}" data-reco="${i}" title="Changer le statut" ${S.writable ? "" : "disabled"}>${lab}</button></div>`; }).join("") : `<p class="muted">Aucune pour l'instant.</p>`}
+      <form class="add" id="f-reco"><input id="reco-nom" placeholder="Nom et rôle (ex. Nicolas Bouchet, Dior)" autocomplete="off" aria-label="Personne à ajouter"><button class="btn small" type="submit" ${S.writable ? "" : "disabled"}>Ajouter</button></form>
+      <p class="muted" style="font-size:.78rem">Touche le statut pour passer de « Demandée » à « Accord donné » puis « Reçue ».</p></section>`;
+  }
+
+  function blocChiffres(cands) {
+    const s = o => S.suivi.get(o.id) || {};
+    const envoyees = cands.filter(o => APRES_ENVOI.has(s(o).etape) || s(o).envoye_le);
+    const reponses = cands.filter(o => ["entretien", "offre", "refus"].includes(s(o).etape));
     const pct = (a, b) => b ? Math.round(100 * a / b) + " %" : "—";
     const lundi = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
-    const cetteSemaine = lundi(new Date()).getTime();
-    const envoyeLe = o => { const s = S.suivi.get(o.id) || {}; return s.envoye_le ? new Date(s.envoye_le) : null; };
-    const semaine = envoyees.filter(o => { const d = envoyeLe(o); return d && d.getTime() >= cetteSemaine; });
-    const semaines = Array.from({ length: 8 }, (_, k) => { const deb = new Date(cetteSemaine); deb.setDate(deb.getDate() - 7 * (7 - k)); return deb; });
-    const parSemaine = semaines.map(deb => { const fin = deb.getTime() + 7 * 86400000; return envoyees.filter(o => { const d = envoyeLe(o); return d && d.getTime() >= deb.getTime() && d.getTime() < fin; }).length; });
-    const maxW = Math.max(1, ...parSemaine);
-
-    // Prochaines actions, de la plus urgente à la moins urgente
-    const actions = [];
-    for (const o of aRelancer()) { const s = S.suivi.get(o.id); actions.push({ o, k: "Relancer", cls: "urgent", m: `Envoyée le ${fmtDate(s.envoye_le)}${s.nb_relances ? " · " + s.nb_relances + " relance(s) déjà faite(s)" : ""}`, btn: "Ouvrir" }); }
-    for (const o of all.filter(o => et(o) === "entretien")) { const d = S.dossiers.get(o.id); actions.push({ o, k: "Entretien", cls: "go", m: d && d.preparation_entretien ? "Fiche de préparation prête" : "Fiche de préparation au prochain passage", btn: "Préparer" }); }
-    for (const o of all.filter(o => et(o) === "dossier_pret")) actions.push({ o, k: "À envoyer", cls: "go", m: "Dossier prêt : CV, lettre et réponses à copier", btn: "Postuler" });
-    for (const o of all.filter(o => et(o) === "dossier_demande")) actions.push({ o, k: "En préparation", cls: "", m: "Prêt vers 12 h 30 ou 18 h 30, sinon demain matin", btn: "Voir" });
-    for (const o of all.filter(o => et(o) === "interessante")) actions.push({ o, k: "Intéressante", cls: "", m: "Clique « Préparer le dossier » pour lancer la candidature", btn: "Voir" });
-
-    const groupes = (cle, libelle) => {
-      const keys = [...new Set(all.filter(o => et(o) !== "nouvelle" && et(o) !== "ecartee").map(o => o[cle] || "—"))];
-      if (!keys.length) return "";
-      return `<div class="table-scroll"><table class="mini"><thead><tr><th>${libelle}</th><th>Suivies</th><th>Envoyées</th><th>Réponses</th><th>Entretiens</th></tr></thead><tbody>${keys.map(k => {
-        const g = all.filter(o => (o[cle] || "—") === k);
-        const lab = cle === "axe" ? (AXES[k] || k) : (CANAUX[k] || (k === "—" ? "Non précisé" : k));
-        return `<tr><td>${esc(lab)}</td><td class="num">${g.filter(o => !["nouvelle", "ecartee"].includes(et(o))).length}</td><td class="num">${g.filter(o => APRES_ENVOI.has(et(o))).length}</td><td class="num">${g.filter(o => ["entretien", "offre", "refus"].includes(et(o))).length}</td><td class="num">${g.filter(o => ["entretien", "offre"].includes(et(o))).length}</td></tr>`;
-      }).join("")}</tbody></table></div>`;
-    };
-    const suivies = all.filter(o => !["nouvelle", "ecartee"].includes(et(o)));
-    const filtre = o => S.pipeAxe === "tous" || o.axe === S.pipeAxe;
-
-    let html = `<section><div class="section-head"><h2>Prochaines actions</h2><p>${actions.length ? actions.length + " à traiter" : ""}</p></div>
-      ${actions.length ? `<div class="todo">${actions.map(a => `<div class="todo-item"><span class="tag-k ${a.cls}">${a.k}</span>
-        <div style="min-width:0"><div class="t">${esc(a.o.intitule)} — ${esc(a.o.entreprise)}</div><div class="m">${esc(a.m)}</div></div>
-        <button class="btn${a.cls === "go" || a.cls === "urgent" ? " primary" : ""}" type="button" data-open="${esc(a.o.id)}">${a.btn}</button></div>`).join("")}</div>`
-        : `<div class="empty">Rien à faire pour l'instant. Marque une offre « Intéressé » ou « Préparer le dossier » depuis Aujourd'hui.</div>`}</section>
-
-      <section><div class="section-head"><h2>Tes candidatures en chiffres</h2></div>
+    const debut = lundi(new Date());
+    const semaines = Array.from({ length: 8 }, (_, k) => { const d = new Date(debut); d.setDate(d.getDate() - 7 * (7 - k)); return d; });
+    const parSem = semaines.map(d => { const f = d.getTime() + 7 * 86400000; return envoyees.filter(o => { const e = s(o).envoye_le; if (!e || String(e).length < 10) return false; const t = new Date(e).getTime(); return t >= d.getTime() && t < f; }).length; });
+    const max = Math.max(2, ...parSem), W = 560, H = 150, pad = 26, bw = (W - pad * 2) / 8;
+    const y = v => H - 22 - (H - 44) * v / max;
+    const grille = [0, Math.ceil(max / 2), max].map(v => `<line x1="${pad}" x2="${W - pad}" y1="${y(v)}" y2="${y(v)}" class="g"/><text x="${pad - 6}" y="${y(v) + 4}" text-anchor="end" class="ax">${v}</text>`).join("");
+    const barres = parSem.map((n, k) => { const x = pad + k * bw + bw * 0.2, h = H - 22 - y(n); return `${n ? `<rect x="${x}" y="${y(n)}" width="${bw * 0.6}" height="${Math.max(h, 0)}" rx="3" class="${k === 7 ? "b now" : "b"}"/><text x="${x + bw * 0.3}" y="${y(n) - 5}" text-anchor="middle" class="v">${n}</text>` : ""}<text x="${x + bw * 0.3}" y="${H - 6}" text-anchor="middle" class="ax">${semaines[k].getDate()} ${MOIS[semaines[k].getMonth()]}</text>`; }).join("");
+    const canaux = {}; for (const o of cands) { const c = o.canal || "—"; canaux[c] = (canaux[c] || 0) + 1; }
+    const maxC = Math.max(1, ...Object.values(canaux));
+    return `<section class="sv-chiffres"><div class="section-head"><h2>Tes chiffres</h2><p>Toutes les candidatures suivies, Copilote et démarches ajoutées</p></div>
       <div class="kpis">
         <div class="kpi"><b>${envoyees.length}</b><span>candidatures envoyées</span></div>
-        <div class="kpi"><b>${semaine.length}</b><span>envoyées cette semaine</span></div>
-        <div class="kpi"><b>${reponses.length}</b><span>réponses reçues</span></div>
+        <div class="kpi"><b>${cands.filter(o => s(o).etape === "entretien").length}</b><span>en discussion</span></div>
+        <div class="kpi"><b>${cands.filter(o => s(o).etape === "offre").length}</b><span>offres reçues</span></div>
         <div class="kpi"><b>${pct(reponses.length, envoyees.length)}</b><span>taux de réponse</span></div>
-        <div class="kpi"><b>${pct(entretiens.length, envoyees.length)}</b><span>taux d'entretien</span></div>
-      </div></section>
+      </div>
+      <div class="split">
+        <div class="card"><h3>Envoyées par semaine <small>8 dernières semaines, date connue</small></h3>
+          <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Candidatures envoyées par semaine">${grille}${barres}</svg></div>
+        <div class="card"><h3>Par canal</h3><div class="bars">${Object.entries(canaux).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<div class="bar"><span>${esc(CANAUX[c] || (c === "—" ? "Non précisé" : c))}</span><div class="track"><div class="fill" style="width:${Math.round(100 * n / maxC)}%"></div></div><span class="n">${n}</span></div>`).join("")}</div></div>
+      </div></section>`;
+  }
 
-      <section><div class="section-head"><h2>Envoyées par semaine</h2><p>8 dernières semaines</p></div>
-      <div class="weeks" role="img" aria-label="Candidatures envoyées par semaine">${parSemaine.map((n, k) => `<div class="week"><span class="n">${n || ""}</span><div class="b" style="height:${Math.round(80 * n / maxW)}%"></div><span>${fmtDate(semaines[k].toISOString()).slice(0, 5)}</span></div>`).join("")}</div></section>
+  // Panneau « Ajouter une démarche »
+  function drawerAjout() {
+    const opt = (v, l, sel) => `<option value="${v}" ${sel ? "selected" : ""}>${l}</option>`;
+    return `<div class="drawer-bg" data-close></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="aj-t">
+        <button class="btn ghost close" type="button" data-close>Fermer ✕</button>
+        <div><div class="eyebrow">Suivi</div><h2 id="aj-t">Ajouter une démarche</h2>
+          <p class="muted" style="margin:4px 0 0">Une candidature faite hors de Copilote : entretien en cours, offre interne, approche d'un recruteur…</p></div>
+        <form id="f-ajout" class="form-grid">
+          <label for="aj-ent">Entreprise *<input id="aj-ent" required autocomplete="off"></label>
+          <label for="aj-poste">Poste *<input id="aj-poste" required autocomplete="off"></label>
+          <label for="aj-lieu">Lieu<input id="aj-lieu" autocomplete="off"></label>
+          <label for="aj-url">Lien de l'offre<input id="aj-url" type="url" placeholder="https://" autocomplete="off"></label>
+          <label for="aj-canal">Canal<select id="aj-canal">${opt("", "Non précisé")}${Object.entries(CANAUX).map(([k, l]) => opt(k, l)).join("")}</select></label>
+          <label for="aj-etape">Étape<select id="aj-etape">${["interessante", "postulee", "relance", "entretien", "offre", "refus", "sans_suite"].map(k => opt(k, ETAPE_LABEL[k], k === "postulee")).join("")}</select></label>
+          <label for="aj-date">Date de candidature ou du dernier échange<input id="aj-date" type="date" value="${aujourdhui()}"></label>
+          <label for="aj-contact">Contact<input id="aj-contact" placeholder="Nom, rôle" autocomplete="off"></label>
+          <label for="aj-next">Prochaine étape<input id="aj-next" placeholder="Ex. relancer la RH" autocomplete="off"></label>
+          <label for="aj-next-date">Pour le<input id="aj-next-date" type="date"></label>
+          <label for="aj-note" class="wide">Notes<textarea id="aj-note" placeholder="Ce qu'il faut retenir"></textarea></label>
+          <label class="check wide" for="aj-lvmh"><input id="aj-lvmh" type="checkbox"> Groupe LVMH : candidature interne, Copilote ne prépare rien</label>
+          <div class="wide"><button class="btn primary" type="submit" ${S.writable ? "" : "disabled"}>Ajouter au suivi</button></div>
+        </form>
+      </aside>`;
+  }
 
-      ${suivies.length ? `<section class="split"><div><div class="section-head"><h2>Par axe</h2></div>${groupes("axe", "Axe")}</div><div><div class="section-head"><h2>Par canal</h2></div>${groupes("canal", "Canal")}</div></section>` : ""}
+  async function ajouterDemarche(f) {
+    if (!S.db) return;
+    const v = id => ($("#" + id)?.value || "").trim();
+    const ent = v("aj-ent"), poste = v("aj-poste");
+    if (!ent || !poste) { toast("Indique au moins l'entreprise et le poste."); return; }
+    const id = "m-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const etape = v("aj-etape") || "postulee", date = v("aj-date") || aujourdhui(), now = new Date().toISOString();
+    const offre = { origine: "manuel", entreprise: ent, intitule: poste, lieu: v("aj-lieu"), url: safeUrl(v("aj-url")), canal: v("aj-canal"),
+      date_collecte: aujourdhui(), statut: "suivi", groupe_lvmh: !!$("#aj-lvmh")?.checked };
+    const suivi = { etape, maj: now, historique: [{ etape, date }], journal: [], contact: v("aj-contact"), prochaine_action: v("aj-next"), prochaine_date: v("aj-next-date"), note: v("aj-note") };
+    if (APRES_ENVOI.has(etape)) suivi.envoye_le = date;
+    try {
+      await S.db.doc("offres/" + id).set(offre);
+      await S.db.doc("suivi/" + id).set(suivi);
+      S.offres.set(id, { id, ...offre }); S.suivi.set(id, suivi);
+      S.ajout = false; S.ouvert = id; render(); drawer(true); toast("Démarche ajoutée au suivi");
+    } catch { toast("Enregistrement impossible pour l'instant. Réessaie dans un moment."); }
+  }
 
-      <section><div class="section-head"><h2>Tableau de suivi</h2>
-        <div class="toolbar" style="margin:0"><label for="pipe-axe" class="eyebrow">Axe</label>
-        <select id="pipe-axe"><option value="tous">Tous</option>${Object.entries(AXES).map(([k, l]) => `<option value="${k}" ${S.pipeAxe === k ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
-      <div class="board-scroll"><div class="board">`;
-    for (const col of COLONNES) {
-      const items = all.filter(o => et(o) === col && filtre(o)).sort(parNote);
-      html += `<div class="col"><h3>${ETAPE_LABEL[col]} <span>${items.length}</span></h3>
-        ${items.length ? items.map(o => { const s = S.suivi.get(o.id) || {}; const r = prochaineRelance(s); return `<div class="card-mini${o.groupe_lvmh ? " lvmh" : ""}">
-          <button type="button" class="t" data-open="${esc(o.id)}" style="all:unset;cursor:pointer;font-weight:600">${esc(o.intitule)}</button>
-          <span style="color:var(--muted)">${esc(o.entreprise)} · <span class="${classe(o.note)}" style="font-family:var(--f-mono)">${fmtNote(o.note)}</span>${o.groupe_lvmh ? " · interne" : ""}</span>
-          ${s.envoye_le ? `<span style="color:var(--muted);font-size:.78rem">Envoyée le ${fmtDate(s.envoye_le)}${r ? " · relance le " + fmtDate(r.toISOString()) : ""}</span>` : ""}
-          <label for="mv-${esc(o.id)}" style="position:absolute;left:-9999px">Déplacer</label>
-          <select id="mv-${esc(o.id)}" data-move="${esc(o.id)}" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => e.id !== "nouvelle").map(e => `<option value="${e.id}" ${e.id === col ? "selected" : ""}>${e.label}</option>`).join("")}</select>
-        </div>`; }).join("") : `<div class="empty-col">Aucune</div>`}</div>`;
-    }
-    html += `</div></div></section>`;
-    return html;
+  // Bloc de suivi du panneau de détail : étape, contact, prochaine étape, journal, notes
+  function blocSuivi(o, s) {
+    const dis = S.writable ? "" : "disabled";
+    const entrees = [...(s.historique || []).map(h => ({ date: h.date, t: "Étape : " + (ETAPE_LABEL[h.etape] || h.etape), k: "e" })),
+      ...(s.journal || []).map(j => ({ date: j.date, t: j.texte, k: "j" }))].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    const r = prochaineRelance(s);
+    return `<section class="dr-suivi">
+      ${s.a_confirmer ? `<div class="notice ask-box"><strong>À confirmer</strong><span>${esc(s.a_confirmer)}</span><div><button class="btn small" type="button" data-act="confirme" data-h="${esc(o.id)}" ${dis}>C'est à jour</button></div></div>` : ""}
+      ${r && r.getTime() <= Date.now() ? `<div><button class="btn primary small" type="button" data-act="relance" data-h="${esc(o.id)}" ${dis}>J'ai relancé</button></div>` : ""}
+      <div class="form-grid">
+        <label for="dr-etape">Mon étape<select id="dr-etape" ${dis}>${ETAPES.filter(e => !(o.groupe_lvmh && ["dossier_demande", "dossier_pret"].includes(e.id))).map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select></label>
+        <label for="dr-contact">Contact<input id="dr-contact" value="${esc(s.contact || "")}" placeholder="Nom, rôle" ${dis}></label>
+        <label for="dr-next">Prochaine étape<input id="dr-next" value="${esc(s.prochaine_action || "")}" placeholder="${esc(ACTION_DEFAUT[s.etape] || "Ex. relancer la RH")}" ${dis}></label>
+        <label for="dr-next-date">Pour le<input id="dr-next-date" type="date" value="${esc(String(s.prochaine_date || "").length === 10 ? s.prochaine_date : "")}" ${dis}></label>
+        <label for="dr-note" class="wide">Mes notes<textarea id="dr-note" placeholder="Contact, date d'entretien, impressions…" ${dis}>${esc(s.note || "")}</textarea></label>
+        <div class="wide"><button class="btn primary" type="button" id="dr-save" ${dis}>Enregistrer</button></div>
+      </div>
+      ${s.motif_ecart ? `<span class="muted">Écartée : ${esc(s.motif_ecart)}</span>` : ""}
+      <div class="journal"><div class="eyebrow">Journal</div>
+        <div class="add"><input id="dr-j-txt" placeholder="Ce qui s'est passé (appel, entretien, email…)" aria-label="Nouvelle entrée du journal" ${dis}><input id="dr-j-date" type="date" value="${aujourdhui()}" aria-label="Date" ${dis}><button class="btn small" type="button" id="dr-j-add" ${dis}>Ajouter</button></div>
+        ${entrees.length ? `<ol class="timeline">${entrees.map(x => `<li class="${x.k}"><span class="d">${x.date ? jourCourt(x.date) : "—"}</span><span>${esc(x.t)}</span></li>`).join("")}</ol>` : ""}</div>
+    </section>`;
   }
 
   function vueHistorique() {
@@ -670,6 +960,7 @@ table.mini { min-width: 0; }
 
   function drawer(focus = false) {
     const root = $("#drawer-root");
+    if (S.ajout) { root.innerHTML = drawerAjout(); if (focus) $("#aj-ent", root)?.focus(); return; }
     const o = S.ouvert && S.offres.get(S.ouvert);
     if (!o) { root.innerHTML = ""; return; }
     const s = S.suivi.get(o.id) || {}, d = S.dossiers.get(o.id), u = safeUrl(o.url);
@@ -677,26 +968,19 @@ table.mini { min-width: 0; }
     root.innerHTML = `<div class="drawer-bg" data-close></div>
       <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-t">
         <button class="btn ghost close" type="button" data-close>Fermer ✕</button>
-        <div class="offer-head">${gauge(o.note)}<div style="min-width:0"><h2 id="dr-t">${esc(o.intitule)}</h2>
+        <div class="${typeof o.note === "number" ? "offer-head" : "dr-head st-" + (PHASE_DE[etapeDe(o.id)] || "prep")}">${typeof o.note === "number" ? gauge(o.note) : `<div class="mono" aria-hidden="true">${esc(initiales(o.entreprise))}</div>`}<div style="min-width:0"><h2 id="dr-t">${esc(o.intitule)}</h2>
           <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || "")}</div>${chipsDe(o)}</div></div>
         ${!o.groupe_lvmh && d ? kitDe(o, d) : u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
         <dl class="dl">
-          <dt>Recommandation</dt><dd>${RECO[o.recommandation] || "—"}</dd>
-          <dt>Tri</dt><dd>${STATUT_TRI[o.statut] || "—"}</dd>
+          ${o.origine === "manuel" ? `<dt>Ajoutée le</dt><dd>${fmtDate(o.date_collecte)}</dd>` : `<dt>Recommandation</dt><dd>${RECO[o.recommandation] || "—"}</dd>
+          <dt>Tri</dt><dd>${STATUT_TRI[o.statut] || "—"}</dd>`}
           ${o.canal ? `<dt>Canal</dt><dd>${CANAUX[o.canal] || esc(o.canal)}</dd>` : ""}
-          <dt>Vue le</dt><dd>${fmtDate(o.date_collecte)}</dd>
+          ${o.origine === "manuel" ? "" : `<dt>Vue le</dt><dd>${fmtDate(o.date_collecte)}</dd>`}
           ${o.motif ? `<dt>Remarque</dt><dd>${esc(o.motif)}</dd>` : ""}
         </dl>
         ${o.en_bref ? `<p style="margin:0"><b>Le poste :</b> ${esc(o.en_bref)}</p>` : ""}${o.a_savoir ? `<p style="margin:0"><b>À savoir :</b> ${esc(o.a_savoir)}</p>` : ""}
         ${list("Pourquoi", o.points_forts)}${list("Écarts", o.ecarts)}
-        <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-etape">Mon étape</label>
-          <select id="dr-etape" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => !(o.groupe_lvmh && ["dossier_demande", "dossier_pret"].includes(e.id))).map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select>
-          ${s.motif_ecart ? `<span style="color:var(--muted);font-size:.85rem">Écartée : ${esc(s.motif_ecart)}</span>` : ""}
-          ${prochaineRelance(s) && prochaineRelance(s).getTime() <= Date.now() ? `<div><button class="btn primary small" type="button" data-act="relance" data-h="${esc(o.id)}">J'ai relancé</button></div>` : ""}
-          ${Array.isArray(s.historique) && s.historique.length ? `<ol class="timeline">${s.historique.slice().reverse().map(h => `<li><span class="d">${fmtDate(h.date)}</span><span>${ETAPE_LABEL[h.etape] || esc(h.etape)}</span></li>`).join("")}</ol>` : ""}</div>
-        <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-note">Mes notes</label>
-          <textarea id="dr-note" placeholder="Contact, date d'entretien, impressions…" ${S.writable ? "" : "disabled"}>${esc(s.note || "")}</textarea>
-          <div><button class="btn" type="button" id="dr-save" ${S.writable ? "" : "disabled"}>Enregistrer la note</button></div></div>
+        ${blocSuivi(o, s)}
         ${o.groupe_lvmh ? `<div class="notice warn">Offre du groupe LVMH : tu postules toi-même en interne. L'outil ne prépare aucun dossier pour cette offre.</div>`
           : d ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>`
           : etapeDe(o.id) === "dossier_demande" ? `<div class="notice">Dossier demandé : il sera prêt vers 12 h 30 ou 18 h 45 (sinon demain matin), avec le CV en PDF, la lettre et les réponses du formulaire.</div>` : ""}
@@ -704,14 +988,14 @@ table.mini { min-width: 0; }
     if (focus) $(".drawer .close", root)?.focus();
   }
   // Ne pas redessiner le panneau pendant que David y tape une note
-  const refreshDrawer = () => { if (S.ouvert && !document.activeElement?.closest(".drawer")) drawer(); };
+  const refreshDrawer = () => { if (S.ouvert && !S.ajout && !document.activeElement?.closest(".drawer")) drawer(); };
 
   // ---------- Rendu ----------
   function setCounts() {
     const r = dernierRapport(); const jour = r ? r.date : offresList().map(o => o.rapport).sort().pop();
     const n = offresList().filter(o => o.rapport === jour && o.statut === "propose" && !o.groupe_lvmh && etapeDe(o.id) !== "ecartee").length;
     $("#c-auj").textContent = S.offres.size ? n : "";
-    const nAct = aRelancer().length + offresList().filter(o => ["dossier_pret", "entretien"].includes(etapeDe(o.id))).length;
+    const nAct = agendaItems().filter(a => a.u === "late" || a.u === "today").length + questions().length;
     $("#c-pipe").textContent = S.offres.size && nAct ? nAct : "";
     $("#c-hist").textContent = S.offres.size ? S.offres.size : "";
     const st = $("#status");
@@ -725,35 +1009,54 @@ table.mini { min-width: 0; }
     const active = document.activeElement && document.activeElement.id;
     if (S.view === "historique" && $("#h-res")) { renderHistoriqueResultats(); }
     else {
-      main.innerHTML = S.view === "pipeline" ? vuePipeline() : S.view === "historique" ? vueHistorique() : S.view === "reglages" ? vueReglages() : vueAujourdhui();
+      main.innerHTML = S.view === "suivi" ? vueSuivi() : S.view === "historique" ? vueHistorique() : S.view === "reglages" ? vueReglages() : vueAujourdhui();
       if (S.view === "historique") renderHistoriqueResultats();
+      if (S.view === "suivi") renderSuiviListe();
       if (active && document.getElementById(active)) document.getElementById(active).focus();
     }
     setCounts();
   }
   function route() {
     const v = (location.hash || "").replace("#", "");
-    S.view = ["aujourdhui", "pipeline", "historique", "reglages"].includes(v) ? v : "aujourdhui";
+    S.view = v === "pipeline" ? "suivi" : ["aujourdhui", "suivi", "historique", "reglages"].includes(v) ? v : "aujourdhui";
     S.ecartEnCours = null;
     $("#main").innerHTML = ""; render(); window.scrollTo(0, 0);
   }
 
   // ---------- Événements ----------
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-open],[data-act],[data-close],[data-rm],[data-copy],[data-pdf],#h-csv,#dr-save");
+    const t = e.target.closest("[data-open],[data-act],[data-close],[data-rm],[data-copy],[data-pdf],[data-phase],[data-filtre],[data-reco],#h-csv,#dr-save,#dr-j-add");
     if (!t) return;
     if (t.dataset.copy) { copier(t.dataset.copy); return; }
     if (t.dataset.pdf) { telechargerPdf(t.dataset.pdf, t.dataset.nom || "CV.pdf"); return; }
-    if (t.dataset.open) { S.ouvert = t.dataset.open; drawer(true); return; }
-    if (t.hasAttribute("data-close")) { S.ouvert = null; drawer(); return; }
+    if (t.dataset.open) { S.ajout = false; S.ouvert = t.dataset.open; drawer(true); return; }
+    if (t.hasAttribute("data-close")) { S.ouvert = null; S.ajout = false; drawer(); return; }
+    if (t.dataset.phase) { S.sv.filtre = S.sv.filtre === t.dataset.phase ? "actives" : t.dataset.phase; render(); return; }
+    if (t.dataset.filtre) { S.sv.filtre = t.dataset.filtre; render(); return; }
+    if (t.dataset.reco !== undefined) {
+      const items = [...((S.recos && S.recos.items) || [])], i = Number(t.dataset.reco); if (!items[i]) return;
+      items[i] = { ...items[i], statut: RECO_SUIVANT[items[i].statut] || "accord" }; ecrireRecos(items); return;
+    }
+    if (t.id === "dr-j-add") {
+      const txt = ($("#dr-j-txt")?.value || "").trim(); if (!txt) { toast("Écris d'abord ce qui s'est passé."); return; }
+      const s = S.suivi.get(S.ouvert) || {};
+      const journal = [...(Array.isArray(s.journal) ? s.journal : []), { date: $("#dr-j-date")?.value || aujourdhui(), texte: txt }].slice(-60);
+      ecrireSuivi(S.ouvert, { etape: etapeDe(S.ouvert), journal }, "Ajouté au journal"); setTimeout(() => drawer(), 0); return;
+    }
     if (t.id === "h-csv") { exporterCSV(); return; }
-    if (t.id === "dr-save") { ecrireSuivi(S.ouvert, { etape: etapeDe(S.ouvert), note: $("#dr-note").value.trim() }, "Note enregistrée"); return; }
+    if (t.id === "dr-save") {
+      const val = id => ($("#" + id)?.value || "").trim();
+      ecrireSuivi(S.ouvert, { etape: etapeDe(S.ouvert), note: val("dr-note"), contact: val("dr-contact"), prochaine_action: val("dr-next"), prochaine_date: val("dr-next-date") }, "Enregistré");
+      setTimeout(() => drawer(), 0); return;
+    }
     if (t.dataset.rm !== undefined) {
       const g = reglages(); const c = [...(g.cibles || [])]; c.splice(Number(t.dataset.rm), 1);
       S.reglages = { ...g, cibles: c }; render(); ecrireReglages(S.reglages); return;
     }
     const act = t.dataset.act, h = t.dataset.h;
     if (act === "annuler-ecart") { S.ecartEnCours = null; render(); return; }
+    if (act === "ajout-demarche") { S.ouvert = null; S.ajout = true; drawer(true); return; }
+    if (act === "confirme") { ecrireSuivi(h, { etape: etapeDe(h), a_confirmer: "" }, "Marqué à jour"); setTimeout(() => drawer(), 0); return; }
     if (act === "ecarter") { S.ecartEnCours = h; render(); $("#motif-" + CSS.escape(h))?.focus(); return; }
     if (act === "rouvrir") { ecrireSuivi(h, { etape: "nouvelle", motif_ecart: "" }, "Offre rouverte"); return; }
     if (act === "relance") { ecrireSuivi(h, { etape: "relance" }, "Relance notée. La suivante sera proposée dans 7 jours."); setTimeout(() => drawer(), 0); return; }
@@ -770,6 +1073,11 @@ table.mini { min-width: 0; }
     if (f.dataset.ecart) {
       const h = f.dataset.ecart; const motif = (f.motif.value || "").trim();
       S.ecartEnCours = null; ecrireSuivi(h, { etape: "ecartee", motif_ecart: motif || "Sans motif" }, "Offre écartée");
+    } else if (f.id === "f-ajout") { ajouterDemarche(f);
+    } else if (f.id === "f-reco") {
+      const v = ($("#reco-nom")?.value || "").trim(); if (!v) return;
+      const [nom, ...role] = v.split(",");
+      ecrireRecos([...((S.recos && S.recos.items) || []), { nom: nom.trim(), role: role.join(",").trim(), statut: "demandee" }]);
     } else if (f.id === "add-cible") {
       const v = $("#cible-in").value.trim(); if (!v) return;
       const g = reglages(); if ((g.cibles || []).some(c => c.toLowerCase() === v.toLowerCase())) { toast("Déjà dans la liste"); return; }
@@ -794,8 +1102,11 @@ table.mini { min-width: 0; }
     else if (t.id === "h-statut") { S.hist.statut = t.value; renderHistoriqueResultats(); }
     else if (t.id === "h-tri") { S.hist.tri = t.value; renderHistoriqueResultats(); }
   });
-  document.addEventListener("input", e => { if (e.target.id === "h-q") { S.hist.q = e.target.value; renderHistoriqueResultats(); } });
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && S.ouvert) { S.ouvert = null; drawer(); } });
+  document.addEventListener("input", e => {
+    if (e.target.id === "h-q") { S.hist.q = e.target.value; renderHistoriqueResultats(); }
+    else if (e.target.id === "sv-q") { S.sv.q = e.target.value; renderSuiviListe(); }
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && (S.ouvert || S.ajout)) { S.ouvert = null; S.ajout = false; drawer(); } });
   window.addEventListener("hashchange", route);
   // Une erreur inattendue s'affiche au lieu de laisser une page figée
   window.addEventListener("error", e => {
@@ -831,6 +1142,7 @@ table.mini { min-width: 0; }
       S.rapports = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(b.date || b.id).localeCompare(String(a.date || a.id))); done("rapports", snap); render();
     }, () => {});
     db.doc("reglages/candidat").onSnapshot(snap => { S.candidat = snap.exists ? snap.data() : null; if (S.view === "reglages" && !document.activeElement?.closest("form")) render(); refreshDrawer(); }, () => {});
+    db.doc("reglages/recommandations").onSnapshot(snap => { S.recos = snap.exists ? snap.data() : null; if (S.view === "suivi" && !document.activeElement?.closest("form")) render(); }, () => {});
     db.doc("reglages/general").onSnapshot(snap => { S.reglages = snap.exists ? snap.data() : null; if (S.view === "reglages" && !document.activeElement?.closest("form")) render(); }, () => {});
   }
   start();

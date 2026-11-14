@@ -165,7 +165,8 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
       const d = new Date(Date.now() - 8 * 86400000).toISOString(); await db.doc("suivi/" + id).set({ ...s, envoye_le: d }); }, o.id);
     await p.waitForTimeout(200);
     check(await p.locator(`text=À relancer`).count() >= 1, "relance proposée 7 jours après l'envoi");
-    await p.locator(`button[data-open="${o.id}"]`).first().click(); await p.waitForTimeout(200);
+    await p.evaluate(() => { location.hash = "#suivi"; }); await p.waitForTimeout(250);
+    await p.locator(`.cand-t[data-open="${o.id}"]`).first().click(); await p.waitForTimeout(200);
     await p.locator('.drawer button[data-act="relance"]').click(); await p.waitForTimeout(250);
     w = await lastWrite("suivi/" + o.id);
     check(w && w.data.etape === "relance" && w.data.relance_le && w.data.nb_relances === 1, "« J'ai relancé » enregistre la relance et la compte");
@@ -173,27 +174,70 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
   }
 
   console.log("4. Suivi");
-  await p.goto(BASE + "#pipeline"); await p.waitForTimeout(500);
-  check(await p.locator("h2:text-is('Prochaines actions')").count() === 1, "vue Suivi affichée");
-  const nAct = await p.locator(".todo-item").count();
-  check(nAct >= 1, `${nAct} prochaine(s) action(s) listée(s)`);
-  check(await p.locator(".kpi").count() === 5, "5 indicateurs (envoyées, semaine, réponses, taux)");
-  check(await p.locator(".weeks .week").count() === 8, "graphique des 8 dernières semaines");
-  const sel = p.locator("select[data-move]").first();
-  if (await sel.count()) {
-    const id = await sel.getAttribute("data-move");
-    await sel.selectOption("entretien"); await p.waitForTimeout(200);
-    w = await lastWrite("suivi/" + id);
-    check(w && w.data.etape === "entretien", "déplacer une carte dans le pipeline est enregistré");
-  } else check(false, "au moins une carte dans le pipeline");
+  await p.goto(BASE + "#suivi"); await p.waitForTimeout(500);
+  check(await p.locator("h2:text-is('Tes candidatures')").count() === 1, "vue Suivi affichée");
+  const suivies = offres.filter(o => { const e = (DATA.suivi[o.id] || {}).etape; return e && !["nouvelle", "ecartee"].includes(e); });
+  check(await p.locator(".phase").count() === 5, "ruban des 5 phases");
+  const nLignes = await p.locator(".cand").count();
+  check(nLignes >= 1, `${nLignes} candidature(s) en cours listée(s)`);
+  check(await p.locator(".sv-side .card h3:has-text('À faire')").count() === 1, "carte « À faire » affichée");
+  check(await p.locator(".kpi").count() === 4, "4 indicateurs (envoyées, en discussion, offres, taux de réponse)");
+  check(await p.locator(".chart rect, .chart line").count() >= 3, "graphique des envoyées par semaine");
+  // Filtre par phase puis retour
+  await p.locator(".phase[data-phase='prep']").click(); await p.waitForTimeout(150);
+  const nPrep = await p.locator(".cand").count();
+  check(await p.locator(".phase[data-phase='prep'][aria-pressed='true']").count() === 1 && nPrep <= nLignes, `filtre « À préparer » : ${nPrep} ligne(s)`);
+  await p.locator(".seg button[data-filtre='toutes']").click(); await p.waitForTimeout(150);
+  check(await p.locator(".cand").count() === suivies.length, `« Toutes » : ${suivies.length} candidature(s) suivie(s)`);
+  // Recherche sans perdre le focus
+  const premier = await p.locator(".cand .ent").first().textContent();
+  await p.locator("#sv-q").pressSequentially(premier.slice(0, 4)); await p.waitForTimeout(150);
+  check(await p.evaluate(() => document.activeElement && document.activeElement.id === "sv-q"), "la recherche garde le curseur dans le champ");
+  check(await p.locator(".cand").count() >= 1, `recherche « ${premier.slice(0, 4)} » : au moins une ligne`);
+  await p.fill("#sv-q", ""); await p.waitForTimeout(100);
+  // Ajouter une démarche
+  await p.locator("button[data-act='ajout-demarche']").first().click(); await p.waitForTimeout(150);
+  check(await p.locator("#f-ajout").count() === 1, "formulaire « Ajouter une démarche » ouvert");
+  await p.fill("#aj-ent", "Test Industries"); await p.fill("#aj-poste", "Analyste data test");
+  await p.selectOption("#aj-etape", "entretien"); await p.fill("#aj-contact", "Jeanne Test (RH)");
+  await p.fill("#aj-next", "Relancer Jeanne"); await p.fill("#aj-next-date", "2026-11-20");
+  await p.locator("#f-ajout button[type=submit]").click(); await p.waitForTimeout(300);
+  const ecr = await p.evaluate(() => window.__writes.filter(w => w.path.startsWith("offres/m-") || w.path.startsWith("suivi/m-")));
+  const wo = ecr.find(w => w.path.startsWith("offres/m-") && w.data.entreprise === "Test Industries");
+  const ws = wo && ecr.find(w => w.path === "suivi/" + wo.path.slice(7));
+  check(wo && wo.data.origine === "manuel" && wo.data.intitule === "Analyste data test", "démarche enregistrée dans les offres (origine manuelle)");
+  check(ws && ws.data.etape === "entretien" && ws.data.contact === "Jeanne Test (RH)" && ws.data.prochaine_date === "2026-11-20", "suivi de la démarche enregistré (étape, contact, prochaine étape)");
+  check(await p.locator(".drawer h2:text-is('Analyste data test')").count() === 1, "le panneau de la démarche s'ouvre après l'ajout");
+  // Journal et confirmation dans le panneau
+  await p.fill("#dr-j-txt", "Appel avec Jeanne : 2e entretien à planifier"); await p.locator("#dr-j-add").click(); await p.waitForTimeout(200);
+  let wj = await lastWrite(ws ? ws.path : "suivi/x");
+  check(wj && Array.isArray(wj.data.journal) && wj.data.journal.some(j => j.texte.startsWith("Appel avec Jeanne")), "entrée ajoutée au journal");
+  check(await p.locator(".drawer .timeline li").count() >= 2, "journal et étapes affichés dans le panneau");
+  await p.keyboard.press("Escape"); await p.waitForTimeout(100);
+  const aConf = offres.find(o => (DATA.suivi[o.id] || {}).a_confirmer);
+  if (aConf) {
+    await p.goto(BASE + "#suivi"); await p.waitForTimeout(300);
+    await p.locator(`.cand-t[data-open="${aConf.id}"]`).click(); await p.waitForTimeout(150);
+    await p.locator(".drawer [data-act='confirme']").click(); await p.waitForTimeout(200);
+    wj = await lastWrite("suivi/" + aConf.id);
+    check(wj && wj.data.a_confirmer === "" && wj.data.etape === DATA.suivi[aConf.id].etape, "« C'est à jour » retire la question sans changer l'étape");
+    await p.keyboard.press("Escape"); await p.waitForTimeout(100);
+  }
+  // Recommandations
+  if ((DATA.reglages.recommandations || {}).items) {
+    await p.locator(".reco-st").first().click(); await p.waitForTimeout(200);
+    wj = await lastWrite("reglages/recommandations");
+    check(wj && wj.data.items.length === DATA.reglages.recommandations.items.length, "statut d'une recommandation modifié sans perdre les autres");
+  }
   const overflowPipe = await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
-  check(!overflowPipe, "pas de débordement horizontal (Pipeline)");
-  await shot("4-pipeline");
+  check(!overflowPipe, "pas de débordement horizontal (Suivi)");
+  await shot("4-suivi");
 
   console.log("5. Historique");
   await p.goto(BASE + "#historique"); await p.waitForTimeout(500);
   const lignes = await p.locator("#h-res tbody tr").count();
-  check(lignes === offres.length, `${lignes} offres dans l'historique (${offres.length} attendues)`);
+  const ajoutees = await p.evaluate(() => new Set(window.__writes.filter(w => w.path.startsWith("offres/m-")).map(w => w.path)).size);
+  check(lignes === offres.length + ajoutees, `${lignes} offres dans l'historique (${offres.length + ajoutees} attendues, dont ${ajoutees} démarche(s) ajoutée(s) pendant le test)`);
   await p.fill("#h-q", "Pictet"); await p.waitForTimeout(150);
   const filt = await p.locator("#h-res tbody tr").count();
   check(filt >= 1 && filt < lignes, `recherche « Pictet » : ${filt} ligne(s)`);
@@ -217,12 +261,12 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
   console.log("7. Téléphone et thème sombre");
   const mob = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: "dark", deviceScaleFactor: 1 });
   const m = await mob.newPage(); const merr = []; m.on("pageerror", e => merr.push(e.message));
-  for (const v of ["", "#pipeline", "#historique", "#reglages"]) {
+  for (const v of ["", "#suivi", "#historique", "#reglages"]) {
     await m.goto(BASE + v); await m.waitForTimeout(400);
     const of = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     check(!of, `téléphone ${v || "#aujourdhui"} : pas de débordement horizontal`);
   }
-  if (shotsDir) { await m.goto(BASE + "#pipeline"); await m.waitForTimeout(400); await m.screenshot({ path: path.join(shotsDir, "7-telephone-suivi.png") }); }
+  if (shotsDir) { await m.goto(BASE + "#suivi"); await m.waitForTimeout(400); await m.screenshot({ path: path.join(shotsDir, "7-telephone-suivi.png") }); }
   check(merr.length === 0, "aucune erreur JavaScript sur téléphone" + (merr.length ? " : " + merr.join(" | ") : ""));
 
   check(errors.length === 0, "aucune erreur JavaScript pendant tout le test" + (errors.length ? " : " + errors.join(" | ") : ""));
