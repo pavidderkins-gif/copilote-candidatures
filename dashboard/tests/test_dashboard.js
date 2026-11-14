@@ -131,9 +131,16 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
     await p.locator(`button[data-open="${o.id}"]`).first().click(); await p.waitForTimeout(200);
     check(await p.locator(".drawer .kit").count() === 1, `kit affiché pour ${o.entreprise}`);
     if (d.cv_pdf_url) {
-      await p.locator(".drawer button[data-pdf]").click(); await p.waitForTimeout(300);
+      await p.locator('.drawer button[data-pdf]:not([data-nom="Portfolio-David-Perkins.pdf"])').first().click(); await p.waitForTimeout(300);
       const saves = await p.evaluate(() => window.__saves);
-      check(saves.some(s => s.filename.endsWith(".pdf") && s.size > 0), "« Télécharger le PDF » propose le fichier PDF");
+      check(saves.some(s => s.filename.endsWith(".pdf") && !s.filename.startsWith("Portfolio") && s.size > 0), "« Télécharger le PDF » propose le CV en PDF");
+    }
+    if (d.portfolio_pdf_url) {
+      const btnPf = p.locator('.drawer button[data-nom="Portfolio-David-Perkins.pdf"]');
+      check(await btnPf.count() === 1, "bouton « Télécharger le portfolio » présent");
+      await btnPf.click(); await p.waitForTimeout(300);
+      const saves = await p.evaluate(() => window.__saves);
+      check(saves.some(s => s.filename === "Portfolio-David-Perkins.pdf" && s.size > 0), "« Télécharger le portfolio » propose le PDF");
     }
     if (d.lettre) {
       await p.locator('.drawer button[data-copy="lettre"]').click(); await p.waitForTimeout(150);
