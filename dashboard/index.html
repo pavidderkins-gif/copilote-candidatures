@@ -192,6 +192,23 @@ td button.t:hover { text-decoration: underline; }
 .answer .v.missing { color: var(--moyen); font-style: italic; }
 .btn.small { padding: 3px 9px; font-size: 0.78rem; }
 .done { color: var(--fort); font-weight: 600; }
+.todo { display: grid; gap: 8px; }
+.todo-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.todo-item .tag-k { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.todo-item .tag-k.urgent { background: color-mix(in srgb, var(--moyen) 18%, transparent); color: var(--moyen); }
+.todo-item .tag-k.go { background: var(--accent-soft); color: var(--accent); }
+.todo-item .t { font-weight: 500; } .todo-item .m { color: var(--muted); font-size: 0.83rem; }
+.weeks { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; align-items: end; height: 120px; padding-top: 8px; }
+.week { display: grid; gap: 4px; justify-items: center; align-content: end; height: 100%; font-size: 0.72rem; color: var(--muted); }
+.week .b { width: 70%; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+.week .n { font-family: var(--f-mono); color: var(--ink); font-size: 0.78rem; }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+table.mini { min-width: 0; }
+.timeline { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; font-size: 0.85rem; }
+.timeline li { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+.timeline .d { font-family: var(--f-mono); color: var(--muted); }
+.banner-err { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--ink); border-radius: var(--r); padding: 10px 14px; }
+@media (max-width: 520px) { .todo-item { grid-template-columns: minmax(0, 1fr); } }
 
 .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 22px; color: var(--muted); text-align: center; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-size: 0.88rem; z-index: 30; }
@@ -213,7 +230,7 @@ td button.t:hover { text-decoration: underline; }
     </div>
     <nav class="tabs" id="tabs" aria-label="Vues">
       <a href="#aujourdhui" data-view="aujourdhui">Aujourd'hui<span class="count" id="c-auj"></span></a>
-      <a href="#pipeline" data-view="pipeline">Pipeline<span class="count" id="c-pipe"></span></a>
+      <a href="#pipeline" data-view="pipeline">Suivi<span class="count" id="c-pipe"></span></a>
       <a href="#historique" data-view="historique">Historique<span class="count" id="c-hist"></span></a>
       <a href="#reglages" data-view="reglages">Réglages</a>
     </nav>
@@ -288,21 +305,29 @@ td button.t:hover { text-decoration: underline; }
     try {
       if (!S.dl) throw new Error("no-dl");
       const r = await fetch(url); if (!r.ok) throw new Error("fetch");
-      await S.dl.save({ filename: nom, data: await r.blob() }); toast("CV enregistré");
+      await S.dl.save({ filename: nom, data: await r.blob() }); toast("PDF enregistré");
     } catch (e) {
       if (e && e.code === "declined") return;
       toast("Téléchargement direct impossible ici : utilise « Ouvrir le PDF »");
     }
   }
-  const relanceLe = s => { const base = s && (s.envoye_le || s.maj); if (!base) return ""; const d = new Date(base); d.setDate(d.getDate() + 7); return d.toISOString().slice(0, 10); };
+  const relanceLe = s => { const d = prochaineRelance(s); return d ? d.toISOString().slice(0, 10) : ""; };
 
   // ---------- Données dérivées ----------
   const offresList = () => [...S.offres.values()];
   const dernierRapport = () => S.rapports[0] || null;
   const parNote = (a, b) => (b.note ?? -1) - (a.note ?? -1) || String(a.entreprise).localeCompare(String(b.entreprise));
   function joursDepuis(iso) { if (!iso) return 0; return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000); }
+  // Relance à J+7 après l'envoi, puis une seconde 7 jours après la première (J+14)
+  function prochaineRelance(s) {
+    if (!s || !["postulee", "relance"].includes(s.etape)) return null;
+    if ((s.nb_relances || 0) >= 2) return null;
+    const base = s.etape === "relance" ? (s.relance_le || s.envoye_le || s.maj) : (s.envoye_le || s.maj);
+    if (!base) return null;
+    const d = new Date(base); d.setDate(d.getDate() + 7); return d;
+  }
   function aRelancer() {
-    return offresList().filter(o => { const s = S.suivi.get(o.id); return s && s.etape === "postulee" && joursDepuis(s.envoye_le || s.maj) >= 7; });
+    return offresList().filter(o => { const d = prochaineRelance(S.suivi.get(o.id)); return d && d.getTime() <= Date.now(); });
   }
 
   // ---------- Écritures ----------
@@ -311,6 +336,8 @@ td button.t:hover { text-decoration: underline; }
     const prev = S.suivi.get(h) || {};
     const next = { ...prev, ...patch, maj: new Date().toISOString() };
     if (patch.etape && APRES_ENVOI.has(patch.etape) && !prev.envoye_le) next.envoye_le = next.maj;
+    if (patch.etape === "relance") { next.relance_le = next.maj; next.nb_relances = (prev.nb_relances || 0) + 1; }
+    if (patch.etape && patch.etape !== prev.etape) next.historique = [...(Array.isArray(prev.historique) ? prev.historique : []), { etape: patch.etape, date: next.maj }].slice(-30);
     S.suivi.set(h, next); render();
     try { await S.db.doc("suivi/" + h).set(next); if (msg) toast(msg); }
     catch (e) {
@@ -417,7 +444,7 @@ td button.t:hover { text-decoration: underline; }
     if (relances.length) notes.push(`<div class="notice"><strong>À relancer (postulé il y a 7 jours ou plus)</strong><ul>${relances.map(o => `<li>${esc(o.intitule)} — ${esc(o.entreprise)}</li>`).join("")}</ul></div>`);
     if (notes.length) html += `<section style="display:grid;gap:10px">${notes.join("")}</section>`;
 
-    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts : à toi de postuler</h2><p>Clique sur « Postuler » : CV en PDF, lettre et réponses du formulaire prêtes à copier.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
+    if (prets.length) html += `<section><div class="section-head"><h2>Dossiers prêts : à toi de postuler</h2><p>Clique sur « Postuler » : CV en PDF, portfolio, lettre et réponses du formulaire prêtes à copier.</p></div><div class="grid">${prets.sort(parNote).map(carte).join("")}</div></section>`;
     html += `<section><div class="section-head"><h2>À regarder</h2><p>Sélection du jour : jusqu'à ${reglages().plafond_jour} offres, plus toutes celles à ${fmtNote(reglages().passe_droit)}/10 ou plus.</p></div>
       ${selection.length ? `<div class="grid">${selection.map(carte).join("")}</div>` : `<div class="empty">Rien au-dessus du seuil aujourd'hui.</div>`}</section>`;
     if (lvmh.length) html += `<section><div class="section-head"><h2>Groupe LVMH — à postuler en interne</h2><p>Analysées pour toi. L'outil ne prépare et n'envoie rien pour ces offres.</p></div><div class="grid">${lvmh.map(carte).join("")}</div></section>`;
@@ -427,42 +454,75 @@ td button.t:hover { text-decoration: underline; }
 
   function vuePipeline() {
     const all = offresList();
-    const analysees = all.filter(o => o.statut !== "exclu");
-    const suivies = all.filter(o => !["nouvelle", "ecartee"].includes(etapeDe(o.id)));
-    const envoyees = all.filter(o => APRES_ENVOI.has(etapeDe(o.id)));
-    const reponses = all.filter(o => ["entretien", "offre", "refus"].includes(etapeDe(o.id)));
-    const entretiens = all.filter(o => ["entretien", "offre"].includes(etapeDe(o.id)));
-    const taux = envoyees.length ? Math.round(100 * reponses.length / envoyees.length) + " %" : "—";
-    const parAxe = Object.keys(AXES).map(k => [AXES[k], analysees.filter(o => o.axe === k).length]);
-    const max = Math.max(1, ...parAxe.map(x => x[1]));
+    const et = o => etapeDe(o.id);
+    const envoyees = all.filter(o => APRES_ENVOI.has(et(o)));
+    const reponses = all.filter(o => ["entretien", "offre", "refus"].includes(et(o)));
+    const entretiens = all.filter(o => ["entretien", "offre"].includes(et(o)));
+    const pct = (a, b) => b ? Math.round(100 * a / b) + " %" : "—";
+    const lundi = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+    const cetteSemaine = lundi(new Date()).getTime();
+    const envoyeLe = o => { const s = S.suivi.get(o.id) || {}; return s.envoye_le ? new Date(s.envoye_le) : null; };
+    const semaine = envoyees.filter(o => { const d = envoyeLe(o); return d && d.getTime() >= cetteSemaine; });
+    const semaines = Array.from({ length: 8 }, (_, k) => { const deb = new Date(cetteSemaine); deb.setDate(deb.getDate() - 7 * (7 - k)); return deb; });
+    const parSemaine = semaines.map(deb => { const fin = deb.getTime() + 7 * 86400000; return envoyees.filter(o => { const d = envoyeLe(o); return d && d.getTime() >= deb.getTime() && d.getTime() < fin; }).length; });
+    const maxW = Math.max(1, ...parSemaine);
+
+    // Prochaines actions, de la plus urgente à la moins urgente
+    const actions = [];
+    for (const o of aRelancer()) { const s = S.suivi.get(o.id); actions.push({ o, k: "Relancer", cls: "urgent", m: `Envoyée le ${fmtDate(s.envoye_le)}${s.nb_relances ? " · " + s.nb_relances + " relance(s) déjà faite(s)" : ""}`, btn: "Ouvrir" }); }
+    for (const o of all.filter(o => et(o) === "entretien")) { const d = S.dossiers.get(o.id); actions.push({ o, k: "Entretien", cls: "go", m: d && d.preparation_entretien ? "Fiche de préparation prête" : "Fiche de préparation au prochain passage", btn: "Préparer" }); }
+    for (const o of all.filter(o => et(o) === "dossier_pret")) actions.push({ o, k: "À envoyer", cls: "go", m: "Dossier prêt : CV, lettre et réponses à copier", btn: "Postuler" });
+    for (const o of all.filter(o => et(o) === "dossier_demande")) actions.push({ o, k: "En préparation", cls: "", m: "Prêt vers 12 h 30 ou 18 h 30, sinon demain matin", btn: "Voir" });
+    for (const o of all.filter(o => et(o) === "interessante")) actions.push({ o, k: "Intéressante", cls: "", m: "Clique « Préparer le dossier » pour lancer la candidature", btn: "Voir" });
+
+    const groupes = (cle, libelle) => {
+      const keys = [...new Set(all.filter(o => et(o) !== "nouvelle" && et(o) !== "ecartee").map(o => o[cle] || "—"))];
+      if (!keys.length) return "";
+      return `<div class="table-scroll"><table class="mini"><thead><tr><th>${libelle}</th><th>Suivies</th><th>Envoyées</th><th>Réponses</th><th>Entretiens</th></tr></thead><tbody>${keys.map(k => {
+        const g = all.filter(o => (o[cle] || "—") === k);
+        const lab = cle === "axe" ? (AXES[k] || k) : (CANAUX[k] || (k === "—" ? "Non précisé" : k));
+        return `<tr><td>${esc(lab)}</td><td class="num">${g.filter(o => !["nouvelle", "ecartee"].includes(et(o))).length}</td><td class="num">${g.filter(o => APRES_ENVOI.has(et(o))).length}</td><td class="num">${g.filter(o => ["entretien", "offre", "refus"].includes(et(o))).length}</td><td class="num">${g.filter(o => ["entretien", "offre"].includes(et(o))).length}</td></tr>`;
+      }).join("")}</tbody></table></div>`;
+    };
+    const suivies = all.filter(o => !["nouvelle", "ecartee"].includes(et(o)));
     const filtre = o => S.pipeAxe === "tous" || o.axe === S.pipeAxe;
 
-    let html = `<section><div class="section-head"><h2>Où en sont tes candidatures</h2></div>
+    let html = `<section><div class="section-head"><h2>Prochaines actions</h2><p>${actions.length ? actions.length + " à traiter" : ""}</p></div>
+      ${actions.length ? `<div class="todo">${actions.map(a => `<div class="todo-item"><span class="tag-k ${a.cls}">${a.k}</span>
+        <div style="min-width:0"><div class="t">${esc(a.o.intitule)} — ${esc(a.o.entreprise)}</div><div class="m">${esc(a.m)}</div></div>
+        <button class="btn${a.cls === "go" || a.cls === "urgent" ? " primary" : ""}" type="button" data-open="${esc(a.o.id)}">${a.btn}</button></div>`).join("")}</div>`
+        : `<div class="empty">Rien à faire pour l'instant. Marque une offre « Intéressé » ou « Préparer le dossier » depuis Aujourd'hui.</div>`}</section>
+
+      <section><div class="section-head"><h2>Tes candidatures en chiffres</h2></div>
       <div class="kpis">
-        <div class="kpi"><b>${analysees.length}</b><span>offres analysées</span></div>
-        <div class="kpi"><b>${suivies.length}</b><span>offres suivies</span></div>
         <div class="kpi"><b>${envoyees.length}</b><span>candidatures envoyées</span></div>
-        <div class="kpi"><b>${taux}</b><span>taux de réponse</span></div>
-        <div class="kpi"><b>${entretiens.length}</b><span>entretiens</span></div>
+        <div class="kpi"><b>${semaine.length}</b><span>envoyées cette semaine</span></div>
+        <div class="kpi"><b>${reponses.length}</b><span>réponses reçues</span></div>
+        <div class="kpi"><b>${pct(reponses.length, envoyees.length)}</b><span>taux de réponse</span></div>
+        <div class="kpi"><b>${pct(entretiens.length, envoyees.length)}</b><span>taux d'entretien</span></div>
       </div></section>
-      <section><div class="section-head"><h2>Offres analysées par axe</h2></div>
-      <div class="bars">${parAxe.map(([l, n]) => `<div class="bar"><span>${l}</span><div class="track"><div class="fill" style="width:${(100 * n / max).toFixed(0)}%"></div></div><span class="n">${n}</span></div>`).join("")}</div></section>
-      <section><div class="section-head"><h2>Pipeline</h2>
+
+      <section><div class="section-head"><h2>Envoyées par semaine</h2><p>8 dernières semaines</p></div>
+      <div class="weeks" role="img" aria-label="Candidatures envoyées par semaine">${parSemaine.map((n, k) => `<div class="week"><span class="n">${n || ""}</span><div class="b" style="height:${Math.round(80 * n / maxW)}%"></div><span>${fmtDate(semaines[k].toISOString()).slice(0, 5)}</span></div>`).join("")}</div></section>
+
+      ${suivies.length ? `<section class="split"><div><div class="section-head"><h2>Par axe</h2></div>${groupes("axe", "Axe")}</div><div><div class="section-head"><h2>Par canal</h2></div>${groupes("canal", "Canal")}</div></section>` : ""}
+
+      <section><div class="section-head"><h2>Tableau de suivi</h2>
         <div class="toolbar" style="margin:0"><label for="pipe-axe" class="eyebrow">Axe</label>
         <select id="pipe-axe"><option value="tous">Tous</option>${Object.entries(AXES).map(([k, l]) => `<option value="${k}" ${S.pipeAxe === k ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>
       <div class="board-scroll"><div class="board">`;
     for (const col of COLONNES) {
-      const items = all.filter(o => etapeDe(o.id) === col && filtre(o)).sort(parNote);
+      const items = all.filter(o => et(o) === col && filtre(o)).sort(parNote);
       html += `<div class="col"><h3>${ETAPE_LABEL[col]} <span>${items.length}</span></h3>
-        ${items.length ? items.map(o => `<div class="card-mini${o.groupe_lvmh ? " lvmh" : ""}">
+        ${items.length ? items.map(o => { const s = S.suivi.get(o.id) || {}; const r = prochaineRelance(s); return `<div class="card-mini${o.groupe_lvmh ? " lvmh" : ""}">
           <button type="button" class="t" data-open="${esc(o.id)}" style="all:unset;cursor:pointer;font-weight:600">${esc(o.intitule)}</button>
           <span style="color:var(--muted)">${esc(o.entreprise)} · <span class="${classe(o.note)}" style="font-family:var(--f-mono)">${fmtNote(o.note)}</span>${o.groupe_lvmh ? " · interne" : ""}</span>
-          <label class="eyebrow" for="mv-${esc(o.id)}" style="position:absolute;left:-9999px">Déplacer</label>
+          ${s.envoye_le ? `<span style="color:var(--muted);font-size:.78rem">Envoyée le ${fmtDate(s.envoye_le)}${r ? " · relance le " + fmtDate(r.toISOString()) : ""}</span>` : ""}
+          <label for="mv-${esc(o.id)}" style="position:absolute;left:-9999px">Déplacer</label>
           <select id="mv-${esc(o.id)}" data-move="${esc(o.id)}" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => e.id !== "nouvelle").map(e => `<option value="${e.id}" ${e.id === col ? "selected" : ""}>${e.label}</option>`).join("")}</select>
-        </div>`).join("") : `<div class="empty-col">Aucune</div>`}</div>`;
+        </div>`; }).join("") : `<div class="empty-col">Aucune</div>`}</div>`;
     }
     html += `</div></div></section>`;
-    if (!suivies.length) html += `<div class="empty">Marque une offre « Intéressé » ou « J'ai postulé » depuis Aujourd'hui pour la voir ici.</div>`;
     return html;
   }
 
@@ -567,14 +627,25 @@ td button.t:hover { text-decoration: underline; }
     const pdf = d.cv_pdf_url ? safeUrlRel(d.cv_pdf_url) : "";
     const nomPdf = `CV-David-Perkins-${String(o.entreprise).replace(/[^A-Za-z0-9]+/g, "-")}.pdf`;
     const envoye = APRES_ENVOI.has(e);
+    const ppdf = d.portfolio_pdf_url ? safeUrlRel(d.portfolio_pdf_url) : "";
+    const pcanva = d.portfolio_url ? safeUrl(d.portfolio_url) : "";
+    const phrasePf = o.langue === "en" ? "Please also find my project portfolio attached." : "Vous trouverez également mon portfolio de projets en pièce jointe.";
+    const etapePf = ppdf || pcanva ? `<li><div class="step-t">Joins ton portfolio</div>
+          <div class="step-actions">${ppdf ? `<button class="btn primary small" type="button" data-pdf="${esc(ppdf)}" data-nom="Portfolio-David-Perkins.pdf">Télécharger le portfolio</button><a href="${esc(ppdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`}
+          ${pcanva ? `<a href="${esc(pcanva)}" target="_blank" rel="noopener noreferrer">Ouvrir dans Canva ↗</a>` : ""}</div>
+          <div style="color:var(--muted);font-size:.85rem;margin-top:4px">Dans le formulaire (« Autres documents ») ou en pièce jointe d'un email, quand c'est possible. Phrase à ajouter à ta lettre ou à ton message :</div>
+          <div class="step-actions">${btnCopy("portfolio", phrasePf, "Copier la phrase")}</div></li>` : "";
+    const cvAbsent = d.cv_url ? `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`
+      : `<span style="color:var(--muted)">CV ciblé pas encore créé : Canva ne répondait pas. Il sera ajouté ici dès que Canva répond ; les changements prévus sont dans « Ce qui a changé sur le CV ».</span>`;
     return `<section class="kit" aria-label="Postuler">
-      <h3>${envoye ? "Candidature envoyée" : "Postuler en 5 étapes"}</h3>
+      <h3>${envoye ? "Candidature envoyée" : `Postuler en ${etapePf ? 6 : 5} étapes`}</h3>
       ${Array.isArray(d.questions) && d.questions.length && !envoye ? `<div class="notice"><strong>À vérifier avant d'envoyer</strong><ul>${d.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>` : ""}
       <ol>
         <li><div class="step-t">Télécharge ton CV ciblé</div>
-          <div class="step-actions">${pdf ? `<button class="btn primary small" type="button" data-pdf="${esc(pdf)}" data-nom="${esc(nomPdf)}">Télécharger le PDF</button><a href="${esc(pdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : `<span style="color:var(--muted)">PDF pas encore exporté : ouvre-le dans Canva, puis Partager › Télécharger › PDF.</span>`}
+          <div class="step-actions">${pdf ? `<button class="btn primary small" type="button" data-pdf="${esc(pdf)}" data-nom="${esc(nomPdf)}">Télécharger le PDF</button><a href="${esc(pdf)}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF ↗</a>` : cvAbsent}
           ${d.cv_url ? `<a href="${esc(safeUrl(d.cv_url))}" target="_blank" rel="noopener noreferrer">Modifier dans Canva ↗</a>` : ""}</div>
           ${d.cv_titre ? `<div style="color:var(--muted);font-size:.85rem;margin-top:4px">Titre : ${esc(d.cv_titre)}</div>` : ""}</li>
+        ${etapePf}
         <li><div class="step-t">${d.lettre ? "Copie ta lettre de motivation" : "Pas de lettre nécessaire pour ce poste"}</div>
           ${d.lettre ? `<div class="step-actions">${btnCopy("lettre", d.lettre, "Copier la lettre")}</div><details><summary>Lire la lettre</summary><pre>${esc(d.lettre)}</pre></details>` : ""}</li>
         <li><div class="step-t">Ouvre l'offre et remplis le formulaire</div>
@@ -615,7 +686,9 @@ td button.t:hover { text-decoration: underline; }
         ${list("Pourquoi", o.points_forts)}${list("Écarts", o.ecarts)}
         <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-etape">Mon étape</label>
           <select id="dr-etape" ${S.writable ? "" : "disabled"}>${ETAPES.filter(e => !(o.groupe_lvmh && ["dossier_demande", "dossier_pret"].includes(e.id))).map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select>
-          ${s.motif_ecart ? `<span style="color:var(--muted);font-size:.85rem">Écartée : ${esc(s.motif_ecart)}</span>` : ""}</div>
+          ${s.motif_ecart ? `<span style="color:var(--muted);font-size:.85rem">Écartée : ${esc(s.motif_ecart)}</span>` : ""}
+          ${prochaineRelance(s) && prochaineRelance(s).getTime() <= Date.now() ? `<div><button class="btn primary small" type="button" data-act="relance" data-h="${esc(o.id)}">J'ai relancé</button></div>` : ""}
+          ${Array.isArray(s.historique) && s.historique.length ? `<ol class="timeline">${s.historique.slice().reverse().map(h => `<li><span class="d">${fmtDate(h.date)}</span><span>${ETAPE_LABEL[h.etape] || esc(h.etape)}</span></li>`).join("")}</ol>` : ""}</div>
         <div style="display:grid;gap:6px"><label class="eyebrow" for="dr-note">Mes notes</label>
           <textarea id="dr-note" placeholder="Contact, date d'entretien, impressions…" ${S.writable ? "" : "disabled"}>${esc(s.note || "")}</textarea>
           <div><button class="btn" type="button" id="dr-save" ${S.writable ? "" : "disabled"}>Enregistrer la note</button></div></div>
@@ -633,12 +706,13 @@ td button.t:hover { text-decoration: underline; }
     const r = dernierRapport(); const jour = r ? r.date : offresList().map(o => o.rapport).sort().pop();
     const n = offresList().filter(o => o.rapport === jour && o.statut === "propose" && !o.groupe_lvmh && etapeDe(o.id) !== "ecartee").length;
     $("#c-auj").textContent = S.offres.size ? n : "";
-    $("#c-pipe").textContent = S.offres.size ? offresList().filter(o => !["nouvelle", "ecartee"].includes(etapeDe(o.id))).length : "";
+    const nAct = aRelancer().length + offresList().filter(o => ["dossier_pret", "entretien"].includes(etapeDe(o.id))).length;
+    $("#c-pipe").textContent = S.offres.size && nAct ? nAct : "";
     $("#c-hist").textContent = S.offres.size ? S.offres.size : "";
     const st = $("#status");
     if (!S.db) st.textContent = S.loaded.offres ? "" : st.textContent;
     else if (S.stale && !S.loaded.offres) st.textContent = "Connexion lente aux données…";
-    else st.textContent = r ? `Dernière recherche : ${fmtDate(r.date)}` : "";
+    else st.textContent = (r ? `Dernière recherche : ${fmtDate(r.date)}` : "") + (S.syncAt ? ` · à jour à ${S.syncAt}` : "");
   }
   function render() {
     document.querySelectorAll("#tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.view === S.view ? "page" : "false"));
@@ -677,6 +751,7 @@ td button.t:hover { text-decoration: underline; }
     if (act === "annuler-ecart") { S.ecartEnCours = null; render(); return; }
     if (act === "ecarter") { S.ecartEnCours = h; render(); $("#motif-" + CSS.escape(h))?.focus(); return; }
     if (act === "rouvrir") { ecrireSuivi(h, { etape: "nouvelle", motif_ecart: "" }, "Offre rouverte"); return; }
+    if (act === "relance") { ecrireSuivi(h, { etape: "relance" }, "Relance notée. La suivante sera proposée dans 7 jours."); setTimeout(() => drawer(), 0); return; }
     if (act === "postulee" && S.ouvert === h) { ecrireSuivi(h, { etape: "postulee" }, "Candidature notée comme envoyée. Relance dans 7 jours."); setTimeout(() => drawer(), 0); return; }
     if (act) {
       const cur = etapeDe(h);
@@ -717,6 +792,12 @@ td button.t:hover { text-decoration: underline; }
   document.addEventListener("input", e => { if (e.target.id === "h-q") { S.hist.q = e.target.value; renderHistoriqueResultats(); } });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && S.ouvert) { S.ouvert = null; drawer(); } });
   window.addEventListener("hashchange", route);
+  // Une erreur inattendue s'affiche au lieu de laisser une page figée
+  window.addEventListener("error", e => {
+    if (!e.message || /ResizeObserver|Script error/.test(e.message)) return;
+    const m = $("#main"); if (!m || $("#err-banner")) return;
+    m.insertAdjacentHTML("afterbegin", `<div class="banner-err" id="err-banner" role="alert">Un problème d'affichage est survenu (${esc(e.message)}). Recharge la page ; si ça continue, signale-le à Claude.</div>`);
+  });
 
   // ---------- Connexion aux données ----------
   async function start() {
@@ -732,7 +813,7 @@ td button.t:hover { text-decoration: underline; }
     S.db = db;
     try { S.dl = await claude.use("downloads"); } catch { S.dl = null; }
     const onErr = () => { S.loaded.offres = true; clearTimeout(timer); render(); };
-    const done = (k, snap) => { if (!snap.metadata.fromCache) { S.loaded[k] = true; if (k === "offres") { clearTimeout(timer); S.stale = false; } } };
+    const done = (k, snap) => { if (!snap.metadata.fromCache) { S.loaded[k] = true; S.syncAt = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); if (k === "offres") { clearTimeout(timer); S.stale = false; } } };
     db.collection("offres").onSnapshot(snap => {
       S.offres = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); done("offres", snap); render(); refreshDrawer();
     }, onErr);
