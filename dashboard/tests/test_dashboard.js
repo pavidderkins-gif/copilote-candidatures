@@ -123,7 +123,7 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
   check(await p.locator(`section:has(h2:text-is('À regarder')) button[data-open="${cible.id}"]`).count() === 0, "l'offre écartée disparaît de la sélection");
 
   console.log("3. Kit Postuler");
-  const avecDossier = offres.filter(o => DATA.dossiers[o.id] && !o.groupe_lvmh && (DATA.suivi[o.id] || {}).etape === "dossier_pret");
+  const avecDossier = offres.filter(o => DATA.dossiers[o.id] && (DATA.suivi[o.id] || {}).etape === "dossier_pret");
   check(avecDossier.length > 0, `${avecDossier.length} dossier(s) prêt(s) dans les données`);
   if (avecDossier.length) {
     const o = avecDossier.find(x => DATA.dossiers[x.id].cv_pdf_url) || avecDossier[0];
@@ -214,9 +214,13 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
   check(wj && Array.isArray(wj.data.journal) && wj.data.journal.some(j => j.texte.startsWith("Appel avec Jeanne")), "entrée ajoutée au journal");
   check(await p.locator(".drawer .timeline li").count() >= 2, "journal et étapes affichés dans le panneau");
   await p.keyboard.press("Escape"); await p.waitForTimeout(100);
-  const aConf = offres.find(o => (DATA.suivi[o.id] || {}).a_confirmer);
+  // Une candidature avec une question, visible dans la liste par défaut (les clôturées sont masquées).
+  await p.goto(BASE + "#suivi"); await p.waitForTimeout(300);
+  let aConf = null;
+  for (const o of offres.filter(o => (DATA.suivi[o.id] || {}).a_confirmer)) {
+    if (await p.locator(`.cand-t[data-open="${o.id}"]`).count()) { aConf = o; break; }
+  }
   if (aConf) {
-    await p.goto(BASE + "#suivi"); await p.waitForTimeout(300);
     await p.locator(`.cand-t[data-open="${aConf.id}"]`).click(); await p.waitForTimeout(150);
     await p.locator(".drawer [data-act='confirme']").click(); await p.waitForTimeout(200);
     wj = await lastWrite("suivi/" + aConf.id);
