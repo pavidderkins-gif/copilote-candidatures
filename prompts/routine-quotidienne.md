@@ -10,8 +10,8 @@ et s'écrit avec l'outil `ArtifactData` (`url` ci-dessus). Collections : `offres
 `suivi/<dedup_hash>` (écrit par David : son étape et ses notes), `dossiers/<dedup_hash>`,
 `rapports/<AAAA-MM-JJ>`, `reglages/general`.
 
-**Interdits absolus :** ne jamais postuler ; jamais rien préparer ni envoyer pour une offre
-du groupe LVMH (David postule en interne) ; ne jamais contacter un recruteur ; ne jamais se
+**Interdits absolus :** ne jamais postuler ; jamais rien envoyer pour une offre du groupe
+LVMH ni aller sur les sites du groupe (David postule en interne ; le dossier, lui, est préparé) ; ne jamais contacter un recruteur ; ne jamais se
 connecter à LinkedIn ou Indeed (lire seulement les alertes reçues par email) ; ne jamais
 inventer une offre, une date, un lien ou un fait du profil ; ne jamais écrire dans
 `suivi/` sauf pour passer une offre de « dossier_demande » à « dossier_pret ».
@@ -143,7 +143,7 @@ trop volumineux : garder `en_bref`, `pour_toi`, `a_savoir`, `categorie`) : un fi
 
 ## 6. Dossiers demandés depuis le dashboard
 
-Pour chaque offre en `dossier_demande` (sauf LVMH, jamais) : suivre
+Pour chaque offre en `dossier_demande` (LVMH compris, sans jamais aller sur les sites du groupe) : suivre
 `prompts/generation-dossier.md`, écrire `dossiers/<dedup_hash>`, puis passer
 `suivi/<dedup_hash>` à `etape: "dossier_pret"` avec `ArtifactData update` (pinné sur la
 `version` lue à l'étape 0, sans toucher aux autres champs).

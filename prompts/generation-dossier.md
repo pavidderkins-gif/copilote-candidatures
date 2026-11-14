@@ -1,7 +1,7 @@
 # Génération d'un dossier de candidature — version v1.1 (13/11/2026)
 
 Entrées : l'offre (texte complet si possible), `profil/profil-maitre.md`, `profil/regles.yaml`,
-`profil/perimetre.yaml` (titre_cv, langue_dossier, canva). **Jamais pour une offre LVMH.**
+`profil/perimetre.yaml` (titre_cv, langue_dossier, canva). **Offres du groupe LVMH** (décision du 14/11/2026) : dossier préparé avec le plus grand soin, ce sont les postes prioritaires de David ; mais jamais d'envoi, de candidature ni de visite des sites du groupe (lvmh.com et sites des Maisons). Le texte de l'offre vient de David (export Excel interne) ou d'un site public tiers (Business France, iagora, jobup).
 
 Branche : travailler et pousser sur `main` uniquement (`git fetch origin main && git checkout
 main && git pull --ff-only origin main` avant de commencer ; `git push origin main` à la fin).

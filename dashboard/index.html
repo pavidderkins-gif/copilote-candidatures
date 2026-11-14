@@ -483,9 +483,9 @@ table.mini { min-width: 0; }
     }
     const b = (act, label, on) => `<button class="btn${on ? " on" : ""}" type="button" data-act="${act}" data-h="${h}" ${S.writable ? "" : "disabled"}>${label}</button>`;
     const parts = [];
-    if (!o.groupe_lvmh && S.dossiers.has(o.id) && !APRES_ENVOI.has(e)) parts.push(`<button class="btn primary" type="button" data-open="${h}">Postuler : kit prêt</button>`);
+    if (S.dossiers.has(o.id) && !APRES_ENVOI.has(e)) parts.push(`<button class="btn primary" type="button" data-open="${h}">Postuler : kit prêt</button>`);
     parts.push(b("interessante", "Intéressé", e === "interessante"));
-    if (!o.groupe_lvmh) parts.push(b("dossier_demande", e === "dossier_pret" ? "Dossier prêt" : "Préparer le dossier", e === "dossier_demande" || e === "dossier_pret"));
+    parts.push(b("dossier_demande", e === "dossier_pret" ? "Dossier prêt" : "Préparer le dossier", e === "dossier_demande" || e === "dossier_pret"));
     parts.push(b("postulee", o.groupe_lvmh ? "Postulé en interne" : "J'ai postulé", APRES_ENVOI.has(e)));
     parts.push(e === "ecartee" ? b("rouvrir", "Rouvrir", false) : `<button class="btn ghost" type="button" data-act="ecarter" data-h="${h}" ${S.writable ? "" : "disabled"}>Écarter</button>`);
     if (url) parts.push(`<a class="link-out" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>`);
@@ -669,9 +669,9 @@ table.mini { min-width: 0; }
 
   function actionRapide(o, s) {
     const h = esc(o.id), dis = S.writable ? "" : "disabled";
-    if (s.etape === "dossier_pret" && !o.groupe_lvmh) return `<button class="btn primary small" type="button" data-open="${h}">Postuler</button>`;
-    if (s.etape === "interessante" && o.origine === "manuel") return `<button class="btn small" type="button" data-act="postulee" data-h="${h}" ${dis}>J'ai postulé</button>`;
-    if (s.etape === "interessante" && !o.groupe_lvmh) return `<button class="btn small" type="button" data-act="dossier_demande" data-h="${h}" ${dis}>Préparer le dossier</button>`;
+    if (s.etape === "dossier_pret") return `<button class="btn primary small" type="button" data-open="${h}">Postuler</button>`;
+    if (s.etape === "interessante" && o.origine === "manuel" && !o.groupe_lvmh) return `<button class="btn small" type="button" data-act="postulee" data-h="${h}" ${dis}>J'ai postulé</button>`;
+    if (s.etape === "interessante") return `<button class="btn small" type="button" data-act="dossier_demande" data-h="${h}" ${dis}>Préparer le dossier</button>`;
     const r = prochaineRelance(s);
     if (r && r.getTime() <= Date.now()) return `<button class="btn primary small" type="button" data-act="relance" data-h="${h}" ${dis}>J'ai relancé</button>`;
     return "";
@@ -806,7 +806,7 @@ table.mini { min-width: 0; }
       ${s.a_confirmer ? `<div class="notice ask-box"><strong>À confirmer</strong><span>${esc(s.a_confirmer)}</span><div><button class="btn small" type="button" data-act="confirme" data-h="${esc(o.id)}" ${dis}>C'est à jour</button></div></div>` : ""}
       ${r && r.getTime() <= Date.now() ? `<div><button class="btn primary small" type="button" data-act="relance" data-h="${esc(o.id)}" ${dis}>J'ai relancé</button></div>` : ""}
       <div class="form-grid">
-        <label for="dr-etape">Mon étape<select id="dr-etape" ${dis}>${ETAPES.filter(e => !(o.groupe_lvmh && ["dossier_demande", "dossier_pret"].includes(e.id))).map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select></label>
+        <label for="dr-etape">Mon étape<select id="dr-etape" ${dis}>${ETAPES.map(e => `<option value="${e.id}" ${etapeDe(o.id) === e.id ? "selected" : ""}>${e.label}</option>`).join("")}</select></label>
         <label for="dr-contact">Contact<input id="dr-contact" value="${esc(s.contact || "")}" placeholder="Nom, rôle" ${dis}></label>
         <label for="dr-next">Prochaine étape<input id="dr-next" value="${esc(s.prochaine_action || "")}" placeholder="${esc(ACTION_DEFAUT[s.etape] || "Ex. relancer la RH")}" ${dis}></label>
         <label for="dr-next-date">Pour le<input id="dr-next-date" type="date" value="${esc(String(s.prochaine_date || "").length === 10 ? s.prochaine_date : "")}" ${dis}></label>
@@ -970,7 +970,7 @@ table.mini { min-width: 0; }
         <button class="btn ghost close" type="button" data-close>Fermer ✕</button>
         <div class="${typeof o.note === "number" ? "offer-head" : "dr-head st-" + (PHASE_DE[etapeDe(o.id)] || "prep")}">${typeof o.note === "number" ? gauge(o.note) : `<div class="mono" aria-hidden="true">${esc(initiales(o.entreprise))}</div>`}<div style="min-width:0"><h2 id="dr-t">${esc(o.intitule)}</h2>
           <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || "")}</div>${chipsDe(o)}</div></div>
-        ${!o.groupe_lvmh && d ? kitDe(o, d) : u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
+        ${d ? kitDe(o, d) : u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
         <dl class="dl">
           ${o.origine === "manuel" ? `<dt>Ajoutée le</dt><dd>${fmtDate(o.date_collecte)}</dd>` : `<dt>Recommandation</dt><dd>${RECO[o.recommandation] || "—"}</dd>
           <dt>Tri</dt><dd>${STATUT_TRI[o.statut] || "—"}</dd>`}
@@ -981,7 +981,8 @@ table.mini { min-width: 0; }
         ${o.en_bref ? `<p style="margin:0"><b>Le poste :</b> ${esc(o.en_bref)}</p>` : ""}${o.a_savoir ? `<p style="margin:0"><b>À savoir :</b> ${esc(o.a_savoir)}</p>` : ""}
         ${list("Pourquoi", o.points_forts)}${list("Écarts", o.ecarts)}
         ${blocSuivi(o, s)}
-        ${o.groupe_lvmh ? `<div class="notice warn">Offre du groupe LVMH : tu postules toi-même en interne. L'outil ne prépare aucun dossier pour cette offre.</div>`
+        ${o.groupe_lvmh ? `<div class="notice warn">Offre du groupe LVMH : tu postules toi-même en interne. Copilote prépare le dossier (CV, lettre, portfolio) mais ne postule pas et ne va pas sur les sites du groupe.</div>`
+          + (d ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>` : "")
           : d ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>`
           : etapeDe(o.id) === "dossier_demande" ? `<div class="notice">Dossier demandé : il sera prêt vers 12 h 30 ou 18 h 45 (sinon demain matin), avec le CV en PDF, la lettre et les réponses du formulaire.</div>` : ""}
       </aside>`;

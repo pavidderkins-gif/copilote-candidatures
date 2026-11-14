@@ -57,7 +57,8 @@ Si l'un de ces cas s'applique, l'offre est **exclue** : statut `exclu`, motif no
 Une offre du groupe LVMH ou d'une de ses Maisons est notée normalement (bonus compris), mais
 elle reçoit `"groupe_lvmh": true` et `"canal": "interne_lvmh"`. Elle n'entre pas dans les 5
 dossiers du jour : elle va dans une rubrique à part du rapport. **L'outil ne postule jamais et
-ne prépare aucun envoi pour ces offres : David postule lui-même en interne.**
+ne prépare aucun envoi pour ces offres : David postule lui-même en interne.** Le dossier (CV, lettre,
+portfolio) est préparé quand David le demande (« Préparer le dossier »), sans aller sur les sites du groupe.
 
 ## 4. Où va l'offre (catégorie de l'email)
 
@@ -66,7 +67,7 @@ ne prépare aucun envoi pour ces offres : David postule lui-même en interne.**
 | `postuler` | CDI / CDD en Suisse, à Paris ou à Lyon : toutes les offres ≥ `passe_droit` (8), puis les meilleures ≥ `seuil` (6) jusqu'à `plafond_jour` (5) |
 | `vie` | **Tous** les VIE du périmètre (finance, contrôle de gestion, data / BI, business analysis, supply chain, achats) avec une note ≥ 5, « au cas où » (demande de David du 14/11) ; hors Chine, Japon, Corée |
 | `australie` | Sydney, Melbourne ou Brisbane, note ≥ 8 seulement (« que des très bonnes offres »). David n'a pas encore de droit de travail (visa post-études 485 probable) : si l'offre exige « full working rights », `a_savoir` = « Droit de travail exigé : il te faudrait le visa post-études (485) » ; si elle propose un sponsoring de visa, le dire (+0,5 en signaux implicites) |
-| `lvmh` | Groupe LVMH : signalé, jamais de dossier (voir plus haut) |
+| `lvmh` | Groupe LVMH : rubrique à part ; dossier préparé sur demande, jamais d'envoi (voir plus haut) |
 | `a_surveiller` | Au-dessus du seuil mais hors sélection : tableau de bord seulement, pas dans l'email |
 
 ## 4 bis. Recommandation
