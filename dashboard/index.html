@@ -172,6 +172,8 @@ td button.t:hover { text-decoration: underline; }
 .dl dt { color: var(--muted); } .dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .dossier { border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: grid; gap: 10px; }
 .dossier pre { white-space: pre-wrap; font-family: var(--f-body); font-size: 0.86rem; background: var(--surface-2); border-radius: 8px; padding: 10px; margin: 0; max-height: 320px; overflow-y: auto; }
+.kit pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--f-body); font-size: 0.86rem; line-height: 1.5; background: var(--surface-2); border-radius: 8px; padding: 12px; margin: 0; }
+.kit.prep pre { max-height: 60vh; overflow-y: auto; }
 .close { justify-self: end; }
 .kit { border: 1px solid var(--accent); border-radius: var(--r); padding: 14px; display: grid; gap: 12px; background: var(--surface); }
 .kit h3 { margin: 0; font-family: var(--f-display); font-size: 1.05rem; font-weight: 600; }
@@ -952,7 +954,6 @@ table.mini { min-width: 0; }
           <div class="step-actions">${envoye ? `<span class="done">Envoyée${s.envoye_le ? " le " + fmtDate(s.envoye_le) : ""}. Relance prévue le ${fmtDate(relanceLe(s))}.</span>` : `<button class="btn primary small" type="button" data-act="postulee" data-h="${esc(o.id)}" ${S.writable ? "" : "disabled"}>J'ai postulé</button><span style="color:var(--muted);font-size:.85rem">La relance sera préparée pour J+7.</span>`}</div></li>
       </ol>
       ${envoye && d.relance ? `<div><div class="eyebrow">Relance prête</div><div class="step-actions">${btnCopy("relance", d.relance, "Copier la relance")}</div><details><summary>Lire la relance</summary><pre>${esc(d.relance)}</pre></details></div>` : ""}
-      ${d.preparation_entretien ? `<div><div class="eyebrow">Préparation d'entretien</div><pre>${esc(d.preparation_entretien)}</pre></div>` : ""}
     </section>`;
   }
   // URL absolue http(s) ou chemin d'asset de l'artifact (/_blob/…)
@@ -964,13 +965,21 @@ table.mini { min-width: 0; }
     const o = S.ouvert && S.offres.get(S.ouvert);
     if (!o) { root.innerHTML = ""; return; }
     const s = S.suivi.get(o.id) || {}, d = S.dossiers.get(o.id), u = safeUrl(o.url);
+    // Le kit remet S.copy à zéro : le calculer avant d'enregistrer le texte de la fiche
+    const kitH = d && (d.lettre || d.cv_url || d.cv_pdf_url) ? kitDe(o, d) : "";
+    if (!kitH) S.copy = {};
+    if (d && d.preparation_entretien) S.copy.prep = String(d.preparation_entretien);
     const list = (t, a) => a && a.length ? `<div><div class="eyebrow">${t}</div><ul style="margin:4px 0 0;padding-left:18px">${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
     root.innerHTML = `<div class="drawer-bg" data-close></div>
       <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-t">
         <button class="btn ghost close" type="button" data-close>Fermer ✕</button>
         <div class="${typeof o.note === "number" ? "offer-head" : "dr-head st-" + (PHASE_DE[etapeDe(o.id)] || "prep")}">${typeof o.note === "number" ? gauge(o.note) : `<div class="mono" aria-hidden="true">${esc(initiales(o.entreprise))}</div>`}<div style="min-width:0"><h2 id="dr-t">${esc(o.intitule)}</h2>
           <div class="offer-sub">${esc(o.entreprise)} · ${esc(o.lieu || "")}</div>${chipsDe(o)}</div></div>
-        ${d ? kitDe(o, d) : u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
+        ${d && d.preparation_entretien ? `<section class="kit prep" aria-label="Préparation d'entretien">
+          <h3>Fiche d'entretien</h3>
+          <div class="step-actions"><button class="btn small" type="button" data-copy="prep">Copier la fiche</button></div>
+          <pre>${esc(d.preparation_entretien)}</pre></section>` : ""}
+        ${kitH ? kitH : u ? `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">Voir l'offre ↗</a>` : ""}
         <dl class="dl">
           ${o.origine === "manuel" ? `<dt>Ajoutée le</dt><dd>${fmtDate(o.date_collecte)}</dd>` : `<dt>Recommandation</dt><dd>${RECO[o.recommandation] || "—"}</dd>
           <dt>Tri</dt><dd>${STATUT_TRI[o.statut] || "—"}</dd>`}
@@ -982,8 +991,8 @@ table.mini { min-width: 0; }
         ${list("Pourquoi", o.points_forts)}${list("Écarts", o.ecarts)}
         ${blocSuivi(o, s)}
         ${o.groupe_lvmh ? `<div class="notice warn">Offre du groupe LVMH : tu postules toi-même en interne. Copilote prépare le dossier (CV, lettre, portfolio) mais ne postule pas et ne va pas sur les sites du groupe.</div>`
-          + (d ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>` : "")
-          : d ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>`
+          + (d && d.fiche_modifications ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>` : "")
+          : d && d.fiche_modifications ? `<details class="dossier"><summary>Ce qui a changé sur le CV</summary><pre>${esc(d.fiche_modifications || "")}</pre></details>`
           : etapeDe(o.id) === "dossier_demande" ? `<div class="notice">Dossier demandé : il sera prêt vers 12 h 30 ou 18 h 45 (sinon demain matin), avec le CV en PDF, la lettre et les réponses du formulaire.</div>` : ""}
       </aside>`;
     if (focus) $(".drawer .close", root)?.focus();

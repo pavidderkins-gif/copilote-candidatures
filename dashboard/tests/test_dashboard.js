@@ -173,6 +173,18 @@ const check = (cond, label) => { if (cond) { ok++; console.log("  ✓ " + label)
     await p.keyboard.press("Escape"); await p.waitForTimeout(100);
   }
 
+  console.log("3 bis. Fiche d'entretien");
+  const avecFiche = offres.find(o => (DATA.dossiers[o.id] || {}).preparation_entretien && (DATA.suivi[o.id] || {}).etape === "entretien");
+  if (avecFiche) {
+    await p.goto(BASE + "#suivi"); await p.waitForTimeout(400);
+    await p.locator(`.cand-t[data-open="${avecFiche.id}"]`).click(); await p.waitForTimeout(200);
+    check(await p.locator(".drawer .kit.prep pre").count() === 1, `fiche d'entretien affichée pour ${avecFiche.entreprise}`);
+    const sansKit = !DATA.dossiers[avecFiche.id].lettre && !DATA.dossiers[avecFiche.id].cv_url;
+    if (sansKit) check(await p.locator(".drawer .kit:not(.prep)").count() === 0, "pas de kit « Postuler » vide quand il n'y a que la fiche");
+    await shot("3b-fiche-entretien");
+    await p.keyboard.press("Escape"); await p.waitForTimeout(100);
+  }
+
   console.log("4. Suivi");
   await p.goto(BASE + "#suivi"); await p.waitForTimeout(500);
   check(await p.locator("h2:text-is('Tes candidatures')").count() === 1, "vue Suivi affichée");
