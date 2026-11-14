@@ -170,6 +170,11 @@ Pour chaque offre en `dossier_demande` (sauf LVMH, jamais) : suivre
 `suivi/<dedup_hash>` à `etape: "dossier_pret"` avec `ArtifactData update` (pinné sur la
 `version` lue à l'étape 0, sans toucher aux autres champs).
 
+**Dossiers incomplets** : si Canva répond, compléter aussi chaque dossier marqué
+`cv_a_generer: true` (CV Canva ciblé et PDF selon `prompts/generation-dossier.md` § 1 à 2 bis,
+puis `cv_a_generer` supprimé) et chaque dossier sans `portfolio_pdf_url` (§ 2 ter). Écrire avec
+`ArtifactData update` pinné sur la version lue, et les signaler dans l'email du matin.
+
 ## 6 bis. Relances (J+7 et J+14)
 
 Pour chaque offre en `postulee` ou `relance` depuis 7 jours (puis 14 jours) sans réponse :

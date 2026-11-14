@@ -39,6 +39,15 @@ def curl(url: str, methode: str = "GET", donnees: str = ""):
     return int(code or 0), finale.strip(), corps
 
 
+def mots_cles(texte: str) -> list[str]:
+    return [w for w in re.findall(r"[a-zà-ÿ]{4,}", texte.lower()) if w not in ("junior", "senior", "with", "pour", "dans")]
+
+
+def meme_intitule(attendu: str, trouve: str) -> bool:
+    mots = mots_cles(attendu)
+    return not mots or sum(w in trouve.lower() for w in mots) >= max(1, len(mots) // 2)
+
+
 def verifier(url: str, intitule: str) -> tuple[str, str]:
     if not url:
         return "non_verifiable", "aucun lien"
@@ -50,8 +59,18 @@ def verifier(url: str, intitule: str) -> tuple[str, str]:
     m = re.match(r"https://([\w-]+)\.(wd\d+)\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?([^/]+)/(job/.+)$", url)
     if m:
         tenant, wd, site, chemin = m.groups()
-        code, _, corps = curl(f"https://{tenant}.{wd}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/{chemin}")
+        for essai in range(3):  # Workday renvoie parfois une erreur passagère (521, corps vide)
+            code, _, corps = curl(f"https://{tenant}.{wd}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/{chemin}")
+            if code in (404, 410) or (code == 200 and '"jobPostingInfo"' in corps):
+                break
+            time.sleep(3)
         if code == 200 and '"jobPostingInfo"' in corps:
+            try:
+                titre_flux = json.loads(corps)["jobPostingInfo"].get("title", "")
+            except (ValueError, KeyError):
+                titre_flux = ""
+            if titre_flux and not meme_intitule(intitule, titre_flux):
+                return "ok", f"flux Workday officiel, mais intitulé différent : « {titre_flux} » (vérifier le lien)"
             return "ok", "flux Workday officiel"
         return ("retire", f"Workday {code}") if code in (404, 410) else ("protege", f"Workday {code}")
 
@@ -96,8 +115,7 @@ def verifier(url: str, intitule: str) -> tuple[str, str]:
     visible = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", visible))).lower()
     if any(k in titre for k in MOTS_RETIRE) or any(k in visible for k in MOTS_RETIRE):
         return "retire", "la page indique que l'offre n'est plus disponible"
-    mots = [w for w in re.findall(r"[a-zà-ÿ]{4,}", intitule.lower()) if w not in ("junior", "senior", "with", "pour", "dans")]
-    if mots and sum(w in visible for w in mots) >= max(1, len(mots) // 2):
+    if mots_cles(intitule) and meme_intitule(intitule, visible):
         return "ok", "page en ligne, intitulé retrouvé"
     return "ok", "page en ligne (intitulé non retrouvé dans la page)"
 
