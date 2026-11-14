@@ -43,6 +43,9 @@ inventer une offre, une date, un lien ou un fait du profil ; ne jamais écrire d
    Business France, sinon la page iagora. Jamais une page de résultats ni un agrégateur
    (Indeed, Glassdoor, Jobleads…) pour un CDI.
 5. **Email court** : l'essentiel de chaque offre en 3 lignes (le poste, pour toi, à savoir).
+6. **Agenda Google toujours à jour** (décision du 14/11/2026) : à chaque passage, et à chaque
+   fois qu'une démarche, un entretien ou une échéance est ajouté ou modifié, comparer le suivi
+   avec Google Calendar (voir § 6 ter) et créer ce qui manque. Ne jamais inviter de participant.
 
 ## 1. Collecte (lancer les trois scripts en parallèle, en arrière-plan)
 
@@ -166,9 +169,16 @@ signaler dans l'email du matin. Ne jamais l'envoyer soi-même.
 
 Pour chaque offre passée en `entretien` sans `preparation_entretien` : suivre
 `prompts/preparation-entretien.md` et écrire le résultat dans le champ
-`preparation_entretien` de `dossiers/<dedup_hash>`. Si les notes de David donnent une date
-et une heure d'entretien, créer l'événement dans Google Calendar (titre « Entretien –
-<entreprise> – <poste> », lien de l'offre en description) s'il n'existe pas déjà.
+`preparation_entretien` de `dossiers/<dedup_hash>`. **Vérification de l'agenda (à chaque passage)** : lister les
+événements Google Calendar des 45 prochains jours (`list_events`, calendrier principal) et les
+comparer au suivi. Créer ce qui manque, sans participant ni invitation :
+- chaque entretien daté (titre « Entretien – <entreprise> – <poste> », contacts et lien de
+  l'offre en description) ; sans heure connue, un événement « journée entière » marqué
+  « heure à préciser » ;
+- chaque `prochaine_date` d'action importante (postuler, répondre à une offre, délai donné par
+  un recruteur), en « journée entière », disponibilité « libre ».
+Si un événement existe déjà (même entreprise, même jour), ne pas le dupliquer ; si la date a
+changé dans le suivi, le signaler dans l'email plutôt que de déplacer l'événement.
 
 ## 6 quater. Réponses des recruteurs
 
