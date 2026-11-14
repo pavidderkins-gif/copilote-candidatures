@@ -17,7 +17,11 @@ inventer une offre, une date, un lien ou un fait du profil ; ne jamais écrire d
 
 ## 0. Préparation
 
-1. `git pull` dans `copilote-candidatures`.
+1. `git pull` dans `copilote-candidatures`, puis **se placer sur la branche `main`** (c'est la
+   seule branche de travail, celle que voit David et la session de maintenance) :
+   `git fetch origin main && git checkout main && git pull --ff-only origin main` (si `main`
+   n'existe pas en local : `git checkout -b main origin/main`). Si ce fichier a changé avec ce
+   pull, le relire avant de continuer. Tous les commits sont poussés sur `main`.
 2. Lire `profil/profil-maitre.md`, `profil/perimetre.yaml`, `profil/regles.yaml`, `prompts/scoring.md`.
 3. Lire les réglages de David : `ArtifactData get reglages/general` (seuil, passe_droit,
    plafond_jour, cibles). Ils remplacent les valeurs de `perimetre.yaml`.
@@ -202,8 +206,11 @@ David la met à jour dans le tableau de bord.
 ## 7. Publication
 
 ```bash
-git add rapports/ donnees/ && git commit -m "Rapport du AAAA-MM-JJ" && git push
+git add rapports/ donnees/ dossiers/ && git commit -m "Rapport du AAAA-MM-JJ" && git push origin main
 ```
+
+En cas de refus du push (commit arrivé entre-temps) : `git pull --rebase origin main`, puis
+`git push origin main`.
 
 ## 8. Envoi à David
 

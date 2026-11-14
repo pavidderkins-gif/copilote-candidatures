@@ -3,6 +3,9 @@
 Entrées : l'offre (texte complet si possible), `profil/profil-maitre.md`, `profil/regles.yaml`,
 `profil/perimetre.yaml` (titre_cv, langue_dossier, canva). **Jamais pour une offre LVMH.**
 
+Branche : travailler et pousser sur `main` uniquement (`git fetch origin main && git checkout
+main && git pull --ff-only origin main` avant de commencer ; `git push origin main` à la fin).
+
 ## 1. Langue et base du CV
 
 - Langue = langue de l'offre (`fr` ou `en`).
