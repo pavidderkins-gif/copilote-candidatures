@@ -56,8 +56,12 @@ Chaque ligne a déjà `texte` (description complète), `controles` et `exclusion
 Pendant ce temps :
 
 **a. Alertes Gmail** des N derniers jours :
-`newer_than:Nd from:(jobalerts-noreply@linkedin.com OR jobs-noreply@linkedin.com OR seek.com.au OR businessfrance.fr OR vie-via.businessfrance.fr OR jobs.ch OR jobup.ch OR welcometothejungle.com OR apec.fr OR jobteaser.com)`
-Pour chaque offre des alertes : retrouver le lien de l'entreprise, puis la lire et la contrôler :
+`newer_than:Nd from:(linkedin.com OR businessfrance.fr OR sig-ge.ch OR jobs.ch OR jobup.ch OR seek.com.au OR welcometothejungle.com OR apec.fr OR jobteaser.com)`
+(Alertes créées par David le 15/11 : VIE Business France, SIG, LinkedIn. Si une alerte arrive
+d'un autre expéditeur d'emploi, l'ajouter à cette requête.) Lire chaque email d'alerte en
+entier (`get_thread`) : il liste plusieurs offres. Pour chaque offre : retrouver le lien de
+l'entreprise (une alerte LinkedIn donne l'entreprise et l'intitulé : chercher l'offre sur son
+site carrières ; ne jamais ouvrir LinkedIn), puis la lire et la contrôler :
 `printf '%s\n' <lien1> <lien2> … | python3 scripts/lire_offre.py | python3 scripts/qualite.py >> /tmp/c_autres.jsonl`
 
 **b. Paris et Lyon** : HelloWork filtré CDI et dernière semaine

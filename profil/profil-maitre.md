@@ -20,6 +20,10 @@
 - Nationalité : pas de nationalité britannique (confirmé le 13/11/2026) ; un VIE au
   Royaume-Uni est donc possible.
 
+- Australie : pas de droit de travail pour l'instant (14/11/2026). David pense être éligible
+  au visa post-études (Temporary Graduate, subclass 485) après son master à UQ (fin en
+  juillet 2026) : non confirmé, délai de dépôt à vérifier sur le site officiel.
+
 - Disponible en CDI à partir de début février 2027. Le stage Dior se
   termine le 15 janvier 2027.
 

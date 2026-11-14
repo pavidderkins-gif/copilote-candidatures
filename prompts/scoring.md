@@ -65,7 +65,7 @@ ne prépare aucun envoi pour ces offres : David postule lui-même en interne.**
 |---|---|
 | `postuler` | CDI / CDD en Suisse, à Paris ou à Lyon : toutes les offres ≥ `passe_droit` (8), puis les meilleures ≥ `seuil` (6) jusqu'à `plafond_jour` (5) |
 | `vie` | **Tous** les VIE du périmètre (finance, contrôle de gestion, data / BI, business analysis, supply chain, achats) avec une note ≥ 5, « au cas où » (demande de David du 14/11) ; hors Chine, Japon, Corée |
-| `australie` | Sydney, Melbourne ou Brisbane, note ≥ 8 seulement (« que des très bonnes offres ») ; droit de travailler en Australie exigé → le dire dans `a_savoir` |
+| `australie` | Sydney, Melbourne ou Brisbane, note ≥ 8 seulement (« que des très bonnes offres »). David n'a pas encore de droit de travail (visa post-études 485 probable) : si l'offre exige « full working rights », `a_savoir` = « Droit de travail exigé : il te faudrait le visa post-études (485) » ; si elle propose un sponsoring de visa, le dire (+0,5 en signaux implicites) |
 | `lvmh` | Groupe LVMH : signalé, jamais de dossier (voir plus haut) |
 | `a_surveiller` | Au-dessus du seuil mais hors sélection : tableau de bord seulement, pas dans l'email |
 
