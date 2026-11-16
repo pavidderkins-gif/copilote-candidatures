@@ -52,10 +52,11 @@
 - En cours : un outil Power BI de prévision pour les lancements pays et
   marchés.
 
-- En cours (2e projet du stage) : suivi des fiches articles pour vérifier
-  l'exactitude des statuts des articles, afin de suivre plus précisément
-  les fins de vie des articles (confirmé par David le 16/11/2026 ; outil et
-  résultats chiffrés à préciser).
+- En cours (2e projet du stage) : suivi des fiches articles. David vérifie
+  que le statut des articles de conditionnement et des matières premières
+  est cohérent avec le statut des produits finis qu'ils servent à fabriquer,
+  pour suivre plus précisément les fins de vie des articles (confirmé par
+  David le 16/11/2026 ; outil et résultats chiffrés à préciser).
 
 **Cogeco – Consultant data et finance indépendant (depuis août 2026, fin
 prévue en décembre 2026)**
