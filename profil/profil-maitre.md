@@ -44,8 +44,11 @@ précisée par David le 16/11/2026 :
   compare le plan de production au plan de besoins ; donne les besoins en
   articles de conditionnement et en matières premières.
 
-- Suit chaque lancement jusqu'à sa date de « mise au … » (terme exact à
-  confirmer par David : probablement mise à disposition).
+- Suit chaque lancement jusqu'à sa date de mise au comptoir (on-counter
+  date) (confirmé par David le 16/11/2026).
+
+- C'est aussi l'outil de « prévision pour les lancements pays et marchés »
+  noté le 13/11 : un seul et même outil (confirmé par David le 16/11/2026).
 
 - Une quinzaine de dashboards construits sur une quinzaine de tables de
   référence (jusqu'à 1 million de lignes chacune).
@@ -68,15 +71,15 @@ précisée par David le 16/11/2026 :
 - Outil Power BI qui contrôle l'exactitude des fiches articles, pour tous
   les articles de conditionnement et toutes les matières premières.
 
-- Calcule la classe de chaque article et la compare à la classe renseignée.
+- Calcule la classe ABC de chaque article et la compare à la classe ABC
+  renseignée (confirmé par David le 16/11/2026).
 
 - Vérifie la cohérence du statut des articles de conditionnement et des
   matières premières avec celui du produit fini auquel ils correspondent,
   pour suivre plus précisément les fins de vie des articles.
 
-- À confirmer : l'« outil de prévision pour les lancements pays et marchés »
-  noté le 13/11 existe-t-il en plus de ces deux outils ? (retiré du CV
-  Supply Planner en attendant). Résultats chiffrés de l'outil 2 à préciser.
+- Résultats chiffrés de l'outil 2 à préciser (nombre d'articles contrôlés,
+  écarts trouvés).
 
 **Cogeco – Consultant data et finance indépendant (depuis août 2026, fin
 prévue en décembre 2026)**

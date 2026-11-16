@@ -7,8 +7,7 @@ Préparé le 14/11/2026 · CV Canva : https://www.canva.com/design/DAHa6GJwaIw/e
 ## Ce qui a changé sur le CV
 Version 4 (16/11) : CV réorienté supply chain, avec la description exacte de tes deux outils Dior.
 - Ordre des sections : l'expérience passe juste après les compétences, avant la formation ; Dior est en tête.
-- Dior, 5 lignes : outil de suivi des lancements (prévisions de ventes, plan de production vs plan de besoins), besoins en articles de conditionnement et matières premières sur 3 sites, ~15 dashboards / 50+ utilisateurs / 1h30 gagnée par lancement, outil de fiabilité des fiches articles (classe), cohérence des statuts avec les produits finis (fins de vie).
-- Retiré : « outil de prévision des lancements pays et marchés » (à confirmer avec toi).
+- Dior, 5 lignes : outil de suivi des lancements (prévisions de ventes, plan de production vs plan de besoins), besoins en articles de conditionnement et matières premières jusqu'à l'on-counter date, sur 3 sites, ~15 dashboards / 50+ utilisateurs / 1h30 gagnée par lancement, outil de fiabilité des fiches articles (classe ABC), cohérence des statuts avec les produits finis (fins de vie).
 - Résumé : outil de suivi des lancements, des prévisions de ventes aux besoins en composants, et outil de fiabilité des fiches articles.
 - Compétences : 1re ligne « Supply Chain & Planification : prévisions de ventes, plan de besoins, données articles, SAP ».
 - Projet « Modélisation financière – options (Python) » retiré : hors sujet pour un Supply Planner.
@@ -20,9 +19,9 @@ Madame, Monsieur,
 
 Je vous adresse ma candidature au poste de Supply Planner (référence PCD22435), rattaché au Supply Planning Manager. Je connais déjà la Maison de l'intérieur : depuis juillet 2026, je suis Supply Chain Data & Analytics Engineer en stage sur le site de Saint-Jean-de-Braye.
 
-J'y ai conçu seul l'outil Power BI qui suit le lancement de tous les nouveaux produits. À partir des prévisions de ventes et des données de tous les articles, il compare le plan de production au plan de besoins et donne les besoins en articles de conditionnement et en matières premières, pour les sites de Chartres, Saint-Jean-de-Braye et Pudong. Il s'appuie sur une quinzaine de tables de référence (jusqu'à un million de lignes) alimentées par SAP, SharePoint et Excel, sert à plus de 50 utilisateurs clés, des opérateurs à l'Industrial Supply Chain Director, et fait gagner au moins 1 h 30 à chaque lancement.
+J'y ai conçu seul l'outil Power BI qui suit le lancement de tous les nouveaux produits. À partir des prévisions de ventes et des données de tous les articles, il compare le plan de production au plan de besoins et donne les besoins en articles de conditionnement et en matières premières jusqu'à la date de mise au comptoir (on-counter date), pour les sites de Chartres, Saint-Jean-de-Braye et Pudong. Il s'appuie sur une quinzaine de tables de référence (jusqu'à un million de lignes) alimentées par SAP, SharePoint et Excel, sert à plus de 50 utilisateurs clés, des opérateurs à l'Industrial Supply Chain Director, et fait gagner au moins 1 h 30 à chaque lancement.
 
-Je développe aujourd'hui un second outil Power BI qui contrôle l'exactitude des fiches articles : pour chaque article de conditionnement et chaque matière première, il calcule la classe et la compare à celle renseignée, et vérifie que son statut est cohérent avec celui du produit fini qu'il sert à fabriquer. C'est la base d'un suivi fiable des fins de vie.
+Je développe aujourd'hui un second outil Power BI qui contrôle l'exactitude des fiches articles : pour chaque article de conditionnement et chaque matière première, il calcule la classe ABC et la compare à celle renseignée, et vérifie que son statut est cohérent avec celui du produit fini qu'il sert à fabriquer. C'est la base d'un suivi fiable des fins de vie.
 
 Ces deux projets m'ont appris à relier prévisions, plan de production et besoins, et à rendre les écarts lisibles pour les équipes. Ce sont les leviers du poste : projections d'inventaire, allocation, paramètres de stock et fins de vie produits. Ingénieur Arts et Métiers et diplômé du Master of Entrepreneurship and Innovation de l'UQ Business School, je suis bilingue français-anglais.
 
