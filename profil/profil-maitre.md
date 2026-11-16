@@ -61,6 +61,9 @@ précisée par David le 16/11/2026 :
 - Plus de 50 utilisateurs clés, des opérateurs à l'Industrial Supply Chain Director (directeur supply chain
   industrielle ; confirmé par David le 13/11/2026).
 
+- Utilise MaIA (outil d'IA interne LVMH) au quotidien pendant le stage
+  (confirmé par David le 16/11/2026). Pas d'usage de Copilot à ce jour.
+
 - Flux de données venant de SAP, SharePoint et Excel. Cycle Dev / Test /
   Prod. Gestion des accès et de la gouvernance. Utilisation de Google
   Cloud Platform (GCP).

@@ -21,7 +21,7 @@ On budget cycles and financial planning: as a freelance consultant for Cogeco, I
 
 On governance and reporting: at Dior, I built on my own a Power BI tool that tracks every new product launch, from sales forecasts to packaging and raw material requirements, across three sites. It serves more than 50 users, from operators to the Industrial Supply Chain Director, with a Dev / Test / Prod cycle and access governance, and saves at least 1.5 hours per launch. Working with users at every level taught me to turn their needs into clear dashboards and documentation.
 
-On AI adoption: I built and shipped a personal finance web app on my own with Claude Code, writing the specification first, and coded an MCP server so that an AI assistant can query the data. I hold the Leading with Generative AI certificate from HBS Online and two Anthropic certifications. I have not used Copilot or MaIA yet, but I learn new tools quickly and enjoy showing others how to use them.
+On AI adoption: I use MaIA every day in my internship at Dior. Outside work, I built and shipped a personal finance web app on my own with Claude Code, writing the specification first, and coded an MCP server so that an AI assistant can query the data. I hold the Leading with Generative AI certificate from HBS Online and two Anthropic certifications, and I have taught business English to 50 students at IPSSI, which helps when building awareness materials and guiding new users.
 
 I am an Arts et Métiers engineer, I hold a Master of Entrepreneurship and Innovation from UQ Business School, and I am fully bilingual in French and English. I would be glad to discuss how I could support the PMO. I am available from February 2027.
 
@@ -31,14 +31,14 @@ David Perkins
 References: Mathurine Moreau, Nicolas Bouchet, Peggy Lapeyronie, Mathilde Goutille (voir PDF).
 
 ## Message d'approche
-Hello, I am applying for the VIE IT Project Management role in the FG Americas IT PMO (FADIV01114). I built a consolidated forecasting tool for a 10-subsidiary group, a governed Power BI tool for 50+ users at Dior, and an app shipped with Claude Code. I would be glad to talk. Kind regards, David Perkins
+Hello, I am applying for the VIE IT Project Management role in the FG Americas IT PMO (FADIV01114). I built a consolidated forecasting tool for a 10-subsidiary group, a governed Power BI tool for 50+ users at Dior, and I use MaIA daily at Dior. I would be glad to talk. Kind regards, David Perkins
 
 ## « Pourquoi ce poste ? »
 I already work in the Group and I have done, at a smaller scale, the three pillars of the role: consolidating budgets across entities (Cogeco), governed reporting for senior stakeholders (Dior), and hands-on AI adoption (Claude Code, MCP). A PMO role in New York lets me put them together for FG Americas.
 
 ## Questions avant envoi
 - Expérience requise : « minimum 3 years » dans l'offre. Tu as moins (stage + missions). C'est le principal frein.
-- Tu n'as pas utilisé Copilot ni MaIA (outil IA interne LVMH) : la lettre le dit honnêtement.
+- Tu utilises MaIA au quotidien chez Dior : prépare 2 ou 3 exemples concrets. Copilot : pas utilisé.
 - Cycles budgétaires R1 / R2 / BI-27 : vocabulaire interne LVMH à réviser avant l'entretien (ou demander à Mathurine Moreau).
 - VIE : vérifie ton éligibilité (âge, nationalité) et la date de début (non indiquée).
 - RH de l'offre : Paige Goodridge & Hayley Seawell.
