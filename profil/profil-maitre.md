@@ -32,15 +32,28 @@
 **Parfums Christian Dior – Supply Chain Data & Analytics Engineer
 (stage, juillet 2026 à janvier 2027, Saint-Jean-de-Braye)**
 
-- Premier projet livré de bout en bout : une quinzaine de dashboards
-  Power BI construits sur une quinzaine de tables de référence (jusqu'à
-  1 million de lignes chacune).
+Outils utilisés pendant le stage : SAP, Power BI, Excel / VBA (précisé par David le 16/11/2026).
 
-- L'outil est utilisé pour la production de tous les nouveaux produits,
-  sur les sites de Chartres, Saint-Jean-de-Braye et Pudong (Chine).
+**Outil 1 – Suivi des lancements de nouveaux produits (livré)** — description
+précisée par David le 16/11/2026 :
 
-- Gain d'au moins 1h30 par projet lors de chaque lancement de nouveau
-  projet.
+- Outil Power BI (extractions Excel possibles) qui suit le lancement de tous
+  les nouveaux produits à partir des prévisions de ventes.
+
+- Prend en entrée les prévisions de ventes et toutes les données articles ;
+  compare le plan de production au plan de besoins ; donne les besoins en
+  articles de conditionnement et en matières premières.
+
+- Suit chaque lancement jusqu'à sa date de « mise au … » (terme exact à
+  confirmer par David : probablement mise à disposition).
+
+- Une quinzaine de dashboards construits sur une quinzaine de tables de
+  référence (jusqu'à 1 million de lignes chacune).
+
+- Utilisé pour tous les nouveaux produits, sur les sites de Chartres,
+  Saint-Jean-de-Braye et Pudong (Chine).
+
+- Gain d'au moins 1h30 par projet lors de chaque lancement.
 
 - Plus de 50 utilisateurs clés, des opérateurs à l'Industrial Supply Chain Director (directeur supply chain
   industrielle ; confirmé par David le 13/11/2026).
@@ -49,14 +62,21 @@
   Prod. Gestion des accès et de la gouvernance. Utilisation de Google
   Cloud Platform (GCP).
 
-- En cours : un outil Power BI de prévision pour les lancements pays et
-  marchés.
+**Outil 2 – Exactitude des fiches articles (en cours)** — décrit par David le
+16/11/2026 :
 
-- En cours (2e projet du stage) : suivi des fiches articles. David vérifie
-  que le statut des articles de conditionnement et des matières premières
-  est cohérent avec le statut des produits finis qu'ils servent à fabriquer,
-  pour suivre plus précisément les fins de vie des articles (confirmé par
-  David le 16/11/2026 ; outil et résultats chiffrés à préciser).
+- Outil Power BI qui contrôle l'exactitude des fiches articles, pour tous
+  les articles de conditionnement et toutes les matières premières.
+
+- Calcule la classe de chaque article et la compare à la classe renseignée.
+
+- Vérifie la cohérence du statut des articles de conditionnement et des
+  matières premières avec celui du produit fini auquel ils correspondent,
+  pour suivre plus précisément les fins de vie des articles.
+
+- À confirmer : l'« outil de prévision pour les lancements pays et marchés »
+  noté le 13/11 existe-t-il en plus de ces deux outils ? (retiré du CV
+  Supply Planner en attendant). Résultats chiffrés de l'outil 2 à préciser.
 
 **Cogeco – Consultant data et finance indépendant (depuis août 2026, fin
 prévue en décembre 2026)**
