@@ -16,7 +16,7 @@ Madame, Monsieur,
 
 Je vous adresse ma candidature au poste de Planificateur Habillage (référence HUBL00957), au sein de la Planification de Production. Je suis aujourd'hui dans le groupe LVMH, en stage Supply Chain Data & Analytics chez Parfums Christian Dior, et je souhaite poursuivre en planification industrielle, en Suisse.
 
-Chez Dior, j'ai conçu seul l'outil Power BI qui suit la production de tous les nouveaux produits sur trois sites (Chartres, Saint-Jean-de-Braye et Pudong). Il repose sur une quinzaine de tables de référence alimentées par SAP, SharePoint et Excel, et il est utilisé par plus de 50 personnes, des opérateurs à l'Industrial Supply Chain Director. Il fait gagner au moins 1 h 30 à chaque lancement. Ce projet m'a appris à fiabiliser les données ERP qui pilotent un flux et à construire les indicateurs dont les équipes ont besoin, deux missions du poste.
+Chez Dior, j'ai conçu seul l'outil Power BI qui suit le lancement de tous les nouveaux produits sur trois sites (Chartres, Saint-Jean-de-Braye et Pudong) : à partir des prévisions de ventes et des données articles, il compare le plan de production au plan de besoins et calcule les besoins en articles de conditionnement et en matières premières. Il repose sur une quinzaine de tables de référence alimentées par SAP, SharePoint et Excel, il est utilisé par plus de 50 personnes, des opérateurs à l'Industrial Supply Chain Director, et il fait gagner au moins 1 h 30 à chaque lancement. Je développe aujourd'hui un second outil qui contrôle les fiches articles : classe ABC et cohérence des statuts des composants avec ceux des produits finis. Ces projets m'ont appris à fiabiliser les données ERP qui pilotent un flux et à construire les indicateurs dont les équipes ont besoin, deux missions du poste.
 
 Ingénieur Arts et Métiers, j'ai aussi construit pour Cogeco un outil Excel (macros VBA) et Power BI de trésorerie consolidée pour une holding et dix filiales. Je suis bilingue français-anglais et disponible à partir de février 2027.
 
@@ -26,7 +26,7 @@ Respectueusement,
 David Perkins
 
 ## Message d'approche
-Bonjour, je postule au poste de Planificateur Habillage (HUBL00957). En stage chez Parfums Christian Dior, j'ai conçu seul l'outil Power BI qui suit la production des nouveaux produits sur 3 sites, à partir de données SAP. J'aimerais beaucoup échanger sur vos flux d'habillage. Respectueusement, David Perkins
+Bonjour, je postule au poste de Planificateur Habillage (HUBL00957). En stage chez Parfums Christian Dior, j'ai conçu seul l'outil Power BI qui suit les lancements des nouveaux produits, des prévisions de ventes aux besoins en composants (SAP). J'aimerais beaucoup échanger sur vos flux d'habillage. Respectueusement, David Perkins
 
 ## « Pourquoi ce poste ? »
 J'ai construit chez Dior l'outil qui suit la production des nouveaux produits sur 3 sites. Je veux maintenant planifier un flux moi-même, dans une Maison horlogère, en Suisse.

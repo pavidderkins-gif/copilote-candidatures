@@ -16,7 +16,7 @@ Dear Hiring Team,
 
 I am applying for the Regional Demand & Supply Planner position (reference MHWS01003). I already work within the LVMH Group, as a Supply Chain Data & Analytics Engineer intern at Parfums Christian Dior, and I would like to move into planning for Moët Hennessy's EMEA markets.
 
-At Dior, I built on my own the Power BI tool that tracks the production of every new product across three sites (Chartres, Saint-Jean-de-Braye and Pudong). It runs on about fifteen reference tables fed by SAP, SharePoint and Excel, serves more than 50 users up to the Industrial Supply Chain Director, and saves at least 1.5 hours on each launch. I am now building a forecasting tool for country and market launches. This work taught me to keep master data reliable, spot gaps early and turn KPIs into clear action points for the teams.
+At Dior, I built on my own the Power BI tool that tracks every new product launch across three sites (Chartres, Saint-Jean-de-Braye and Pudong): from sales forecasts and item data, it compares the production plan with the requirements plan and calculates packaging and raw material needs up to the on-counter date. It runs on about fifteen reference tables fed by SAP, SharePoint and Excel, serves more than 50 users up to the Industrial Supply Chain Director, and saves at least 1.5 hours on each launch. I am now building a second tool that checks item master data: ABC classification and consistency between component and finished-good statuses, the basis for reliable phase-outs. This work taught me to keep master data reliable, spot gaps early and turn KPIs into clear action points for the teams.
 
 These are the core of the role: forecast accuracy, replenishment, product lifecycle and reporting on service levels and slow movers. I have not used Maestro Kinaxis yet, but I learn planning tools quickly. I am an Arts et Métiers engineer and hold a Master of Entrepreneurship and Innovation from UQ Business School, and I am fully bilingual in French and English.
 
@@ -26,7 +26,7 @@ Kind regards,
 David Perkins
 
 ## Message d'approche
-Hello, I am applying for the Regional Demand & Supply Planner role (MHWS01003). As an intern at Parfums Christian Dior, I built the Power BI tool that tracks new-product production across 3 sites for 50+ users, and I am now building a launch forecasting tool. I would be glad to talk. Kind regards, David Perkins
+Hello, I am applying for the Regional Demand & Supply Planner role (MHWS01003). As an intern at Parfums Christian Dior, I built the Power BI tool that tracks every launch from sales forecasts to material requirements for 50+ users, and I am now building an item master data check. I would be glad to talk. Kind regards, David Perkins
 
 ## « Pourquoi ce poste ? »
 I built Dior's tool for tracking new-product production across 3 sites, and I am now working on launch forecasting. I want to own demand and supply planning for real markets, in Wines & Spirits.

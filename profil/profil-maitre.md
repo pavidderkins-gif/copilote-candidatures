@@ -225,8 +225,16 @@ dépenses, déclarations annuelles).
 
 - Email ENSAM sur le CV, pas d'adresse postale.
 
-- Références disponibles : Nicolas Bouchet (Directeur supply chain
-  industrielle, Dior), Peggy Lapeyronie (Directrice de l'excellence
-  opérationnelle, Dior), Nicole Smith (manager, Babylon Brisbane),
-  Mathilde Goutille (Présidente, Cogeco).
+- Références (liste donnée par David le 16/11/2026, à mettre sous chaque
+  lettre de motivation) :
+  - Mathurine Moreau – RH Supply Chain, Parfums Christian Dior –
+    mamoreau@diormail.com
+  - Nicolas Bouchet – Industrial Supply Chain Director, Parfums Christian
+    Dior – nbouchet@diormail.com
+  - Peggy Lapeyronie – Excellence opérationnelle, tutrice de stage, Parfums
+    Christian Dior – plapeyronie@diormail.com
+  - Mathilde Goutille – Présidente, Cogeco –
+    mathilde.goutille@cogeco-promotion.fr
+  - Autre référence possible (pas dans la liste du 16/11) : Nicole Smith
+    (manager, Babylon Brisbane).
 
