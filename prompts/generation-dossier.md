@@ -9,7 +9,8 @@ main && git pull --ff-only origin main` avant de commencer ; `git push origin ma
 ## 1. Langue et base du CV
 
 - Langue = langue de l'offre (`fr` ou `en`).
-- Base Canva : `canva.cv_reference_fr` pour une offre en français ; pour une offre en anglais,
+- Base Canva : `canva.cv_reference_fr` pour une offre en français (`canva.cv_reference_supply_chain_fr`
+  si l'offre est en supply chain, planification ou approvisionnement : expérience en premier, outils Dior détaillés) ; pour une offre en anglais,
   le CV anglais le plus proche de l'axe parmi les CV « EN-David-Perkins-CV-… » de Canva
   (rechercher « EN-David-Perkins-CV »), sinon traduire la base française.
 - Toujours travailler sur une **copie** (`copy-design`), jamais sur l'original. Nommer la copie
