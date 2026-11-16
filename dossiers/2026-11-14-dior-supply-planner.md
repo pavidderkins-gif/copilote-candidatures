@@ -5,11 +5,14 @@ Préparé le 14/11/2026 · CV Canva : https://www.canva.com/design/DAHa6GJwaIw/e
 > Offre interne LVMH : Copilote prépare le dossier mais ne postule pas et ne va pas sur les sites du groupe. C'est toi qui envoies.
 
 ## Ce qui a changé sur le CV
-Base : CV français de référence (copie ; l'original n'est pas modifié).
-- Titre : « Supply Planner » (intitulé de l'offre).
-- Résumé : les outils Power BI (SAP, GCP) qui suivent la production de tous les nouveaux produits sur 3 sites, pour plus de 50 personnes.
-- Compétences : ligne « Supply Chain & BI » en premier (prévision des lancements, Power BI, Power Automate).
-- Reste du CV inchangé.
+Version 2 (16/11) : CV réorienté supply chain, sur ta remarque.
+- Ordre des sections : l'expérience passe juste après les compétences, avant la formation ; Dior est en tête.
+- Dior : 4 puces au lieu de 2 (suivi de la production sur 3 sites, ~15 dashboards SAP / SharePoint / Excel, 50+ utilisateurs jusqu'à l'Industrial Supply Chain Director, outil de prévision des lancements en cours).
+- Résumé centré sur la supply chain Dior et la prévision des lancements.
+- Compétences : 1re ligne « Supply Chain & Planification ».
+- Projet « Modélisation financière – options (Python) » retiré : hors sujet pour un Supply Planner.
+- Cogeco : « prévision de trésorerie » (outil de prévision, plus parlant pour un planificateur) ; Courlancy : « simulations de scénarios, rapprochement des écarts ».
+- Rien d'inventé : pas de dimensionnement de stocks ni de plan d'allocation sur le CV, tu ne l'as pas encore fait.
 
 ## Lettre de motivation
 Madame, Monsieur,
